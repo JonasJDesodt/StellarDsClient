@@ -1,0 +1,28 @@
+﻿@model ListFormModel
+
+<div>
+    <label asp-for="@Model.Title"></label>
+    <input asp-for="@Model.Title" />
+    <span asp-validation-for="@Model.Title"></span>
+</div>
+
+<div>
+    <label asp-for="@Model.Deadline"></label>
+    <input asp-for="@Model.Deadline" />
+    <span asp-validation-for="@Model.Deadline"></span>
+</div>
+
+<div>
+    <label asp-for="@Model.ImageUpload">Upload image</label>
+    <input type="file" asp-for="@Model.ImageUpload" accept="image/*" />
+    <span asp-validation-for="@Model.ImageUpload"></span>
+</div>
+
+@if (Model?.CurrentImage is not null)
+{
+    <div>
+        <label asp-for="@Model.CurrentImage">Current image</label>
+        <input type="hidden" asp-for="@Model.CurrentImage" />
+        <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.CurrentImage)" alt="@Model.Title thumbnail" />
+    </div>
+}

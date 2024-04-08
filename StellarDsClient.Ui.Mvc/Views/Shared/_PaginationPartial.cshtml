@@ -1,0 +1,71 @@
+﻿@using System.Web
+@model PaginationPartialModel
+
+@{
+    var path = Context.Request.Path;
+    var query = HttpUtility.ParseQueryString(Context.Request.QueryString.ToString());
+}
+
+<div>
+    @if (Model.TotalPages > 1)
+    {
+        <ul class="left">
+            @if (Model.CurrentPage > 1)
+            {
+                <li class="first">
+                    @{
+                        query["page"] = "1";
+                    }
+                    <a href="@(path + "?" + query)" class="button">
+                        First
+                    </a>
+                </li>
+                <li class="previous">
+                    @{
+                        query["page"] = $"{Model.CurrentPage - 1}";
+                    }
+                    <a href="@(path + "?" + query)" class="button">
+                        Previous
+                    </a>
+                </li>
+            }
+        </ul>
+        <ul class="center">
+
+            @for (var pge = Model.StartPage; pge <= Model.EndPage; pge++)
+            {
+                <li class="page-item @(pge == Model.CurrentPage ? "active" : "")">
+                    @{
+                        query["page"] = $"{pge}";
+                    }
+                    <a href="@(path + "?" + query)" class="button">
+                        @pge
+                    </a>
+                </li>
+            }
+
+        </ul>
+        <ul class="right">
+
+            @if (Model.CurrentPage < Model.TotalPages)
+            {
+                <li class="next">
+                    @{
+                        query["page"] = $"{Model.CurrentPage + 1}";
+                    }
+                    <a href="@(path + "?" + query)" class="button">
+                        Next
+                    </a>
+                </li>
+                <li class="last">
+                    @{
+                        query["page"] = $"{Model.TotalPages}";
+                    }
+                    <a href="@(path + "?" + query)" class="button">
+                        Last
+                    </a>
+                </li>
+            }
+        </ul>
+    }
+</div>

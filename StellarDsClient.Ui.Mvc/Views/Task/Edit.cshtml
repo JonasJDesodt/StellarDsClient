@@ -1,0 +1,41 @@
+﻿@model TaskCreateEditViewModel
+
+@{
+    ViewData["Title"] = $"{Model.ListEntity?.Title ?? "List"}: edit {Model.TaskFormModel?.Title}";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (Model.ErrorMessages is not null)
+{
+    <partial name="_ErrorMessagesPartial" model="@Model.ErrorMessages" />
+}
+else if (Model.ListEntity is not null && Model.TaskFormModel is not null)
+{
+    <partial name="_ListEntityPartial" model="@Model.ListEntity" />
+    
+    <form method="post" enctype="multipart/form-data">
+        <partial name="_CreateEditPartial" model="@Model.TaskFormModel" />
+
+        @if (!Model.TaskFormModel.HasDeleteRequest)
+        {
+            <div class="buttons">
+                <button type="submit" class="button">Save</button>
+
+                <a asp-action="Edit" class="button warning">Clear</a>
+
+                <a asp-controller="Task" asp-action="DeleteRequest" asp-route-id="@Model.TaskFormModel.Id" asp-route-listId="@Model.ListEntity.Id" class="button danger">Delete</a>
+            </div>
+        }
+        else
+        {
+            <div class="buttons">
+                <p>Are you sure you want to delete '@Model.TaskFormModel.Title'?</p>
+
+                <a asp-controller="Task" asp-action="Delete" asp-route-id="@Model.TaskFormModel.Id" asp-route-listId="@Model.ListEntity.Id" class="button">Yes</a>
+
+                <a asp-controller="Task" asp-action="Edit" asp-route-id="@Model.TaskFormModel.Id" asp-route-listId="@Model.ListEntity.Id" class="button danger">No</a>
+            </div>
+        }
+    </form>
+}

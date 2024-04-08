@@ -1,0 +1,14 @@
+﻿div {
+    display: flex;
+    flex-direction: column;
+    gap: var(--default-gap-medium);
+}
+
+    div > div {
+        gap: var(--default-gap-small);
+    }
+
+    div > img {
+        width: 100%;
+        object-fit: cover;
+    }

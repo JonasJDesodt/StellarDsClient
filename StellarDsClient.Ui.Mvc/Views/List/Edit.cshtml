@@ -1,0 +1,39 @@
+﻿@model ListCreateEditViewModel
+
+@{
+    ViewData["Title"] = $"Edit {Model.ListFormModel?.Title}";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (Model.ErrorMessages is not null)
+{
+    <partial name="_ErrorMessagesPartial" model="@Model.ErrorMessages" />
+}
+else if (Model.ListFormModel is not null)
+{
+    <form method="post" enctype="multipart/form-data">
+        <partial name="_CreateEditPartial" model="@Model.ListFormModel" />
+
+        @if (!Model.ListFormModel.HasDeleteRequest)
+        {
+            <div class="buttons">
+                <button type="submit">Save</button>
+
+                <a asp-controller="List" asp-action="Edit" class="button warning">Clear</a>
+
+                <a asp-controller="List" asp-action="DeleteRequest" asp-route-id="@Model.ListFormModel.Id" class="button danger">Delete</a>
+            </div>
+        }
+        else
+        {
+            <div class="buttons">
+                <p>Are you sure you want to delete '@Model.ListFormModel.Title'?</p>
+
+                <a asp-controller="List" asp-action="Delete" asp-route-id="@Model.ListFormModel.Id" class="button">Yes</a>
+
+                <a asp-controller="List" asp-action="Edit" asp-route-id="@Model.ListFormModel.Id" class="button danger">No</a>
+            </div>
+        }
+    </form>
+}

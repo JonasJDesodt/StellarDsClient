@@ -1,0 +1,61 @@
+﻿@model TaskIndexViewModel
+
+@{
+    ViewData["Title"] = @Model.ListEntity?.Title;
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (Model.ErrorMessages is not null)
+{
+    <partial name="_ErrorMessagesPartial" model="@Model.ErrorMessages"/>
+}
+else if (Model.ListEntity is not null && Model.TaskResults is not null)
+{
+    <partial name="_ListEntityPartial" model="@Model.ListEntity"/>
+
+    @if (@Model.ListEntity.OwnerId == User.GetId())
+    {
+        <a asp-action="Create" asp-route-listId="@Model.ListEntity.Id" class="button">Add task</a>
+    }
+
+    <partial name="_FilterPartial" model="@Model.TaskIndexFilter" />
+
+    <section id="results">
+        <h3>@Model.PaginationPartialModel?.TotalItems result@(Model.PaginationPartialModel?.TotalItems != 1 ? "s" : ""):</h3>
+
+        <ul>
+            @foreach (var taskResult in @Model.TaskResults)
+            {
+                <li>
+                    <h4>@taskResult.Title</h4>
+
+                    <p>Status:
+                        @if (taskResult.Done)
+                        {
+                            <span class="done">Done</span>
+                        }
+                        else
+                        {
+                            <span>To do</span>
+                        }
+                    <p>Created: @taskResult.Created.ToShortDateString()</p>
+                    
+                    <div class="buttons">
+                        @if (@Model.ListEntity.OwnerId == User.GetId())
+                        {
+                            <a asp-controller="Task" asp-action="Edit" asp-route-id="@taskResult.Id" asp-route-listId="@Model.ListEntity.Id" class="button">Edit</a>
+                        }
+                    </div>
+                </li>
+            }
+        </ul>
+
+        <partial name="_PaginationPartial" model="@Model.PaginationPartialModel" />
+    </section>
+}
+
+@section Scripts
+{
+    <script src="~/js/filters.js"></script>
+}

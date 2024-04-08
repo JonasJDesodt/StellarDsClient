@@ -1,0 +1,42 @@
+﻿@model TaskIndexFilter
+
+<section id="filters">
+    <h3 id="toggle-filters">
+        <span class="open">&#11206;</span>
+        <span class="closed">&#11208;</span>
+        <span>Filters</span>
+        <span class="count">(@Model.GetActiveCount())</span>
+    </h3>
+
+    <form method="get">
+        <div>
+            <label asp-for="@Model.Title"></label>
+            <input asp-for="@Model.Title" />
+        </div>
+
+        <div>
+            <label asp-for="@Model.CreatedStart">Created start</label>
+            <input asp-for="@Model.CreatedStart" />
+        </div>
+
+        <div>
+            <label asp-for="@Model.CreatedEnd">Created end</label>
+            <input asp-for="@Model.CreatedEnd" />
+        </div>
+
+        <div>
+            <label>Sort by</label>
+            <select asp-for="Sort">
+                <option value="created">Created</option>
+                <option value="title">Title</option>
+                <option value="done">Status</option>
+            </select>
+        </div>
+
+        <div class="buttons">
+            <button type="submit">Save</button>
+
+            <a asp-controller="Task" asp-action="Index" class="button warning">Clear</a>
+        </div>
+    </form>
+</section>

@@ -1,0 +1,14 @@
+﻿h4 {
+    color: var(--default-title-foreground-variant);
+    font-size: 1.2em;
+}
+
+p > span {
+    color: #f44336;
+    font-family: var(--default-font-family-variant);
+    font-size: 1.2em;
+}
+
+    p > span.done {
+        color: green;
+    }

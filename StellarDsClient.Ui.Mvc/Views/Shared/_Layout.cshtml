@@ -1,0 +1,99 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    var returnUrl = Context.Request.Path.Value ?? "/";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - StellarDsClient.Ui.Mvc</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/StellarDsClient.Ui.Mvc.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        @if (ViewData["Title"]?.Equals("Home") == true)
+        {
+            <h1 class="active">To do</h1>
+        }
+        else
+        {
+            <h1><a asp-area="" asp-controller="Home" asp-action="Index">To do</a></h1>
+        }
+
+        <nav>
+            <ul>
+                @if (User.Identity?.IsAuthenticated is true)
+                {
+                    <li><b>@User.Identity.Name</b></li>
+
+                    <li><a asp-controller="OAuth" asp-action="SignOut" asp-route-returnUrl="@returnUrl">Sign out</a></li>
+                }
+                else
+                {
+                    <li><a asp-controller="OAuth" asp-action="SignIn" asp-route-returnUrl="@returnUrl">Sign in</a></li>
+                }
+            </ul>
+
+            <ul>
+                @if (User.Identity?.IsAuthenticated is true)
+                {
+                    if (ViewData["Title"]?.Equals("Lists") == true)
+                    {
+                        <li class="active">Lists</li>
+                    }
+                    else
+                    {
+                        <li><a asp-controller="List" asp-action="Index">Lists</a></li>
+                    }
+                }
+            </ul>
+        </nav>
+
+        <button id="close-overlay-button">
+            <svg viewBox="0 0 48 48">
+                <use href="/icons/icons.svg#cross" />
+            </svg>
+        </button>
+
+        <button id="open-overlay-button">
+            <svg viewBox="0 0 48 48">
+                <use href="/icons/icons.svg#hamburger" />
+            </svg>
+        </button>
+    </header>
+    <main role="main">
+        @if (ViewData["Title"]?.Equals("Home") is false)
+        {
+            <button id="return-button" class="warning">Return</button>
+        }
+
+        @RenderBody()
+    </main>
+
+    <footer>
+        <ul>
+            <li><a href="https://www.tmssoftware.com/" target="_blank"><img src="/images/logo_tms_software.png" alt="TMS Software" /></a></li>
+            <li><a href="https://www.vives.be/" target="_blank"><img src="/images/logo_vives.svg" alt="Vives Hogeschool" /></a></li>
+        </ul>
+
+        <div class="container">
+            &copy; 2024 - StellarDsClient.Ui.Mvc - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script type="text/javascript">
+        const oAuthBaseAddress = '@ViewData["OAuthBaseAddress"]/';
+    </script>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+
+

@@ -1,0 +1,25 @@
+﻿div {
+    align-items: flex-end;
+    align-self: flex-end;
+    justify-content: flex-end;
+    display: flex;
+    flex-grow: 1;
+    gap: var(--default-gap-divider-thick);
+}
+
+    div > ul {
+        display: flex;
+        gap: var(--default-gap-divider-thick);
+    }
+    div > ul > li {
+        display: flex;
+    }
+
+    /*todo: in site.css?? */
+        div > ul > li.active > a {
+            background: var(--default-active-background);
+        }
+        div > ul > li.active:hover > a {
+            background: var(--default-active-background-hover);
+        }
+        

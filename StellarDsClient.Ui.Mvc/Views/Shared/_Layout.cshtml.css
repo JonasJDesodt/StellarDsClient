@@ -1,0 +1,136 @@
+﻿body > footer {
+    background: var(--default-footer-background);
+    border-top: var(--default-divider-thin-light);
+    color: var(--default-footer-foreground);
+    display: flex;
+    flex-direction: column;
+    font-size: var(--default-footer-font-size);
+    gap: var(--default-gap-big);
+    padding: var(--mobile-layout-padding);
+}
+
+    body > footer > ul {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: var(--default-gap-big);
+        list-style-type: none;
+    }
+
+        body > footer > ul > li > a > img {
+            height: var(--default-footer-logo-height);
+        }
+
+body > header {
+    background: var(--default-header-background);
+    color: var(--default-header-foreground);
+    padding: var(--mobile-layout-padding);
+    width: 100%;
+}
+
+body > header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    height: var(--mobile-header-height);
+
+}
+
+    body > header > #close-overlay-button, body > header > #open-overlay-button {
+        grid-column: 3/4;
+    }
+
+
+    body > header > #close-overlay-button {
+        display: none;
+    }
+
+    body > header > nav {
+        grid-column: 2/3;
+        display: none;
+    }
+
+    body > header > h1 {
+        grid-column: 1/2;
+        font-family: var(--default-font-family-variant);
+        display: flex;
+    }
+
+        body > header > h1 > ::deep a {
+            color: #fff;
+        }
+
+    body > header > nav > ul > li > ::deep a {
+        color: #fff;
+    }
+
+    body > header > h1 > ::deep a, body > header > nav > ul > li > ::deep a {
+        font-family: inherit;
+        display: flex;
+        text-decoration: none;
+    }
+
+    body > header > button {
+        background: transparent;
+    }
+
+        body > header > button > svg {
+            height: 1em;
+            stroke: var(--default-button-foreground);
+        }
+
+button > svg:hover {
+    /*            stroke: var(--default-button-background-hover);*/
+}
+
+body > main {
+    background: var(--default-main-background);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: var(--default-gap-big);
+    padding: var(--mobile-layout-padding);
+}
+
+body.overlay > header {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto 1fr;
+    height: 100vh;
+    overflow: auto;
+    position: fixed;
+    grid-row-gap: 1em;
+}
+
+    body.overlay > header > #close-overlay-button {
+        display: flex;
+    }
+
+    body.overlay > header > #open-overlay-button {
+        display: none;
+    }
+
+    body.overlay > header > nav {
+        grid-column: 1/3;
+        grid-row: 2/3;
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+        justify-self: center;
+        padding: 1em;
+    }
+
+        body.overlay > header > nav > ul {
+            display: flex;
+            flex-direction: column;
+            gap: .5em;
+            list-style-type: none;
+        }
+
+@media (min-height: 384px) {
+    body > header {
+        position: fixed;
+    }
+
+    body > main {
+        margin-top: var(--mobile-header-height);
+    }
+}

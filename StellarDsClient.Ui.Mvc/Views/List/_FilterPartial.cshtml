@@ -1,0 +1,74 @@
+﻿@model ListIndexFilter
+
+<section id="filters">
+    <h3 id="toggle-filters">
+        <span class="open">&#11206;</span>
+        <span class="closed">&#11208;</span>
+        <span>Filters</span>
+        <span class="count">(@Model.GetActiveCount())</span>
+    </h3>
+
+    <form method="get">
+        <div>
+            <p class="label">Scope</p>
+            
+            <div class="radio-buttons">
+                <div>
+                    <input asp-for="@Model.Scoped" type="radio" value="false" checked="@(Model.Scoped is false or null)" />
+                    <label asp-for="@Model.Scoped">All lists</label>
+                </div>
+
+                <div>
+                    <input asp-for="@Model.Scoped" type="radio" value="true" checked="@(Model.Scoped is true)"/>
+                    <label asp-for="@Model.Scoped">Only my lists</label>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <label asp-for="@Model.Title"></label>
+            <input asp-for="@Model.Title"/>
+        </div>
+        
+        <div>
+            <label asp-for="@Model.Owner"></label>
+            <input asp-for="@Model.Owner"/>
+        </div>
+
+        <div>
+            <label asp-for="@Model.CreatedStart">Created start</label>
+            <input asp-for="@Model.CreatedStart"/>
+        </div>
+
+        <div>
+            <label asp-for="@Model.CreatedEnd">Created end</label>
+            <input asp-for="CreatedEnd"/>
+        </div>
+
+        <div>
+            <label asp-for="@Model.DeadlineStart">Deadline start</label>
+            <input asp-for="@Model.DeadlineStart"/>
+        </div>
+        
+        <div>
+            <label asp-for="@Model.DeadlineEnd">Deadline end</label>
+            <input asp-for="@Model.DeadlineEnd"/>
+        </div>
+
+        <div>
+            <label>Sort by</label>
+            <select name="sort">
+                <option value="created" selected="@(Model.Sort?.Equals("created") is true)">Created</option>
+                <option value="title" selected="@(Model.Sort?.Equals("title") is true)">Title</option>
+                <option value="ownerTitle" selected="@(Model.Sort?.Equals("ownerName") is true)">Owner</option>
+                <option value="deadline" selected="@(Model.Sort?.Equals("deadline") is true)">Deadline</option>
+            </select>
+        </div>
+
+        <div class="buttons">
+            <button type="submit">Save</button>
+
+            <a asp-controller="List" asp-action="Index" class="button warning">Clear</a>
+        </div>
+    </form>
+</section>

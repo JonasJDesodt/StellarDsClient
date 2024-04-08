@@ -1,0 +1,24 @@
+﻿@model TaskCreateEditViewModel
+
+@{
+    ViewData["Title"] = $"{Model.ListEntity?.Title ?? "List"}: Add task";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (Model.ErrorMessages is not null)
+{
+    <partial name="_ErrorMessagesPartial" model="@Model.ErrorMessages" />
+}
+else if (Model.ListEntity is not null)
+{
+    <partial name="_ListEntityPartial" model="@Model.ListEntity" />
+
+    <form method="post">
+        <partial name="_CreateEditPartial" model="Model.TaskFormModel" />
+
+        <div class="buttons">
+            <button type="submit">Add</button>
+        </div>
+    </form>
+}

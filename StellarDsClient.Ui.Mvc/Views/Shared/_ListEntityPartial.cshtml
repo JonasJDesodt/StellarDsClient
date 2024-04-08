@@ -1,0 +1,27 @@
+﻿@model StellarDsClient.Ui.Mvc.Models.EntityModels.ListEntityModel
+
+<div>
+    @if (Model.Image is not null)
+    {
+        <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.Image)" alt="@Model.Title thumbnail" class="thumbnail"/>
+    }
+    else
+    {
+        <img src="/images/dummy_thumb.png" alt="List thumbnail" class="thumbnail"/>
+    }
+    
+    <div>
+        @if (Model.Deadline is { } deadline)
+        {
+            <p>DeadlineStart on <b>@deadline.ToShortDateString()</b></p>
+        }
+        else
+        {
+            <p>There is no deadline set</p>
+        }
+
+        <p>Owned by <b>@Model.OwnerName</b></p>
+
+        <p>Created on @Model.Created.ToShortDateString()</p>
+    </div>
+</div>

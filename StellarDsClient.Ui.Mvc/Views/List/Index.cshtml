@@ -1,0 +1,49 @@
+﻿@model ListIndexViewModel
+
+@{
+    ViewData["Title"] = "Lists";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<a asp-action="Create" class="button">Create</a>
+
+@if (Model.ErrorMessages is not null)
+{
+    <partial name="_ErrorMessagesPartial" model="@Model.ErrorMessages"/>
+}
+else if (Model.ListEntities is not null)
+{
+    <partial name="_FilterPartial" model="@Model.ListIndexFilter" />
+
+    <section id="results">
+        <h3>@Model.PaginationPartialModel?.TotalItems result@(Model.PaginationPartialModel?.TotalItems != 1 ? "s" : ""):</h3>
+
+        <ul>
+            @foreach (var listEntity in @Model.ListEntities)
+            {
+                <li>
+                    <h4>@listEntity.Title</h4>
+
+                    <partial name="_ListEntityPartial" model="@listEntity"/>
+                    
+                    <div class="buttons">
+                        <a asp-controller="Task" asp-action="Index" asp-route-listId="@listEntity.Id" class="button">View</a>
+
+                        @if (listEntity.OwnerId == User.GetId())
+                        {
+                            <a asp-controller="List" asp-action="Edit" asp-route-id="@listEntity.Id" class="button">Edit</a>
+                        }
+                    </div>
+                </li>
+            }
+        </ul>
+
+        <partial name="_PaginationPartial" model="@Model.PaginationPartialModel" />
+    </section>
+}
+
+@section Scripts
+{
+    <script src="~/js/filters.js"></script>
+}

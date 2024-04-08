@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+	<symbol id="cross" >
+		<line x1="4" y1="4" x2="44" y2="44" stroke-width="6" stroke-line-cap="butt"/>
+		<line x1="44" y1="4" x2="4" y2="44" stroke-width="6" stroke-line-cap="butt" />
+	</symbol>
+
+	<symbol id="hamburger">
+		<line x1="0" y1="4" x2="48" y2="4" stroke-width="6"/>
+		<line x1="0" y1="24" x2="48" y2="24" stroke-width="6"/>
+		<line x1="0" y1="44" x2="48" y2="44" stroke-width="6"/>
+	</symbol>
+</svg>

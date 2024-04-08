@@ -1,0 +1,22 @@
+﻿@model TaskFormModel
+
+<div>
+    <label asp-for="@Model.Title"></label>
+    <input asp-for="@Model.Title" />
+</div>
+
+<div>
+    <p class="label">Status</p>
+    
+    <div class="radio-buttons">
+        <div>
+            <input asp-for="@Model.Finished" type="radio" value="false" checked="@(Model?.Finished is false or null)" />
+            <label asp-for="@Model.Finished">To do</label>
+        </div>
+    
+        <div>
+            <input asp-for="@Model.Finished" type="radio" value="true" checked="@(Model?.Finished is true)" />
+            <label asp-for="@Model.Finished">Done</label>
+        </div>
+    </div>
+</div>

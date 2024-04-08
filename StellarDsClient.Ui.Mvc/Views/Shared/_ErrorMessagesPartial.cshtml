@@ -1,0 +1,10 @@
+﻿@model IList<StellarDsClient.Dto.Transfer.StellarDsErrorMessage>
+
+<h2>Something has gone wrong</h2>
+
+<ul>
+    @foreach (var message in Model)
+    {
+    <li>@message</li>
+    }
+</ul>
