@@ -130,6 +130,8 @@ namespace StellarDsClient.Sdk
         {
             var httpResponseMessage = await httpClient.GetAsync(uri);
 
+            var message = await httpResponseMessage.Content.ReadAsStringAsync();
+
             return await httpResponseMessage.ToStellarDsResult<TResult>();
         }
 

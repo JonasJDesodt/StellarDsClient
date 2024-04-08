@@ -6,7 +6,7 @@ using StellarDsClient.Sdk.Settings;
 
 namespace StellarDsClient.Sdk
 {
-    public class OAuthApiService(IHttpClientFactory httpClientFactory, ApiSettings apiSettings, OAuthSettings oAuthSettings, IOAuthClientService oAuthClientService)
+    public class OAuthApiService(IHttpClientFactory httpClientFactory, ApiSettings apiSettings, OAuthSettings oAuthSettings)
     {
         private readonly string _httpClientName = apiSettings.Name;
 
@@ -43,20 +43,6 @@ namespace StellarDsClient.Sdk
                 }.Concat(_clientParams)));
 
             return await httpResponse.ToOAuthTokens();
-        }
-
-        public static bool ValidateAccessToken(string accessToken)
-        { 
-            return new JsonWebTokenHandler().ReadJsonWebToken(accessToken).ValidTo > DateTime.UtcNow;
-        }
-
-        public async Task<string> UseRefreshToken(string refreshToken) 
-        {
-            var tokens = await PostRefreshTokenAsync(refreshToken);
-
-            await oAuthClientService.BrowserSignIn(tokens);
-
-            return tokens.AccessToken;
         }
     }
 }

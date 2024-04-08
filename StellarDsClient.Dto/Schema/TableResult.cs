@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace StellarDsClient.Generator.Models
+﻿namespace StellarDsClient.Dto.Schema
 {
-    internal class TableResult
+    public class TableResult
     {
         public required int Id { get; set; }
 

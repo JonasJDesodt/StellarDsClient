@@ -1,28 +1,75 @@
-﻿using StellarDsClient.Sdk;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.JsonWebTokens;
+using StellarDsClient.Dto.Transfer;
+using StellarDsClient.Sdk;
 using StellarDsClient.Sdk.Abstractions;
-using StellarDsClient.Ui.Mvc.Services;
+using StellarDsClient.Ui.Mvc.Stores;
+using System.Security.Claims;
+using System.Security;
+using StellarDsClient.Ui.Mvc.Extensions;
 
 namespace StellarDsClient.Ui.Mvc.Providers
 {
-    public class OAuthTokenProvider(IOAuthTokenStore iOAuthTokenStore, OAuthApiService oAuthApiService) : ITokenProvider
+    //todo: rename, it does more than only providing a token
+    public class OAuthTokenProvider(IOAuthTokenStore iOAuthTokenStore, OAuthApiService oAuthApiService, IHttpContextAccessor httpContextAccessor) : ITokenProvider
     {
         public async Task<string> Get()
         {
             var accessToken = iOAuthTokenStore.GetAccessToken();
 
-            if (accessToken is not null && OAuthApiService.ValidateAccessToken(accessToken))
+            if (accessToken is not null && ValidateAccessToken(accessToken))
             {
                 return accessToken;
             }
 
-            //var tokens = await oAuthApiService.PostRefreshTokenAsync(refreshToken);
+            var tokens = await oAuthApiService.PostRefreshTokenAsync(iOAuthTokenStore.GetRefreshToken());
 
-            //await oAuthClientService.BrowserSignIn(tokens);
+            await BrowserSignIn(tokens);
 
-            //return tokens.AccessToken;
+            return tokens.AccessToken;
+        }
+
+        public static bool ValidateAccessToken(string accessToken)
+        {
+            return new JsonWebTokenHandler().ReadJsonWebToken(accessToken).ValidTo > DateTime.UtcNow;
+        }
+
+        public async Task BrowserSignIn(OAuthTokens oAuthTokens)
+        {
+            if (httpContextAccessor.HttpContext is null)
+            {
+                return;
+            }
 
 
-            return await oAuthApiService.UseRefreshToken(iOAuthTokenStore.GetRefreshToken()); 
+            var handler = new JsonWebTokenHandler();
+
+            var accessJsonWebToken = handler.ReadJsonWebToken(oAuthTokens.AccessToken) ?? throw new SecurityException("Token could not be converted");
+
+            var claims = accessJsonWebToken.Claims.ToList();
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            iOAuthTokenStore.SaveAccessToken(oAuthTokens.AccessToken, new DateTimeOffset(accessJsonWebToken.ValidTo));
+            var refreshJsonWebToken = handler.ReadJsonWebToken(oAuthTokens.RefreshToken) ?? throw new SecurityException("Token could not be converted");
+
+            var refreshJsonWebTokenExpiry = new DateTimeOffset(refreshJsonWebToken.ValidTo);
+
+            await httpContextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), new AuthenticationProperties() { ExpiresUtc = refreshJsonWebTokenExpiry });
+
+            iOAuthTokenStore.SaveRefreshToken(oAuthTokens.RefreshToken, refreshJsonWebTokenExpiry);
+        }
+
+        public async Task BrowserSignOut()
+        {
+            if (httpContextAccessor.HttpContext is null)
+            {
+                return;
+            }
+
+            await httpContextAccessor.HttpContext.ClearApplicationCookies().SignOutAsync();
         }
     }
 }

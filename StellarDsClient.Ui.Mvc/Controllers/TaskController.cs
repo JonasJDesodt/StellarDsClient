@@ -16,7 +16,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
     [Authorize]
     [Route("tasks/{listId:int}")]
     [ProvideOAuthBaseAddress]
-    public class TaskController(DataApiService<AccessTokenProvider> readOnlyDataApiService, DataApiService<OAuthTokenProvider> oAuthDataApiService, TableSettings tableSettings) : Controller
+    public class TaskController(DataApiService<ReadonlyAccessTokenProvider> readOnlyDataApiService, DataApiService<OAuthTokenProvider> oAuthDataApiService, TableSettings tableSettings) : Controller
     {
         private readonly int _listTableId = tableSettings.ListTableId;
         private readonly int _taskTableId = tableSettings.TaskTableId;

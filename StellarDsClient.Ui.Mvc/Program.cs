@@ -5,7 +5,6 @@ using StellarDsClient.Sdk;
 using StellarDsClient.Sdk.Settings;
 using StellarDsClient.Ui.Mvc.Models.Settings;
 using StellarDsClient.Ui.Mvc.Providers;
-using StellarDsClient.Ui.Mvc.Services;
 using StellarDsClient.Ui.Mvc.Stores;
 using System.Diagnostics;
 
@@ -58,7 +57,7 @@ builder.Services.AddHttpClient(oAuthSettings.Name, httpClient =>
 
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<JsonWebTokenHandler>();
+builder.Services.AddScoped<JsonWebTokenHandler>(); //TODO why is this added as a service? there is no need for it in console app?!
 
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -73,12 +72,11 @@ builder.Services
 builder.Services.AddScoped<IOAuthTokenStore, OAuthTokenStore>();
 
 builder.Services.AddScoped<OAuthApiService>();
-builder.Services.AddScoped<IOAuthClientService, OAuthClientService>();
 
 builder.Services.AddScoped<OAuthTokenProvider>();
-builder.Services.AddScoped<AccessTokenProvider>();
+builder.Services.AddScoped<ReadonlyAccessTokenProvider>();
 builder.Services.AddScoped<DataApiService<OAuthTokenProvider>>();
-builder.Services.AddScoped<DataApiService<AccessTokenProvider>>();
+builder.Services.AddScoped<DataApiService<ReadonlyAccessTokenProvider>>();
 
 
 var app = builder.Build();

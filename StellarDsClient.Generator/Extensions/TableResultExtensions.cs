@@ -6,6 +6,7 @@ using System.Net.Http.Json;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using StellarDsClient.Dto.Schema;
 using StellarDsClient.Dto.Transfer;
 using StellarDsClient.Generator.Attributes;
 using StellarDsClient.Generator.Models;

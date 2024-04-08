@@ -3,11 +3,12 @@ using StellarDsClient.Sdk;
 using StellarDsClient.Sdk.Abstractions;
 using StellarDsClient.Sdk.Settings;
 using StellarDsClient.Ui.Mvc.Attributes;
+using StellarDsClient.Ui.Mvc.Providers;
 
 namespace StellarDsClient.Ui.Mvc.Controllers
 {
     [ProvideOAuthBaseAddress]
-    public class OAuthController(OAuthApiService oAuthApiService, IOAuthClientService iOAuthClientService, OAuthSettings oAuthSettings) : Controller
+    public class OAuthController(OAuthApiService oAuthApiService, OAuthTokenProvider oAuthTokenProvider, OAuthSettings oAuthSettings) : Controller
     {
         [HttpGet]
         public IActionResult Index([FromQuery] string returnUrl)
@@ -30,7 +31,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         {
             var tokens = await oAuthApiService.GetTokensAsync(code);
 
-            await iOAuthClientService.BrowserSignIn(tokens);
+            await oAuthTokenProvider.BrowserSignIn(tokens);
 
             if (TempData["returnUrl"] is string returnUrl)
             {
@@ -43,7 +44,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> SignOut([FromQuery] string returnUrl)
         {
-            await iOAuthClientService.BrowserSignOut();
+            await oAuthTokenProvider.BrowserSignOut();
 
             return LocalRedirect(returnUrl);
         }

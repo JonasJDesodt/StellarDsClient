@@ -1,25 +1,20 @@
-﻿using System.Net.Http.Json;
-using Microsoft.IdentityModel.JsonWebTokens;
-using StellarDsClient.Dto.Transfer;
+﻿using Microsoft.IdentityModel.JsonWebTokens;
 using StellarDsClient.Generator.Models;
-using StellarDsClient.Sdk.Extensions;
 using StellarDsClient.Generator.Attributes;
 using StellarDsClient.Generator.Extensions;
 using System.Reflection;
-using System.Text.Json;
 using StellarDsClient.Sdk.Settings;
-using StellarDsClient.Ui.Mvc.Models.Settings;
-using System.IO;
 using Microsoft.AspNetCore.Http;
-using System.Net.Sockets;
-using System.Net;
-using System.Text;
 using System.Diagnostics;
-using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
 using StellarDsClient.Generator.Helpers;
+using StellarDsClient.Sdk;
+using StellarDsClient.Generator.Providers;
+
+var jsonWebTokenHandler = new JsonWebTokenHandler();
+
 
 //GET THE LOCALHOST PORT
 Console.Write("Localhost port: ");
@@ -83,7 +78,7 @@ JsonWebToken readOnlyJsonWebAccessToken;
 
 try
 {
-    readOnlyJsonWebAccessToken = new JsonWebTokenHandler().ReadJsonWebToken(readOnlyAccessToken);
+    readOnlyJsonWebAccessToken = jsonWebTokenHandler.ReadJsonWebToken(readOnlyAccessToken);
 }
 catch (Exception exception)
 {
@@ -106,90 +101,119 @@ builder.WebHost.UseKestrel(serverOptions =>
 });
 
 
-var app = builder.Build();
+// Add services
+builder.Services.AddScoped<OAuthApiService>();
 
+builder.Services.AddSingleton(new AccessTokenProvider());
+builder.Services.AddScoped<SchemaApiService<AccessTokenProvider>>();
+
+var apiSettings = new ApiSettings
+{
+    BaseAddress = "https://api.stellards.io",
+    Name = "StellarDs",
+    Project = projectId.ToString(),
+    ReadOnlyToken = readOnlyAccessToken.ToString(),
+    Version = "v1"
+};
+builder.Services.AddSingleton(apiSettings);
+
+builder.Services.AddSingleton(new OAuthSettings
+{
+    BaseAddress = "https://stellards.io",
+    ClientId = clientId.ToString(),
+    ClientSecret = clientSecret,
+    Name = "OAuth",
+    RedirectUri = $"https://localhost:{port}/oauth/oauthcallback",
+});
+
+builder.Services.AddHttpClient(apiSettings.Name, httpClient =>
+{
+    httpClient.BaseAddress = new Uri(apiSettings.BaseAddress);
+});
+
+
+var app = builder.Build();
 
 
 app.MapGet("/oauth/oauthcallback", async context =>
 {
-    var code = context.Request.Query["code"];
-    var state = context.Request.Query["state"];
-
-    // Your logic to handle the authorization code and exchange it for tokens
-
-    var clientParams = new Dictionary<string, string>()
+    if (context.RequestServices.GetService<OAuthApiService>() is not { } oAuthApiService)
     {
-        { "client_id", clientGuid.ToString() },
-        { "client_secret", clientSecret },
-        { "grant_type", "authorization_code" },
-        { "code", code },
-        { "redirect_uri", $"https://localhost:{port}/oauth/oauthcallback" },
-    };
-
-    using var httpClient = new HttpClient();
-    httpClient.BaseAddress = new Uri("https://api.stellards.io");
-    var httpTokensResponseMessage = await httpClient.PostAsync("/v1/oauth/token", new FormUrlEncodedContent(clientParams));
-    var tokens = await httpTokensResponseMessage.Content.ReadFromJsonAsync<OAuthTokens>();
-
-    if (tokens?.AccessToken != null)
-    {
-        try
-        {
-            new JsonWebTokenHandler().ReadJsonWebToken(tokens.AccessToken);
-            await context.Response.WriteAsync("Token is valid. You can close the browser.");
-
-            httpClient.AddAuthorization(tokens.AccessToken);
-        }
-        catch (Exception exception)
-        {
-            context.Response.StatusCode = 400;
-            await context.Response.WriteAsync($"Invalid token: {exception.Message}");
-
-            return;
-        }
+        return;
     }
-    else
+
+    var code = context.Request.Query["code"].ToString();
+    var state = context.Request.Query["state"]; // todo?!
+
+    if (string.IsNullOrWhiteSpace(code.ToString()))
+    {
+        return;
+    }
+
+    var tokens = await oAuthApiService.GetTokensAsync(code);
+
+    if (tokens?.AccessToken is not { } accessToken)
     {
         context.Response.StatusCode = 400;
-        await context.Response.WriteAsync("Failed to obtain tokens.");
+        await context.Response.WriteAsync("Failed to obtain the access token.");
 
         return;
     }
 
-    var tablesMetaDataHttpResponseMessage = await httpClient.GetAsync($"v1/schema/table?project={projectGuid}");
-    tablesMetaDataHttpResponseMessage.EnsureSuccessStatusCode();
-
-    if (await tablesMetaDataHttpResponseMessage.Content.ReadFromJsonAsync<StellarDsResult<IList<TableResult>>>() is not { } stellarDsTablesMetaDataResult)
+    try
     {
-        Console.WriteLine("Unable to fetch the tables metadata");
+        jsonWebTokenHandler.ReadJsonWebToken(tokens.AccessToken);
+        await context.Response.WriteAsync("The access token is valid. You can close the browser.");
+    }
+    catch (Exception exception)
+    {
+        context.Response.StatusCode = 400;
+        await context.Response.WriteAsync($"Invalid access token: {exception.Message}");
 
         return;
     }
 
-    if (stellarDsTablesMetaDataResult.Data is null)
+    if (context.RequestServices.GetService<AccessTokenProvider>() is not { } accessTokenProvider)
     {
-        Console.WriteLine("Unable to retrieve metadata");
         return;
     }
 
-    if (stellarDsTablesMetaDataResult.Data.GetMetadata("list") is { } listMetadata)
+    accessTokenProvider.Set(accessToken);
+
+    if (context.RequestServices.GetService<SchemaApiService<AccessTokenProvider>>() is not { } schemaApiService)
     {
-        (await httpClient.DeleteAsync($"v1/schema/table?project={projectGuid}&table={listMetadata.Id}")).EnsureSuccessStatusCode();
+        return;
     }
 
-    if (stellarDsTablesMetaDataResult.Data.GetMetadata("task") is { } taskMetadata)
+    var tablesStellarDsResult = await schemaApiService.FindTables();
+
+    if (tablesStellarDsResult.Data is not { } tableResults)
     {
-        (await httpClient.DeleteAsync($"v1/schema/table?project={projectGuid}&table={taskMetadata.Id}")).EnsureSuccessStatusCode();
+        Console.WriteLine("Unable to retrieve table metadata:");
+
+        foreach (var message in tablesStellarDsResult.Messages)
+        {
+            Console.WriteLine(message.Code + ": " + message.Message);
+        }
+
+        return;
     }
 
-    var listMetadataResponseMessage = await httpClient.PostAsJsonAsync($"v1/schema/table?project={projectGuid}", new { name = "list", isMultitenant = true });
-    listMetadataResponseMessage.EnsureSuccessStatusCode();
-
-
-
-    if ((await listMetadataResponseMessage.Content.ReadFromJsonAsync<StellarDsResult<TableResult>>())?.Data is not { } listTableResult)
+    //CREATE THE LIST TABLE
+    if (tableResults.GetMetadata("list") is { } oldListMetadata)
     {
-        Console.WriteLine("ERROR");
+        await schemaApiService.DeleteTable(oldListMetadata.Id);
+    }
+
+    var listMetadataStellarDsResult = await schemaApiService.CreateTable("list", true);
+
+    if (listMetadataStellarDsResult.Data is not { } newListMetadata)
+    {
+        Console.WriteLine("Failed to create the list table: ");
+        foreach (var message in listMetadataStellarDsResult.Messages)
+        {
+            Console.WriteLine(message.Code + ": " + message.Message);
+        }
 
         return;
     }
@@ -198,16 +222,37 @@ app.MapGet("/oauth/oauthcallback", async context =>
     {
         var stellarDsType = property.GetCustomAttribute<StellarDsType>()?.Name ?? property.PropertyType.ToString();
 
-        (await httpClient.PostAsJsonAsync($"v1/schema/table/field?project={projectGuid}&table={listTableResult.Id}", new { name = property.Name, type = stellarDsType })).EnsureSuccessStatusCode();
+        var fieldMetadataStellarDsResult = await schemaApiService.CreateField(newListMetadata.Id, property.Name, stellarDsType);
+
+        if (fieldMetadataStellarDsResult.Data is not null)
+        {
+            continue;
+        }
+
+        Console.WriteLine("Failed to create field for the list table: ");
+        foreach (var message in fieldMetadataStellarDsResult.Messages)
+        {
+            Console.WriteLine(message.Code + ": " + message.Message);
+        }
+
+        return;
     }
 
-
-    var taskMetadataResponseMessage = await httpClient.PostAsJsonAsync($"v1/schema/table?project={projectGuid}", new { name = "task", isMultitenant = true });
-    taskMetadataResponseMessage.EnsureSuccessStatusCode();
-
-    if ((await taskMetadataResponseMessage.Content.ReadFromJsonAsync<StellarDsResult<TableResult>>())?.Data is not { } taskTableResult)
+    //CREATE THE TASK TABLE
+    if (tableResults.GetMetadata("task") is { } oldTaskMetadata)
     {
-        Console.WriteLine("ERROR");
+        await schemaApiService.DeleteTable(oldTaskMetadata.Id);
+    }
+
+    var taskMetadataStellarDsResult = await schemaApiService.CreateTable("task", true);
+
+    if (taskMetadataStellarDsResult.Data is not { } newTaskMetadata)
+    {
+        Console.WriteLine("Failed to create the task table: ");
+        foreach (var message in taskMetadataStellarDsResult.Messages)
+        {
+            Console.WriteLine(message.Code + ": " + message.Message);
+        }
 
         return;
     }
@@ -216,10 +261,24 @@ app.MapGet("/oauth/oauthcallback", async context =>
     {
         var stellarDsType = property.GetCustomAttribute<StellarDsType>()?.Name ?? property.PropertyType.ToString();
 
-        (await httpClient.PostAsJsonAsync($"v1/schema/table/field?project={projectGuid}&table={taskTableResult.Id}", new { name = property.Name, type = stellarDsType })).EnsureSuccessStatusCode();
+        var fieldMetadataStellarDsResult = await schemaApiService.CreateField(newTaskMetadata.Id, property.Name, stellarDsType);
+
+        if (fieldMetadataStellarDsResult.Data is not null)
+        {
+            continue;
+        }
+
+        Console.WriteLine("Failed to create field for the task table: ");
+        foreach (var message in fieldMetadataStellarDsResult.Messages)
+        {
+            Console.WriteLine(message.Code + ": " + message.Message);
+        }
+
+        return;
     }
 
-    FileHelpers.WriteAppSettings(listTableResult.Id, taskTableResult.Id, port, clientGuid, clientSecret, projectGuid, readOnlyJsonWebAccessToken);
+
+    FileHelpers.WriteAppSettings(newListMetadata.Id, newTaskMetadata.Id, port, clientGuid, clientSecret, projectGuid, readOnlyJsonWebAccessToken);
 });
 
 // Open the system's default browser to the OAuth URL
