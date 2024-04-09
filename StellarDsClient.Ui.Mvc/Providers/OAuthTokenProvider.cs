@@ -13,18 +13,18 @@ using StellarDsClient.Ui.Mvc.Extensions;
 namespace StellarDsClient.Ui.Mvc.Providers
 {
     //todo: rename, it does more than only providing a token
-    public class OAuthTokenProvider(IOAuthTokenStore iOAuthTokenStore, OAuthApiService oAuthApiService, IHttpContextAccessor httpContextAccessor) : ITokenProvider
+    public class OAuthTokenProvider(IOAuthTokenStore oAuthTokenStore, OAuthApiService oAuthApiService, IHttpContextAccessor httpContextAccessor) : ITokenProvider
     {
         public async Task<string> Get()
         {
-            var accessToken = iOAuthTokenStore.GetAccessToken();
+            var accessToken = oAuthTokenStore.GetAccessToken();
 
             if (accessToken is not null && ValidateAccessToken(accessToken))
             {
                 return accessToken;
             }
 
-            var tokens = await oAuthApiService.PostRefreshTokenAsync(iOAuthTokenStore.GetRefreshToken());
+            var tokens = await oAuthApiService.PostRefreshTokenAsync(oAuthTokenStore.GetRefreshToken());
 
             await BrowserSignIn(tokens);
 
@@ -36,6 +36,7 @@ namespace StellarDsClient.Ui.Mvc.Providers
             return new JsonWebTokenHandler().ReadJsonWebToken(accessToken).ValidTo > DateTime.UtcNow;
         }
 
+        //todo: rename
         public async Task BrowserSignIn(OAuthTokens oAuthTokens)
         {
             if (httpContextAccessor.HttpContext is null)
@@ -52,16 +53,20 @@ namespace StellarDsClient.Ui.Mvc.Providers
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-            iOAuthTokenStore.SaveAccessToken(oAuthTokens.AccessToken, new DateTimeOffset(accessJsonWebToken.ValidTo));
+            //oAuthTokenStore.SaveAccessToken(oAuthTokens.AccessToken, new DateTimeOffset(accessJsonWebToken.ValidTo));
+            oAuthTokenStore.SaveAccessToken(oAuthTokens.AccessToken, new DateTimeOffset(DateTime.Now.AddSeconds(15)));
+
+
             var refreshJsonWebToken = handler.ReadJsonWebToken(oAuthTokens.RefreshToken) ?? throw new SecurityException("Token could not be converted");
 
             var refreshJsonWebTokenExpiry = new DateTimeOffset(refreshJsonWebToken.ValidTo);
 
             await httpContextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), new AuthenticationProperties() { ExpiresUtc = refreshJsonWebTokenExpiry });
 
-            iOAuthTokenStore.SaveRefreshToken(oAuthTokens.RefreshToken, refreshJsonWebTokenExpiry);
+            oAuthTokenStore.SaveRefreshToken(oAuthTokens.RefreshToken, refreshJsonWebTokenExpiry);
         }
 
+        //todo: rename
         public async Task BrowserSignOut()
         {
             if (httpContextAccessor.HttpContext is null)

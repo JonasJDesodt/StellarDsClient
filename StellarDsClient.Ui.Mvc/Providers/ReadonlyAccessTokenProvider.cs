@@ -7,7 +7,7 @@ namespace StellarDsClient.Ui.Mvc.Providers
     {
         public Task<string> Get()
         {
-            return Task.FromResult(apiSettings.ReadOnlyToken); //TODO temp hack to get string?
+            return Task.FromResult(apiSettings.ReadOnlyToken); //TODO: temp hack to get string?
         }
     }
 }

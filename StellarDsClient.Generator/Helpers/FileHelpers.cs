@@ -14,7 +14,7 @@ namespace StellarDsClient.Generator.Helpers
 {
     internal static class FileHelpers
     {
-        public static void WriteAppSettings(int listTableId, int taskTableId, int port, Guid clientId, string clientSecret, Guid projectId, JsonWebToken readOnlyAccessToken)
+        public static void WriteAppSettings(int listTableId, int taskTableId, int port, Guid clientId, string clientSecret, Guid projectId, string readOnlyAccessToken)
         {
             var appSettings = new AppSettings
             {
@@ -23,7 +23,7 @@ namespace StellarDsClient.Generator.Helpers
                     BaseAddress = "https://api.stellards.io",
                     Name = "StellarDs",
                     Project = projectId.ToString(),
-                    ReadOnlyToken = readOnlyAccessToken.ToString(),
+                    ReadOnlyToken = readOnlyAccessToken,
                     Version = "v1"
                 },
                 OAuthSettings = new OAuthSettings
@@ -69,8 +69,24 @@ namespace StellarDsClient.Generator.Helpers
             };
 
             var jsonString = JsonSerializer.Serialize(appSettings, new JsonSerializerOptions { WriteIndented = true });
+
+            var folderPath = Path.Combine(AppContext.BaseDirectory, "GeneratedFiles");
             
-            File.WriteAllText(AppContext.BaseDirectory + "appsettings.json", jsonString);
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            File.WriteAllText(Path.Combine(folderPath, "appsettings.json"), jsonString);
+
+            
+       
+            //string relativePath = "../StellarDsClient.Ui.Mvc"; // Adjust based on your actual relative path
+            //string targetProjectRoot = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), relativePath));
+            //string targetFilePath = Path.Combine(targetProjectRoot, "appsettings.json");
+            //File.WriteAllText(targetFilePath, "test");
+
+        
 
             Console.WriteLine($"appsettings.json file path: {AppContext.BaseDirectory + "appsettings.json"}");
         }

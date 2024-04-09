@@ -15,7 +15,6 @@ using StellarDsClient.Generator.Providers;
 
 var jsonWebTokenHandler = new JsonWebTokenHandler();
 
-
 //GET THE LOCALHOST PORT
 Console.Write("Localhost port: ");
 var localHostPort = Console.ReadLine();
@@ -86,8 +85,6 @@ catch (Exception exception)
 
     return;
 }
-
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -276,9 +273,8 @@ app.MapGet("/oauth/oauthcallback", async context =>
 
         return;
     }
-
-
-    FileHelpers.WriteAppSettings(newListMetadata.Id, newTaskMetadata.Id, port, clientGuid, clientSecret, projectGuid, readOnlyJsonWebAccessToken);
+    
+    FileHelpers.WriteAppSettings(newListMetadata.Id, newTaskMetadata.Id, port, clientGuid, clientSecret, projectGuid, readOnlyAccessToken);
 });
 
 // Open the system's default browser to the OAuth URL
