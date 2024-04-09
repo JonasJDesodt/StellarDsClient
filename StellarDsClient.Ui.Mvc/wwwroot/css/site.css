@@ -1,6 +1,7 @@
 :root {
     --default-active-background: #00a7ef;
     --default-active-background-hover: #009ee3;
+    --default-active-foreground: #009ee3;
     --default-border-thin-light: 1px solid #ddd;
     --default-button-background: #00A2AB;
     --default-button-background-hover: #00838f;
@@ -54,6 +55,11 @@
     margin: 0;
     padding: 0;
 }
+
+h1.active, a.active {
+    color: var(--default-active-foreground);
+}
+
 
 a.button {
     text-decoration: none;
