@@ -23,6 +23,7 @@
     --default-header-background: #343537;
     --default-header-foreground: #fff;
     --default-divider-thin-light: 1px solid #ddd;
+    --desktop-layout-padding: 1em 10%;
     --mobile-header-height: 5em;
     --mobile-layout-padding: 1em;
     --warning-button-background: #ffad33;
@@ -40,7 +41,7 @@
     --tmsbiz: #56b8ff;
     --tmsfnc: #BCC6CC;
     --tmsweb: #00838F;*/
-}    
+}
 
 @font-face {
     font-family: 'PermanentMarker';
@@ -218,5 +219,10 @@ section {
 @media (min-width: 768px) {
     html {
         font-size: 16px;
+    }
+
+    body.overlay {
+        min-height: 100vh;
+        overflow: auto;
     }
 }

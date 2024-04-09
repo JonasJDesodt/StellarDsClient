@@ -2,3 +2,9 @@
     color: var(--default-title-foreground-variant);
     font-size: 1.2em;
 }
+
+@media (min-width: 768px) {
+    a.button {
+        align-self: flex-end;
+    }
+}

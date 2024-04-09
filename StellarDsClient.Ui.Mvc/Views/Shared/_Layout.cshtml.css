@@ -32,7 +32,6 @@ body > header {
     display: grid;
     grid-template-columns: auto 1fr auto;
     height: var(--mobile-header-height);
-
 }
 
     body > header > #close-overlay-button, body > header > #open-overlay-button {
@@ -59,15 +58,20 @@ body > header {
             color: #fff;
         }
 
-    body > header > nav > ul > li > ::deep a {
-        color: #fff;
+    body > header > nav > ul {
+        display: flex;
+        list-style-type: none;
     }
 
-    body > header > h1 > ::deep a, body > header > nav > ul > li > ::deep a {
-        font-family: inherit;
-        display: flex;
-        text-decoration: none;
-    }
+        body > header > nav > ul > li > ::deep a {
+            color: #fff;
+        }
+
+        body > header > h1 > ::deep a, body > header > nav > ul > li > ::deep a {
+            font-family: inherit;
+            display: flex;
+            text-decoration: none;
+        }
 
     body > header > button {
         background: transparent;
@@ -119,10 +123,8 @@ body.overlay > header {
     }
 
         body.overlay > header > nav > ul {
-            display: flex;
             flex-direction: column;
             gap: .5em;
-            list-style-type: none;
         }
 
 @media (min-height: 384px) {
@@ -132,5 +134,55 @@ body.overlay > header {
 
     body > main {
         margin-top: var(--mobile-header-height);
+    }
+}
+
+@media (min-width: 768px) {
+    body.overlay > header, body > header {
+        align-items: center;
+        display: grid;
+        grid-column-gap: var(--default-gap-big);
+        grid-template-rows: auto;
+        grid-row-gap: 0;
+        grid-template-columns: auto 1fr auto;
+        height: var(--mobile-header-height);
+    }
+
+        body.overlay > header > nav, body > header > nav {
+            align-items: center;
+            display: flex;
+            flex-direction: row;
+            gap: var(--default-gap-big);
+            justify-content: space-between;
+            grid-column: 2/3;
+            grid-row: 1/2;
+            gap: 1em;
+            padding: 0;
+            justify-self: stretch;
+        }
+
+            body.overlay > header > nav > ul, body > header > nav > ul {
+                gap: var(--default-gap-medium);
+                flex-direction: row;
+            }
+
+                body > header > nav > ul:last-of-type {
+                    order: -1;
+                }
+
+        body > header > #open-overlay-button {
+            display: none;
+        }
+
+        body.overlay > header > #close-overlay-button {
+            display: none;
+        }
+
+    body > header, body > footer, body > main {
+        padding: var(--desktop-layout-padding);
+    }
+
+    button#return-button {
+        align-self: flex-start;
     }
 }

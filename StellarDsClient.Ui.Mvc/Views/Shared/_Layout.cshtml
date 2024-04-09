@@ -79,9 +79,14 @@
             <li><a href="https://www.vives.be/" target="_blank"><img src="/images/logo_vives.svg" alt="Vives Hogeschool" /></a></li>
         </ul>
 
-        <div class="container">
-            &copy; 2024 - StellarDsClient.Ui.Mvc - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
+        
+        @{
+            const int start = 2024;
+            var end = DateTime.UtcNow.Year;
+        }
+
+        <p>&copy; @(end == start ? start.ToString() : $"{start} - {end}") - StellarDsClient.Ui.Mvc - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></p>
+
     </footer>
 
     <script type="text/javascript">
