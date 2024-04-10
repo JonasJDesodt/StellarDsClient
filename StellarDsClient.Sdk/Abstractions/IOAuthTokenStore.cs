@@ -1,13 +1,13 @@
-﻿namespace StellarDsClient.Sdk.Abstractions
-{
-    public interface IOAuthTokenStore
-    {
-        string? GetAccessToken();
+﻿//namespace StellarDsClient.Sdk.Abstractions
+//{
+//    public interface IOAuthTokenStore
+//    {
+//        string? GetAccessToken();
 
-        string GetRefreshToken();
+//        string GetRefreshToken();
 
-        void SaveAccessToken(string token, DateTimeOffset expires);
+//        void SaveAccessToken(string token, DateTimeOffset expires);
 
-        void SaveRefreshToken(string token, DateTimeOffset expires);
-    }
-}
+//        void SaveRefreshToken(string token, DateTimeOffset expires);
+//    }
+//}

@@ -73,7 +73,7 @@ builder.Services
     });
 
 
-builder.Services.AddScoped<IOAuthTokenStore, OAuthTokenStore>();
+builder.Services.AddScoped<OAuthTokenStore>();
 
 builder.Services.AddScoped<OAuthApiService>();
 

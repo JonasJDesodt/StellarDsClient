@@ -1,10 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
-using StellarDsClient.Sdk.Abstractions;
 using StellarDsClient.Ui.Mvc.Models.Settings;
 
 namespace StellarDsClient.Ui.Mvc.Stores
 {
-    public class OAuthTokenStore(IHttpContextAccessor httpContextAccessor, CookieSettings cookieSettings) : IOAuthTokenStore
+    public class OAuthTokenStore(IHttpContextAccessor httpContextAccessor, CookieSettings cookieSettings) 
     {
         private string? _accessTokenScopedStore;
         private string? _refreshTokenScopedStore;

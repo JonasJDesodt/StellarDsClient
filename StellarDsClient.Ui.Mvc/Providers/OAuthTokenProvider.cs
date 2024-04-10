@@ -13,7 +13,7 @@ using StellarDsClient.Ui.Mvc.Extensions;
 namespace StellarDsClient.Ui.Mvc.Providers
 {
     //todo: rename, it does more than only providing a token
-    public class OAuthTokenProvider(IOAuthTokenStore oAuthTokenStore, OAuthApiService oAuthApiService, IHttpContextAccessor httpContextAccessor) : ITokenProvider
+    public class OAuthTokenProvider(OAuthTokenStore oAuthTokenStore, OAuthApiService oAuthApiService, IHttpContextAccessor httpContextAccessor) : ITokenProvider
     {
         public async Task<string> Get()
         {
