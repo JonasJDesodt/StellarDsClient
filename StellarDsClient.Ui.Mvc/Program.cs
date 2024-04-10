@@ -38,21 +38,13 @@ if (cookieSettings is null)
 }
 builder.Services.AddSingleton(cookieSettings);
 
-//var tableSettings = builder.Configuration.GetSection(nameof(TableSettings)).Get<TableSettings>();
-//if (tableSettings is null)
-//{
-//    Debug.WriteLine($"Unable to create {nameof(TableSettings)}");
-//    return;
-//}
-//builder.Services.AddSingleton(tableSettings);
-
 var test = builder.Configuration.GetSection("TableSettings");
 var tableSettingsDictionary = new TableSettingsDictionary();
 foreach (var keyValuePair in test.GetChildren())
 {
     if (int.TryParse(keyValuePair.Value, out var value))
     {
-        tableSettingsDictionary.Add(keyValuePair.Key, value);
+        tableSettingsDictionary.Add(keyValuePair.Key.ToLowerInvariant(), value);
     }
 }
 builder.Services.AddSingleton(tableSettingsDictionary);
@@ -69,7 +61,7 @@ builder.Services.AddHttpClient(oAuthSettings.Name, httpClient =>
 
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<JsonWebTokenHandler>(); //TODO why is this added as a service? there is no need for it in console app?!
+builder.Services.AddScoped<JsonWebTokenHandler>(); //TODO why is this added as a service? there is no need for it in the console app?!
 
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

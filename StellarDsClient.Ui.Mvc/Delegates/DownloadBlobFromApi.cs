@@ -1,4 +1,4 @@
 ﻿namespace StellarDsClient.Ui.Mvc.Delegates
 {
-    public delegate Task<byte[]> DownloadBlobFromApi(int tableId, string field, int record);
+    public delegate Task<byte[]> DownloadBlobFromApi(string table, string field, int record);
 }

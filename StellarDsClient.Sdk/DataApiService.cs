@@ -4,24 +4,25 @@ using System.Net.Http.Json;
 using StellarDsClient.Dto.Transfer;
 using StellarDsClient.Sdk.Abstractions;
 using StellarDsClient.Sdk.Extensions;
+using StellarDsClient.Sdk.Models;
 using StellarDsClient.Sdk.Settings;
 
 //todo: api returns custom code: 'LimitReached' {"messages":[{"code":"LimitReached","message":"The requests limit of 500 has been reached. Upgrade your project tier to continue.","type":30}],"isSuccess":false}
 
 namespace StellarDsClient.Sdk
 {
-    public class DataApiService<TTokenProvider>(IHttpClientFactory httpClientFactory, ApiSettings apiSettings, TTokenProvider tokenProvider) where TTokenProvider : ITokenProvider
+    public class DataApiService<TTokenProvider>(IHttpClientFactory httpClientFactory, ApiSettings apiSettings, TTokenProvider tokenProvider, TableSettingsDictionary tableSettings) where TTokenProvider : ITokenProvider
     {
         private readonly string _requestUriBase = $"/{apiSettings.Version}/data/table";
 
-        public async Task<StellarDsResult<IList<TResult>>> Find<TResult>(int tableId, string query) where TResult : class
+        public async Task<StellarDsResult<IList<TResult>>> Find<TResult>(string table, string query) where TResult : class
         {
-            return await GetAsync<IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableId) + query);
+            return await GetAsync<IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]) + query);
         }
 
-        public async Task<StellarDsResult<TResult>> Get<TResult>(int tableId, int id) where TResult : class
+        public async Task<StellarDsResult<TResult>> Get<TResult>(string table, int id) where TResult : class
         {   
-            var result = await GetAsync<IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableId) + $"&whereQuery=id;equal;{id}");
+            var result = await GetAsync<IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]) + $"&whereQuery=id;equal;{id}");
 
             return new StellarDsResult<TResult>
             {
@@ -32,9 +33,9 @@ namespace StellarDsClient.Sdk
             };
         }
 
-        public async Task<StellarDsResult<TResult>> Create<TRequest, TResult>(int tableId, TRequest request) where TRequest : class where TResult : class
+        public async Task<StellarDsResult<TResult>> Create<TRequest, TResult>(string table, TRequest request) where TRequest : class where TResult : class
         {
-            var result = await PostAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableId), [request]);
+            var result = await PostAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]), [request]);
 
             return new StellarDsResult<TResult>
             {
@@ -45,14 +46,14 @@ namespace StellarDsClient.Sdk
             };
         }
 
-        public async Task<StellarDsResult<IList<TResult>>> Create<TRequest, TResult>(int tableId, IList<TRequest> requests) where TRequest : class where TResult : class
+        public async Task<StellarDsResult<IList<TResult>>> Create<TRequest, TResult>(string table, IList<TRequest> requests) where TRequest : class where TResult : class
         {
-            return await PostAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableId), requests);
+            return await PostAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]), requests);
         }
 
-        public async Task<StellarDsResult<IList<TResult>>> Put<TRequest, TResult>(int tableId, int id, TRequest request) where TRequest : class where TResult : class
+        public async Task<StellarDsResult<IList<TResult>>> Put<TRequest, TResult>(string table, int id, TRequest request) where TRequest : class where TResult : class
         {
-            return await PutAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableId), [id], request);
+            return await PutAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]), [id], request);
         }
 
         public async Task<StellarDsResult<IList<TResult>>> Put<TRequest, TResult>(int tableId, IList<int> ids, TRequest request) where TRequest : class where TResult : class
@@ -60,12 +61,12 @@ namespace StellarDsClient.Sdk
             return await PutAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableId), ids, request);
         }
 
-        public async Task<StellarDsResult> Delete(int tableId, int id) // todo return StellarDsResult // todo use bulk endpoint
+        public async Task<StellarDsResult> Delete(string table, int id) 
         {
-            return await DeleteAsync(await GetHttpClientAsync(), GetDefaultRequestUri(tableId) + $"&record={id}");
+            return await DeleteAsync(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]) + $"&record={id}");
         }
 
-        public async Task Delete(int tableId, string[] ids)
+        public async Task Delete(string table, string[] ids)
         {
             if (ids.Length == 0)
             {
@@ -74,16 +75,16 @@ namespace StellarDsClient.Sdk
 
             var httpClient = await GetHttpClientAsync();
 
-            var httpResponse = await httpClient.PostAsJsonAsync(GetDeleteRequestUri(tableId), ids);  // expected json content to be e.g.  new  { records = int[]{1,2}}
+            var httpResponse = await httpClient.PostAsJsonAsync(GetDeleteRequestUri(tableSettings[table]), ids);  // expected json content to be e.g.  new  { records = int[]{1,2}}
 
             httpResponse.EnsureSuccessStatusCode();
         }
 
-        public async Task<StreamProperties> UploadFileToApi(int tableId, string field, int record, MultipartFormDataContent content)
+        public async Task<StreamProperties> UploadFileToApi(string table, string field, int record, MultipartFormDataContent content)
         {
             var httpClient = await GetHttpClientAsync();
 
-            var httpResponse = await httpClient.PostAsync(GetBlobRequestUri(tableId, field, record), content);
+            var httpResponse = await httpClient.PostAsync(GetBlobRequestUri(tableSettings[table], field, record), content);
 
             httpResponse.EnsureSuccessStatusCode();
 
@@ -92,11 +93,11 @@ namespace StellarDsClient.Sdk
             return result ?? new StreamProperties(); //todo return nullable?
         }
 
-        public async Task<byte[]> DownloadBlobFromApi(int tableId, string field, int record)
+        public async Task<byte[]> DownloadBlobFromApi(string table, string field, int record)
         {
             var httpClient = await GetHttpClientAsync();
 
-            var httpResponse = await httpClient.GetAsync(GetBlobRequestUri(tableId, field, record));
+            var httpResponse = await httpClient.GetAsync(GetBlobRequestUri(tableSettings[table], field, record));
 
             httpResponse.EnsureSuccessStatusCode();
 
@@ -104,19 +105,19 @@ namespace StellarDsClient.Sdk
         }
 
 
-        private string GetDefaultRequestUri(int tableId)
+        private string GetDefaultRequestUri(int table)
         {
-            return $"{_requestUriBase}?project={apiSettings.Project}&table={tableId}";
+            return $"{_requestUriBase}?project={apiSettings.Project}&table={table}";
         }
 
-        private string GetDeleteRequestUri(int tableId)
+        private string GetDeleteRequestUri(int table)
         {
-            return $"{_requestUriBase}/delete?project={apiSettings.Project}&table={tableId}";
+            return $"{_requestUriBase}/delete?project={apiSettings.Project}&table={table}";
         }
 
-        private string GetBlobRequestUri(int tableId, string field, int record)
+        private string GetBlobRequestUri(int table, string field, int record)
         {
-            return $"{_requestUriBase}/blob?project={apiSettings.Project}&table={tableId}&field={field}&record={record}";
+            return $"{_requestUriBase}/blob?project={apiSettings.Project}&table={table}&field={field}&record={record}";
         }
 
         private async Task<HttpClient> GetHttpClientAsync()

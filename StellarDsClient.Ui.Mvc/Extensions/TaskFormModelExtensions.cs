@@ -34,7 +34,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             };
         }
 
-        public static async Task<TaskCreateEditViewModel> ToTaskCreateEditViewModel(this TaskFormModel taskFormModel, StellarDsResult<ListResult> stellarDsListResult, DownloadBlobFromApi downloadBlobFromApi, TableSettings tableSettings)
+        public static async Task<TaskCreateEditViewModel> ToTaskCreateEditViewModel(this TaskFormModel taskFormModel, StellarDsResult<ListResult> stellarDsListResult, DownloadBlobFromApi downloadBlobFromApi)
         {
             if (stellarDsListResult.Data is not { } listResult)
             {
@@ -46,7 +46,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 
             return new TaskCreateEditViewModel
             {
-                ListEntity = await listResult.ToListEntityModel(downloadBlobFromApi, tableSettings),
+                ListEntity = await listResult.ToListEntityModel(downloadBlobFromApi),
                 TaskFormModel = taskFormModel
             };
         }

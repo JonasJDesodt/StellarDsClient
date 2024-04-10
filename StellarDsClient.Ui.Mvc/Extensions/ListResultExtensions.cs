@@ -19,7 +19,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
                 Id = listResult.Id,
                 Deadline = listResult.Deadline,
                 Title = listResult.Title,
-                CurrentImage = listResult.Image?.EndsWith("size=0") == false ? await downloadBlobFromApi(115, "image", listResult.Id) : null //todo: using?, use tableSettings to get the tableId
+                CurrentImage = listResult.Image?.EndsWith("size=0") == false ? await downloadBlobFromApi("list", "image", listResult.Id) : null //todo: using?, use tableSettings to get the tableId
             };
         }
 
@@ -33,7 +33,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             };
         }
 
-        public static async Task<ListEntityModel> ToListEntityModel(this ListResult listResult, DownloadBlobFromApi downloadBlobFromApi, TableSettings tableSettings)
+        public static async Task<ListEntityModel> ToListEntityModel(this ListResult listResult, DownloadBlobFromApi downloadBlobFromApi)
         {
             return new ListEntityModel
             {
@@ -43,7 +43,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
                 OwnerName = listResult.OwnerName,
                 Deadline = listResult.Deadline,
                 Id = listResult.Id,
-                Image = listResult.Image?.EndsWith("size=0") == false ? await downloadBlobFromApi(tableSettings.ListTableId, "image", listResult.Id) : null //todo: using?, use tableSettings to get the tableId
+                Image = listResult.Image?.EndsWith("size=0") == false ? await downloadBlobFromApi("list", "image", listResult.Id) : null //todo: using?, use tableSettings to get the tableId
             };
         }
     }

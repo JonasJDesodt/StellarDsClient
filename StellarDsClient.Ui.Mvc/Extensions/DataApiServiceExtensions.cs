@@ -12,7 +12,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 {
     internal static class DataApiServiceExtensions
     {
-        internal static async Task<StellarDsResult<ListResult>> GetLastUpdatedList(this DataApiService<OAuthTokenProvider> dataApiService, TableSettings tableSettings)
+        internal static async Task<StellarDsResult<ListResult>> GetLastUpdatedList(this DataApiService<OAuthTokenProvider> dataApiService)
         {
             var pagination = new Pagination
             {
@@ -27,7 +27,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
                 Sort = "updated"
             };
 
-            var listStellarDsResult = await dataApiService.Find<ListResult>(tableSettings.ListTableId, listIndexFilter.GetQuery() + pagination.GetQuery());
+            var listStellarDsResult = await dataApiService.Find<ListResult>("list", listIndexFilter.GetQuery() + pagination.GetQuery());
             if (listStellarDsResult.Data?.FirstOrDefault() is not { } listResult)
             {
                 return new StellarDsResult<ListResult>
@@ -42,7 +42,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
                 Sort = "updated"
             };
 
-            var taskStellarDsResult = await dataApiService.Find<TaskResult>(tableSettings.TaskTableId, taskIndexFilter.GetQuery() + pagination.GetQuery());
+            var taskStellarDsResult = await dataApiService.Find<TaskResult>("task", taskIndexFilter.GetQuery() + pagination.GetQuery());
 
             if (taskStellarDsResult.Data?.FirstOrDefault() is not { } taskResult)
             {
@@ -54,7 +54,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             
             if (taskResult.Updated > listResult.Updated && taskResult.ListId != listResult.Id)
             {
-                return await dataApiService.Get<ListResult>(tableSettings.ListTableId, taskResult.ListId);
+                return await dataApiService.Get<ListResult>("list", taskResult.ListId);
             }
 
             return new StellarDsResult<ListResult>
@@ -63,21 +63,21 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             };
         }
 
-        internal static async Task DeleteListWithTasks(this DataApiService<OAuthTokenProvider> dataApiService, int id, TableSettings tableSettings)
+        internal static async Task DeleteListWithTasks(this DataApiService<OAuthTokenProvider> dataApiService, int id)
         {
-            if ((await dataApiService.Find<TaskResult>(tableSettings.TaskTableId, $"&whereQuery=ListId;equal;{id}")).Data is not { } taskResults)
+            if ((await dataApiService.Find<TaskResult>("task", $"&whereQuery=ListId;equal;{id}")).Data is not { } taskResults)
             {
                 return;  //todo error? do not allow to delete the list without deleting tasks possibly associated with it
             }
 
-            await dataApiService.Delete(tableSettings.TaskTableId, taskResults.Select(taskResult => taskResult.Id.ToString()).ToArray());
+            await dataApiService.Delete("task", taskResults.Select(taskResult => taskResult.Id.ToString()).ToArray());
 
-            await dataApiService.Delete(tableSettings.ListTableId, id);
+            await dataApiService.Delete("list", id);
         }
 
-        internal static async Task<int> CreateWithBlob(this DataApiService<OAuthTokenProvider> dataApiService, ListFormModel listFormModel, TableSettings tableSettings, string ownerId, string ownerName)
+        internal static async Task<int> CreateListWithBlob(this DataApiService<OAuthTokenProvider> dataApiService, ListFormModel listFormModel, string ownerId, string ownerName)
         {
-            if ((await dataApiService.Create<CreateListRequest, ListResult>(tableSettings.ListTableId, listFormModel.ToCreateListRequest(ownerId, ownerName))).Data is not { } listResult)
+            if ((await dataApiService.Create<CreateListRequest, ListResult>("list", listFormModel.ToCreateListRequest(ownerId, ownerName))).Data is not { } listResult)
             {
                 return 0;
             };
@@ -89,14 +89,14 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 
             using var multipartFormDataContent = new MultipartFormDataContent().AddFormFile(listFormModel.ImageUpload);
 
-            await dataApiService.UploadFileToApi(tableSettings.ListTableId, "Image", listResult.Id, multipartFormDataContent);
+            await dataApiService.UploadFileToApi("list", "Image", listResult.Id, multipartFormDataContent);
 
             return listResult.Id;
         }
 
-        internal static async Task UpdateWithBlob(this DataApiService<OAuthTokenProvider> dataApiService, int listId, ListFormModel listFormModel, TableSettings tableSettings)
+        internal static async Task UpdateListWithBlob(this DataApiService<OAuthTokenProvider> dataApiService, int listId, ListFormModel listFormModel)
         {
-            if ((await dataApiService.Put<PutListRequest, ListResult>(tableSettings.ListTableId, listId, listFormModel.ToPutListRequest())).Data is null)
+            if ((await dataApiService.Put<PutListRequest, ListResult>("list", listId, listFormModel.ToPutListRequest())).Data is null)
             {
                 return;
             };
@@ -108,7 +108,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 
             using var multipartFormDataContent = new MultipartFormDataContent().AddFormFile(listFormModel.ImageUpload);
 
-            await dataApiService.UploadFileToApi(tableSettings.ListTableId, "Image",listId, multipartFormDataContent);
+            await dataApiService.UploadFileToApi("list", "Image",listId, multipartFormDataContent);
         }
     }
 }

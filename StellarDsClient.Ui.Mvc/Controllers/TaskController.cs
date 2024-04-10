@@ -16,34 +16,31 @@ namespace StellarDsClient.Ui.Mvc.Controllers
     [Authorize]
     [Route("tasks/{listId:int}")]
     [ProvideOAuthBaseAddress]
-    public class TaskController(DataApiService<ReadonlyAccessTokenProvider> readOnlyDataApiService, DataApiService<OAuthTokenProvider> oAuthDataApiService, TableSettings tableSettings) : Controller
+    public class TaskController(DataApiService<ReadonlyAccessTokenProvider> readOnlyDataApiService, DataApiService<OAuthTokenProvider> oAuthDataApiService) : Controller
     {
-        private readonly int _listTableId = tableSettings.ListTableId;
-        private readonly int _taskTableId = tableSettings.TaskTableId;
-
         [HttpGet]
         [Route("index")]
         public async Task<IActionResult> Index([FromRoute] int listId, [FromQuery] TaskIndexFilter? taskIndexFilter, [FromQuery] Pagination? pagination)
         {
             pagination ??= new Pagination();
 
-            var stellarDsListResult = await readOnlyDataApiService.Get<ListResult>(_listTableId, listId);
+            var stellarDsListResult = await readOnlyDataApiService.Get<ListResult>("list", listId);
 
             taskIndexFilter ??= new TaskIndexFilter();
             taskIndexFilter.ListId = listId;
 
-            var stellarDsTaskResult = await readOnlyDataApiService.Find<TaskResult>(_taskTableId, pagination.GetQuery() + taskIndexFilter.GetQuery());
+            var stellarDsTaskResult = await readOnlyDataApiService.Find<TaskResult>("task", pagination.GetQuery() + taskIndexFilter.GetQuery());
 
-            return View(await stellarDsTaskResult.ToTaskIndexViewModel(stellarDsListResult, readOnlyDataApiService.DownloadBlobFromApi, taskIndexFilter, pagination, tableSettings));
+            return View(await stellarDsTaskResult.ToTaskIndexViewModel(stellarDsListResult, readOnlyDataApiService.DownloadBlobFromApi, taskIndexFilter, pagination));
         }
 
         [HttpGet]
         [Route("create")]
         public async Task<IActionResult> Create([FromRoute] int listId)
         {
-            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>(_listTableId, listId);
+            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>("list", listId);
 
-            return View(await stellarDsListResult.ToTaskCreateEditViewModel(oAuthDataApiService.DownloadBlobFromApi, tableSettings));
+            return View(await stellarDsListResult.ToTaskCreateEditViewModel(oAuthDataApiService.DownloadBlobFromApi));
         }
 
         [HttpPost]
@@ -51,14 +48,14 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [Route("create")]
         public async Task<IActionResult> Create([FromRoute] int listId, [FromForm] TaskFormModel taskFormModel)
         {
-            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>(_listTableId, listId);
+            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>("list", listId);
 
             if (!ModelState.IsValid)
             {
-                return View(await taskFormModel.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi, tableSettings));
+                return View(await taskFormModel.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi));
             }
 
-            await oAuthDataApiService.Create<CreateTaskRequest, TaskResult>(_taskTableId, taskFormModel.ToCreateRequest(listId));
+            await oAuthDataApiService.Create<CreateTaskRequest, TaskResult>("task", taskFormModel.ToCreateRequest(listId));
             //todo: error if no success?
 
             return RedirectToAction("Index", new { listId });
@@ -68,11 +65,11 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [Route("edit/{id:int}")]
         public async Task<IActionResult> Edit([FromRoute] int listId, [FromRoute] int id)
         {
-            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>(_listTableId, listId);
+            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>("list", listId);
 
-            var stellarDsTaskResult = await oAuthDataApiService.Get<TaskResult>(_taskTableId, id);
+            var stellarDsTaskResult = await oAuthDataApiService.Get<TaskResult>("task", id);
 
-            return View(await stellarDsTaskResult.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi, tableSettings));
+            return View(await stellarDsTaskResult.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi));
         }
 
         [HttpPost]
@@ -80,15 +77,15 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [Route("edit/{id:int}")]
         public async Task<IActionResult> Edit([FromRoute] int listId, [FromRoute] int id, [FromForm] TaskFormModel taskFormModel)
         {
-            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>(_listTableId, listId);
+            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>("list", listId);
 
             if (!ModelState.IsValid)
             {
-                return View(await taskFormModel.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi, tableSettings));
+                return View(await taskFormModel.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi));
 
             }
 
-            await oAuthDataApiService.Put<PutTaskRequest, TaskResult>(_taskTableId, id, taskFormModel.ToPutRequest());
+            await oAuthDataApiService.Put<PutTaskRequest, TaskResult>("task", id, taskFormModel.ToPutRequest());
             //todo: error if no success?
 
             return RedirectToAction("Index", new { listId });
@@ -98,23 +95,23 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [Route("delete-request/{id:int}")]
         public async Task<IActionResult> DeleteRequest([FromRoute] int listId, [FromRoute] int id)
         {
-            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>(_listTableId, listId);
+            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>("list", listId);
 
-            if ((await oAuthDataApiService.Get<TaskResult>(_taskTableId, id)) is not { } stellarDbResult)
+            if ((await oAuthDataApiService.Get<TaskResult>("task", id)) is not { } stellarDbResult)
             {
                 return RedirectToAction("Index", "Task", new { listId }); // todo: error page
             }
 
-            return View("Edit", await stellarDbResult.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi, tableSettings,true));
+            return View("Edit", await stellarDbResult.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi,true));
         }
 
         [HttpGet]
         [Route("delete/{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int listId, [FromRoute] int id)
         {
-            if ((await oAuthDataApiService.Get<TaskResult>(_taskTableId, id)).Data is {} taskResult && taskResult.ListId == listId)
+            if ((await oAuthDataApiService.Get<TaskResult>("task", id)).Data is {} taskResult && taskResult.ListId == listId)
             {
-                await oAuthDataApiService.Delete(_taskTableId, id);
+                await oAuthDataApiService.Delete("task", id);
             }
             
             return RedirectToAction("Index", new { listId });

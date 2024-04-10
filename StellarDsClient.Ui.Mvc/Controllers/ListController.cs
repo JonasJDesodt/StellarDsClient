@@ -1,17 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Web;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using StellarDsClient.Dto.Data.Request;
 using StellarDsClient.Dto.Data.Result;
-using StellarDsClient.Dto.Transfer;
 using StellarDsClient.Sdk;
 using StellarDsClient.Ui.Mvc.Attributes;
 using StellarDsClient.Ui.Mvc.Extensions;
 using StellarDsClient.Ui.Mvc.Models.Filters;
 using StellarDsClient.Ui.Mvc.Models.FormModels;
-using StellarDsClient.Ui.Mvc.Models.Settings;
 using StellarDsClient.Ui.Mvc.Models.ViewModels;
 using StellarDsClient.Ui.Mvc.Providers;
 
@@ -20,10 +14,8 @@ namespace StellarDsClient.Ui.Mvc.Controllers
     [Authorize]
     [Route("lists")]
     [ProvideOAuthBaseAddress]
-    public class ListController(DataApiService<ReadonlyAccessTokenProvider> readOnlyDataApiService, DataApiService<OAuthTokenProvider> oAuthDataApiService, TableSettings tableSettings) : Controller
+    public class ListController(DataApiService<ReadonlyAccessTokenProvider> readOnlyDataApiService, DataApiService<OAuthTokenProvider> oAuthDataApiService) : Controller
     {
-        private readonly int _listTableId = tableSettings.ListTableId;
-   
         [HttpGet]
         [Route("index")]
         public async Task<IActionResult> Index([FromQuery] ListIndexFilter? listIndexFilter, [FromQuery] Pagination? pagination)
@@ -35,15 +27,15 @@ namespace StellarDsClient.Ui.Mvc.Controllers
 
             if (listIndexFilter?.Scoped is true)
             {
-                var stellarDsResult = await oAuthDataApiService.Find<ListResult>(_listTableId, listIndexFilter.GetQuery() + pagination.GetQuery());
+                var stellarDsResult = await oAuthDataApiService.Find<ListResult>("list", listIndexFilter.GetQuery() + pagination.GetQuery());
 
-                return View(await stellarDsResult.ToListIndexViewModel(readOnlyDataApiService.DownloadBlobFromApi, listIndexFilter, pagination, tableSettings));
+                return View(await stellarDsResult.ToListIndexViewModel(readOnlyDataApiService.DownloadBlobFromApi, listIndexFilter, pagination));
             }
             else
             {
-                var stellarDsResult = await readOnlyDataApiService.Find<ListResult>(_listTableId, listIndexFilter.GetQuery() + pagination.GetQuery());
+                var stellarDsResult = await readOnlyDataApiService.Find<ListResult>("list", listIndexFilter.GetQuery() + pagination.GetQuery());
 
-                return View(await stellarDsResult.ToListIndexViewModel(readOnlyDataApiService.DownloadBlobFromApi, listIndexFilter, pagination, tableSettings));
+                return View(await stellarDsResult.ToListIndexViewModel(readOnlyDataApiService.DownloadBlobFromApi, listIndexFilter, pagination));
             }
         }
 
@@ -69,16 +61,16 @@ namespace StellarDsClient.Ui.Mvc.Controllers
                 return RedirectToAction("SignOut", "OAuth");//todo: add message?
             }
 
-            return RedirectToAction("Index", "Task", new { ListId = await oAuthDataApiService.CreateWithBlob(listFormModel, tableSettings, ownerId, ownerName) });
+            return RedirectToAction("Index", "Task", new { ListId = await oAuthDataApiService.CreateListWithBlob(listFormModel, ownerId, ownerName) });
         }
 
         [HttpGet]
         [Route("edit/{id:int}")]
         public async Task<IActionResult> Edit([FromRoute] int id)
         {
-            var stellarDsResult = await oAuthDataApiService.Get<ListResult>(_listTableId, id);
+            var stellarDsResult = await oAuthDataApiService.Get<ListResult>("list", id);
 
-            return View(await stellarDsResult.ToListCreateEditViewModel(readOnlyDataApiService.DownloadBlobFromApi, tableSettings));
+            return View(await stellarDsResult.ToListCreateEditViewModel(readOnlyDataApiService.DownloadBlobFromApi));
         }
 
         [HttpPost]
@@ -91,7 +83,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
                 return View(listFormModel.ToListCreateEditViewModel());
             }
 
-            await oAuthDataApiService.UpdateWithBlob(id, listFormModel, tableSettings);
+            await oAuthDataApiService.UpdateListWithBlob(id, listFormModel);
 
             return RedirectToAction("Index");
         }
@@ -100,16 +92,16 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [Route("delete-request/{id:int}")]
         public async Task<IActionResult> DeleteRequest([FromRoute] int id)
         {
-            var stellarDsResult = await oAuthDataApiService.Get<ListResult>(_listTableId, id);
+            var stellarDsResult = await oAuthDataApiService.Get<ListResult>("list", id);
 
-            return View("Edit", await stellarDsResult.ToListCreateEditViewModel(readOnlyDataApiService.DownloadBlobFromApi, tableSettings, true));
+            return View("Edit", await stellarDsResult.ToListCreateEditViewModel(readOnlyDataApiService.DownloadBlobFromApi, true));
         }
 
         [HttpGet]
         [Route("delete/{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            await oAuthDataApiService.DeleteListWithTasks(id, tableSettings);
+            await oAuthDataApiService.DeleteListWithTasks(id);
 
             return RedirectToAction("Index");
         }
