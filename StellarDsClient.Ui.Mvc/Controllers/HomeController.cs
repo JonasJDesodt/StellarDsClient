@@ -26,7 +26,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         {
             var stellarDsResult = await dataApiService.GetLastUpdatedList(tableSettings);
 
-            return View(await stellarDsResult.ToHomeViewModel(dataApiService.DownloadBlobFromApi));
+            return View(await stellarDsResult.ToHomeViewModel(dataApiService.DownloadBlobFromApi, tableSettings));
         }
 
         public IActionResult Privacy()

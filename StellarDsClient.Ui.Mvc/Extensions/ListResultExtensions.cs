@@ -5,6 +5,7 @@ using StellarDsClient.Ui.Mvc.Delegates;
 using StellarDsClient.Ui.Mvc.Models.EntityModels;
 using StellarDsClient.Ui.Mvc.Models.Filters;
 using StellarDsClient.Ui.Mvc.Models.FormModels;
+using StellarDsClient.Ui.Mvc.Models.Settings;
 using StellarDsClient.Ui.Mvc.Models.ViewModels;
 
 namespace StellarDsClient.Ui.Mvc.Extensions
@@ -32,7 +33,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             };
         }
 
-        public static async Task<ListEntityModel> ToListEntityModel(this ListResult listResult, DownloadBlobFromApi downloadBlobFromApi)
+        public static async Task<ListEntityModel> ToListEntityModel(this ListResult listResult, DownloadBlobFromApi downloadBlobFromApi, TableSettings tableSettings)
         {
             return new ListEntityModel
             {
@@ -42,7 +43,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
                 OwnerName = listResult.OwnerName,
                 Deadline = listResult.Deadline,
                 Id = listResult.Id,
-                Image = listResult.Image?.EndsWith("size=0") == false ? await downloadBlobFromApi(115, "image", listResult.Id) : null //todo: using?, use tableSettings to get the tableId
+                Image = listResult.Image?.EndsWith("size=0") == false ? await downloadBlobFromApi(tableSettings.ListTableId, "image", listResult.Id) : null //todo: using?, use tableSettings to get the tableId
             };
         }
     }

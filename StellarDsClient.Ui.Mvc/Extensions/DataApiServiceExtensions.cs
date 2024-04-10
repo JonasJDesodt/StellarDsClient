@@ -1,7 +1,9 @@
-﻿using StellarDsClient.Dto.Data.Result;
+﻿using StellarDsClient.Dto.Data.Request;
+using StellarDsClient.Dto.Data.Result;
 using StellarDsClient.Dto.Transfer;
 using StellarDsClient.Sdk;
 using StellarDsClient.Ui.Mvc.Models.Filters;
+using StellarDsClient.Ui.Mvc.Models.FormModels;
 using StellarDsClient.Ui.Mvc.Models.Settings;
 using StellarDsClient.Ui.Mvc.Models.ViewModels;
 using StellarDsClient.Ui.Mvc.Providers;
@@ -71,6 +73,42 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             await dataApiService.Delete(tableSettings.TaskTableId, taskResults.Select(taskResult => taskResult.Id.ToString()).ToArray());
 
             await dataApiService.Delete(tableSettings.ListTableId, id);
+        }
+
+        internal static async Task<int> CreateWithBlob(this DataApiService<OAuthTokenProvider> dataApiService, ListFormModel listFormModel, TableSettings tableSettings, string ownerId, string ownerName)
+        {
+            if ((await dataApiService.Create<CreateListRequest, ListResult>(tableSettings.ListTableId, listFormModel.ToCreateListRequest(ownerId, ownerName))).Data is not { } listResult)
+            {
+                return 0;
+            };
+
+            if (listFormModel.ImageUpload is null)
+            {
+                return listResult.Id;
+            }
+
+            using var multipartFormDataContent = new MultipartFormDataContent().AddFormFile(listFormModel.ImageUpload);
+
+            await dataApiService.UploadFileToApi(tableSettings.ListTableId, "Image", listResult.Id, multipartFormDataContent);
+
+            return listResult.Id;
+        }
+
+        internal static async Task UpdateWithBlob(this DataApiService<OAuthTokenProvider> dataApiService, int listId, ListFormModel listFormModel, TableSettings tableSettings)
+        {
+            if ((await dataApiService.Put<PutListRequest, ListResult>(tableSettings.ListTableId, listId, listFormModel.ToPutListRequest())).Data is null)
+            {
+                return;
+            };
+
+            if (listFormModel.ImageUpload is null)
+            {
+                return;
+            }
+
+            using var multipartFormDataContent = new MultipartFormDataContent().AddFormFile(listFormModel.ImageUpload);
+
+            await dataApiService.UploadFileToApi(tableSettings.ListTableId, "Image",listId, multipartFormDataContent);
         }
     }
 }

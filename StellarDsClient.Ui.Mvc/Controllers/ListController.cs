@@ -23,8 +23,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
     public class ListController(DataApiService<ReadonlyAccessTokenProvider> readOnlyDataApiService, DataApiService<OAuthTokenProvider> oAuthDataApiService, TableSettings tableSettings) : Controller
     {
         private readonly int _listTableId = tableSettings.ListTableId;
-        private readonly int _taskTableId = tableSettings.TaskTableId;
-
+   
         [HttpGet]
         [Route("index")]
         public async Task<IActionResult> Index([FromQuery] ListIndexFilter? listIndexFilter, [FromQuery] Pagination? pagination)
@@ -38,13 +37,13 @@ namespace StellarDsClient.Ui.Mvc.Controllers
             {
                 var stellarDsResult = await oAuthDataApiService.Find<ListResult>(_listTableId, listIndexFilter.GetQuery() + pagination.GetQuery());
 
-                return View(await stellarDsResult.ToListIndexViewModel(readOnlyDataApiService.DownloadBlobFromApi, listIndexFilter, pagination));
+                return View(await stellarDsResult.ToListIndexViewModel(readOnlyDataApiService.DownloadBlobFromApi, listIndexFilter, pagination, tableSettings));
             }
             else
-            { 
-               var stellarDsResult = await readOnlyDataApiService.Find<ListResult>(_listTableId, listIndexFilter.GetQuery() + pagination.GetQuery());
+            {
+                var stellarDsResult = await readOnlyDataApiService.Find<ListResult>(_listTableId, listIndexFilter.GetQuery() + pagination.GetQuery());
 
-                return View(await stellarDsResult.ToListIndexViewModel(readOnlyDataApiService.DownloadBlobFromApi, listIndexFilter, pagination));
+                return View(await stellarDsResult.ToListIndexViewModel(readOnlyDataApiService.DownloadBlobFromApi, listIndexFilter, pagination, tableSettings));
             }
         }
 
@@ -70,21 +69,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
                 return RedirectToAction("SignOut", "OAuth");//todo: add message?
             }
 
-            if ((await oAuthDataApiService.Create<CreateListRequest, ListResult>(_listTableId, listFormModel.ToCreateListRequest(ownerId, ownerName))).Data is not { } listResult)
-            {
-                return View(new ListCreateEditViewModel { ListFormModel = listFormModel }); //todo error view?
-            };
-
-            if (listFormModel.ImageUpload is null)
-            {
-                return RedirectToAction("Index", "Task", new { listId = listResult.Id });
-            }
-
-            using var multipartFormDataContent = new MultipartFormDataContent().AddFormFile(listFormModel.ImageUpload);
-
-            await oAuthDataApiService.UploadFileToApi(_listTableId, "image", listResult.Id, multipartFormDataContent);
-
-            return RedirectToAction("Index", "Task", new { ListId = listResult.Id });
+            return RedirectToAction("Index", "Task", new { ListId = await oAuthDataApiService.CreateWithBlob(listFormModel, tableSettings, ownerId, ownerName) });
         }
 
         [HttpGet]
@@ -93,7 +78,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         {
             var stellarDsResult = await oAuthDataApiService.Get<ListResult>(_listTableId, id);
 
-            return View(await stellarDsResult.ToListCreateEditViewModel(readOnlyDataApiService.DownloadBlobFromApi));
+            return View(await stellarDsResult.ToListCreateEditViewModel(readOnlyDataApiService.DownloadBlobFromApi, tableSettings));
         }
 
         [HttpPost]
@@ -103,19 +88,10 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(listFormModel.ToListCreateEditViewModel()); 
+                return View(listFormModel.ToListCreateEditViewModel());
             }
 
-            await oAuthDataApiService.Put<PutListRequest, ListResult>(_listTableId, id, listFormModel.ToPutListRequest());
-
-            if (listFormModel.ImageUpload is null)
-            {
-                return RedirectToAction("Index");
-            }
-
-            using var multipartFormDataContent = new MultipartFormDataContent().AddFormFile(listFormModel.ImageUpload);
-
-            await oAuthDataApiService.UploadFileToApi(_listTableId, "image", id, multipartFormDataContent);
+            await oAuthDataApiService.UpdateWithBlob(id, listFormModel, tableSettings);
 
             return RedirectToAction("Index");
         }
@@ -125,8 +101,8 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         public async Task<IActionResult> DeleteRequest([FromRoute] int id)
         {
             var stellarDsResult = await oAuthDataApiService.Get<ListResult>(_listTableId, id);
-            
-            return View("Edit", await stellarDsResult.ToListCreateEditViewModel(readOnlyDataApiService.DownloadBlobFromApi, true));
+
+            return View("Edit", await stellarDsResult.ToListCreateEditViewModel(readOnlyDataApiService.DownloadBlobFromApi, tableSettings, true));
         }
 
         [HttpGet]

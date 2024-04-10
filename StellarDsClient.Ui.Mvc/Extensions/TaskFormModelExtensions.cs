@@ -3,6 +3,7 @@ using StellarDsClient.Dto.Data.Result;
 using StellarDsClient.Dto.Transfer;
 using StellarDsClient.Ui.Mvc.Delegates;
 using StellarDsClient.Ui.Mvc.Models.FormModels;
+using StellarDsClient.Ui.Mvc.Models.Settings;
 using StellarDsClient.Ui.Mvc.Models.ViewModels;
 
 namespace StellarDsClient.Ui.Mvc.Extensions
@@ -33,7 +34,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             };
         }
 
-        public static async Task<TaskCreateEditViewModel> ToTaskCreateEditViewModel(this TaskFormModel taskFormModel, StellarDsResult<ListResult> stellarDsListResult, DownloadBlobFromApi downloadBlobFromApi)
+        public static async Task<TaskCreateEditViewModel> ToTaskCreateEditViewModel(this TaskFormModel taskFormModel, StellarDsResult<ListResult> stellarDsListResult, DownloadBlobFromApi downloadBlobFromApi, TableSettings tableSettings)
         {
             if (stellarDsListResult.Data is not { } listResult)
             {
@@ -45,7 +46,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 
             return new TaskCreateEditViewModel
             {
-                ListEntity = await listResult.ToListEntityModel(downloadBlobFromApi),
+                ListEntity = await listResult.ToListEntityModel(downloadBlobFromApi, tableSettings),
                 TaskFormModel = taskFormModel
             };
         }

@@ -34,7 +34,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
 
             var stellarDsTaskResult = await readOnlyDataApiService.Find<TaskResult>(_taskTableId, pagination.GetQuery() + taskIndexFilter.GetQuery());
 
-            return View(await stellarDsTaskResult.ToTaskIndexViewModel(stellarDsListResult, readOnlyDataApiService.DownloadBlobFromApi, taskIndexFilter, pagination));
+            return View(await stellarDsTaskResult.ToTaskIndexViewModel(stellarDsListResult, readOnlyDataApiService.DownloadBlobFromApi, taskIndexFilter, pagination, tableSettings));
         }
 
         [HttpGet]
@@ -43,7 +43,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         {
             var stellarDsListResult = await oAuthDataApiService.Get<ListResult>(_listTableId, listId);
 
-            return View(await stellarDsListResult.ToTaskCreateEditViewModel(oAuthDataApiService.DownloadBlobFromApi));
+            return View(await stellarDsListResult.ToTaskCreateEditViewModel(oAuthDataApiService.DownloadBlobFromApi, tableSettings));
         }
 
         [HttpPost]
@@ -55,7 +55,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
 
             if (!ModelState.IsValid)
             {
-                return View(await taskFormModel.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi));
+                return View(await taskFormModel.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi, tableSettings));
             }
 
             await oAuthDataApiService.Create<CreateTaskRequest, TaskResult>(_taskTableId, taskFormModel.ToCreateRequest(listId));
@@ -72,7 +72,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
 
             var stellarDsTaskResult = await oAuthDataApiService.Get<TaskResult>(_taskTableId, id);
 
-            return View(await stellarDsTaskResult.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi));
+            return View(await stellarDsTaskResult.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi, tableSettings));
         }
 
         [HttpPost]
@@ -84,7 +84,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
 
             if (!ModelState.IsValid)
             {
-                return View(await taskFormModel.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi));
+                return View(await taskFormModel.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi, tableSettings));
 
             }
 
@@ -105,7 +105,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
                 return RedirectToAction("Index", "Task", new { listId }); // todo: error page
             }
 
-            return View("Edit", await stellarDbResult.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi, true));
+            return View("Edit", await stellarDbResult.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi, tableSettings,true));
         }
 
         [HttpGet]
