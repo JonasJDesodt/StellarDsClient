@@ -134,9 +134,7 @@ namespace StellarDsClient.Generator.Helpers
                 },
                 AllowedHosts = "*"
             };
-
-
-
+            
             var jsonString = JsonSerializer.Serialize(appSettings, JsonSerializerOptions);
 
             var folderPath = Path.Combine(AppContext.BaseDirectory, "GeneratedFiles");

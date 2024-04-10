@@ -7,6 +7,7 @@ using StellarDsClient.Ui.Mvc.Models.Settings;
 using StellarDsClient.Ui.Mvc.Providers;
 using StellarDsClient.Ui.Mvc.Stores;
 using System.Diagnostics;
+using StellarDsClient.Sdk.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,13 +38,24 @@ if (cookieSettings is null)
 }
 builder.Services.AddSingleton(cookieSettings);
 
-var tableSettings = builder.Configuration.GetSection(nameof(TableSettings)).Get<TableSettings>();
-if (tableSettings is null)
+//var tableSettings = builder.Configuration.GetSection(nameof(TableSettings)).Get<TableSettings>();
+//if (tableSettings is null)
+//{
+//    Debug.WriteLine($"Unable to create {nameof(TableSettings)}");
+//    return;
+//}
+//builder.Services.AddSingleton(tableSettings);
+
+var test = builder.Configuration.GetSection("TableSettings");
+var tableSettingsDictionary = new TableSettingsDictionary();
+foreach (var keyValuePair in test.GetChildren())
 {
-    Debug.WriteLine($"Unable to create {nameof(TableSettings)}");
-    return;
+    if (int.TryParse(keyValuePair.Value, out var value))
+    {
+        tableSettingsDictionary.Add(keyValuePair.Key, value);
+    }
 }
-builder.Services.AddSingleton(tableSettings);
+builder.Services.AddSingleton(tableSettingsDictionary);
 
 builder.Services.AddHttpClient(apiSettings.Name, httpClient =>
 {
