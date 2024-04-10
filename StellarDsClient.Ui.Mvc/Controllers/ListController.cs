@@ -133,14 +133,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [Route("delete/{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            if ((await oAuthDataApiService.Find<TaskResult>(_taskTableId, $"&whereQuery=ListId;equal;{id}")).Data is not { } taskResults)
-            {
-                return RedirectToAction("Index"); //todo error? do not allow to delete the list without deleting tasks possibly associated with it
-            }
-
-            await oAuthDataApiService.Delete(_taskTableId, taskResults.Select(taskResult => taskResult.Id.ToString()).ToArray());
-
-            await oAuthDataApiService.Delete(_listTableId, id);
+            await oAuthDataApiService.DeleteListWithTasks(id, tableSettings);
 
             return RedirectToAction("Index");
         }

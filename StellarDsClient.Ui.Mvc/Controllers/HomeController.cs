@@ -24,7 +24,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
     {
         public async Task<IActionResult> Index()
         {
-            var stellarDsResult = await dataApiService.GetLastUpdatedList(tableSettings.ListTableId, tableSettings.TaskTableId);
+            var stellarDsResult = await dataApiService.GetLastUpdatedList(tableSettings);
 
             return View(await stellarDsResult.ToHomeViewModel(dataApiService.DownloadBlobFromApi));
         }
