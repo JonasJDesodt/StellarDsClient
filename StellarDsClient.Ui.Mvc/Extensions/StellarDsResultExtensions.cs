@@ -1,4 +1,5 @@
-﻿using StellarDsClient.Dto.Data.Result;
+﻿using Microsoft.AspNetCore.Server.Kestrel.Transport.NamedPipes;
+using StellarDsClient.Dto.Data.Result;
 using StellarDsClient.Dto.Transfer;
 using StellarDsClient.Ui.Mvc.Delegates;
 using StellarDsClient.Ui.Mvc.Models.EntityModels;
@@ -67,6 +68,27 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             return new TaskCreateEditViewModel
             {
                 ListEntity = await listResult.ToListEntityModel(downloadBlobFromApi),
+            };
+        }
+
+        public static async Task<HomeViewModel> ToHomeViewModel(this StellarDsResult<ListResult> stellarDsResult, DownloadBlobFromApi downloadBlobFromApi)
+        {
+            if (stellarDsResult.Messages.Count > 0)
+            {
+                return new HomeViewModel
+                {
+                    ErrorMessages = stellarDsResult.Messages
+                };
+            }
+
+            if (stellarDsResult.Data is not { } listResult)
+            {
+                return new HomeViewModel();
+            }
+
+            return new HomeViewModel
+            {
+                ListEntity = await stellarDsResult.Data.ToListEntityModel(downloadBlobFromApi),
             };
         }
 

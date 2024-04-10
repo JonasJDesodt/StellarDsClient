@@ -6,6 +6,8 @@
 
         public required DateTime Created { get; set; }
 
+        public required DateTime Updated { get; set; }
+
         public DateTime? Deadline { get; set; }
 
         public required string OwnerId { get; set; }

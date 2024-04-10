@@ -9,5 +9,7 @@
         public DateTime? CreatedEnd { get; set; }
 
         public string? Sort { get; set; }
+
+        public int? ListId { get; set; }
     }
 }

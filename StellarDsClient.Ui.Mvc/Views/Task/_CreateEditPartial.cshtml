@@ -10,12 +10,12 @@
     
     <div class="radio-buttons">
         <div>
-            <input asp-for="@Model.Finished" type="radio" value="false" checked="@(Model?.Finished is false or null)" />
+            <input asp-for="@Model.Finished" type="radio" value="false" />
             <label asp-for="@Model.Finished">To do</label>
         </div>
     
         <div>
-            <input asp-for="@Model.Finished" type="radio" value="true" checked="@(Model?.Finished is true)" />
+            <input asp-for="@Model.Finished" type="radio" value="true" />
             <label asp-for="@Model.Finished">Done</label>
         </div>
     </div>

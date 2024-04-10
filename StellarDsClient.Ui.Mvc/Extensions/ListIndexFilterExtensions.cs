@@ -39,7 +39,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 
             //todo deadline
 
-            return query + HttpUtility.UrlEncode(string.Join("&", queries)) + $"&sortQuery={listIndexFilter.Sort ?? "created"};asc";
+            return query + HttpUtility.UrlEncode(string.Join("&", queries)) + $"&sortQuery={listIndexFilter.Sort ?? "created"};desc";
         }
 
         public static int GetActiveCount(this ListIndexFilter filter)

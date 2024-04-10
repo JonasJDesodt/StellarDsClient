@@ -12,8 +12,9 @@ using Microsoft.Extensions.DependencyInjection;
 using StellarDsClient.Generator.Helpers;
 using StellarDsClient.Sdk;
 using StellarDsClient.Generator.Providers;
+using System.Runtime.InteropServices;
 
-//TODO: rename the project to 'builder'
+//TODO: rename the project to 'AspMvcBuilder' or 'Builder.AspMvc'
 
 var jsonWebTokenHandler = new JsonWebTokenHandler();
 
@@ -77,12 +78,12 @@ app.MapGet("/oauth/oauthcallback", async context =>
     try
     {
         jsonWebTokenHandler.ReadJsonWebToken(tokens.AccessToken);
-        await context.Response.WriteAsync("The access token is valid. You can close the browser.");
+        await context.Response.WriteAsync("The access token is a valid JsonWebToken. You can close the browser.");
     }
     catch (Exception exception)
     {
         context.Response.StatusCode = 400;
-        await context.Response.WriteAsync($"The access token could not be retrieved: {exception.Message}");
+        await context.Response.WriteAsync($"The access token is not a valid JsonWebToken {exception.Message}. You can close the browser.");
 
         return;
     }

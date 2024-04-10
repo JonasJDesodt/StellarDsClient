@@ -20,5 +20,8 @@ namespace StellarDsClient.Generator.Models
 
         [StellarDsType("DateTime")]
         public required DateTime Created { get; set; }
+
+        [StellarDsType("DateTime")]
+        public required DateTime Updated { get; set; }
     }
 }

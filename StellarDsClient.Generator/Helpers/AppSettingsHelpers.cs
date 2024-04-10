@@ -14,6 +14,8 @@ namespace StellarDsClient.Generator.Helpers
 {
     internal class AppSettingsHelpers
     {
+        private static readonly JsonSerializerOptions JsonSerializerOptions = new() { WriteIndented = true };
+
         public static ApiSettings RequestApiSettings()
         {
             Console.Write("Project id: ");
@@ -84,12 +86,15 @@ namespace StellarDsClient.Generator.Helpers
         {
             Console.Write("Localhost port: ");
             var localHostPort = Console.ReadLine();
-            if (!int.TryParse(localHostPort, out var port))
-            {
-                Console.WriteLine("The provided localhost port is not an integer");
 
-                Environment.Exit(0);
+            if (int.TryParse(localHostPort, out var port))
+            {
+                return port;
             }
+
+            Console.WriteLine("The provided localhost port is not an integer");
+
+            Environment.Exit(0);
 
             return port;
         }
@@ -130,7 +135,9 @@ namespace StellarDsClient.Generator.Helpers
                 AllowedHosts = "*"
             };
 
-            var jsonString = JsonSerializer.Serialize(appSettings, new JsonSerializerOptions { WriteIndented = true });
+
+
+            var jsonString = JsonSerializer.Serialize(appSettings, JsonSerializerOptions);
 
             var folderPath = Path.Combine(AppContext.BaseDirectory, "GeneratedFiles");
 
@@ -139,18 +146,11 @@ namespace StellarDsClient.Generator.Helpers
                 Directory.CreateDirectory(folderPath);
             }
 
-            File.WriteAllText(Path.Combine(folderPath, "appsettings.json"), jsonString);
+            var fullPath = Path.Combine(folderPath, "appsettings.json");
 
+            File.WriteAllText(fullPath, jsonString);
 
-
-            //string relativePath = "../StellarDsClient.Ui.Mvc"; // Adjust based on your actual relative path
-            //string targetProjectRoot = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), relativePath));
-            //string targetFilePath = Path.Combine(targetProjectRoot, "appsettings.json");
-            //File.WriteAllText(targetFilePath, "test");
-
-
-
-            Console.WriteLine($"appsettings.json file path: {AppContext.BaseDirectory + "appsettings.json"}");
+            Console.WriteLine($"appsettings.json file path: {fullPath}");
         }
     }
 }

@@ -10,9 +10,12 @@ namespace StellarDsClient.Ui.Mvc.Extensions
     {
         public static CreateListRequest ToCreateListRequest(this ListFormModel listFormModel, string ownerId, string ownerName)
         {
+            var now = DateTime.UtcNow;
+
             return new CreateListRequest
             {
-                Created = DateTime.UtcNow,
+                Created = now,
+                Updated = now,
                 Title = listFormModel.Title,
                 OwnerId = ownerId,
                 OwnerName = ownerName,
@@ -25,7 +28,8 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             return new PutListRequest
             {
                 Title = listFormModel.Title,
-                Deadline = listFormModel.Deadline
+                Deadline = listFormModel.Deadline,
+                Updated = DateTime.UtcNow
             };
         }
 

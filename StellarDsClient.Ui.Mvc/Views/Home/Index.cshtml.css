@@ -1,0 +1,16 @@
+﻿div:not(div.buttons) {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+@media (min-width: 768px) {
+    div:not(div.buttons) {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        flex-grow: 1;
+        justify-content: center;
+    }
+}

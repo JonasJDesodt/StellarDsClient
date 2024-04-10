@@ -27,7 +27,8 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             return new PutListRequest
             {
                 Deadline = listResult.Deadline,
-                Title = listResult.Title
+                Title = listResult.Title,
+                Updated = DateTime.UtcNow,
             };
         }
 

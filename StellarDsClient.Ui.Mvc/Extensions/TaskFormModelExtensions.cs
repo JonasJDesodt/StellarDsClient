@@ -11,12 +11,15 @@ namespace StellarDsClient.Ui.Mvc.Extensions
     {
         public static CreateTaskRequest ToCreateRequest(this TaskFormModel taskFormModel, int listId)
         {
+            var now = DateTime.UtcNow;
+
             return new CreateTaskRequest
             {
                 Done = taskFormModel.Finished,
                 ListId = listId,
                 Title = taskFormModel.Title,
-                Created = DateTime.UtcNow
+                Created = now,
+                Updated = now
             };
         }
 

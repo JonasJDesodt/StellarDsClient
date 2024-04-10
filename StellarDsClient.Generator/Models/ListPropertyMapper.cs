@@ -16,6 +16,9 @@ namespace StellarDsClient.Generator.Models
         public required DateTime Created { get; set; }
 
         [StellarDsType("DateTime")]
+        public required DateTime Updated { get; set; }
+
+        [StellarDsType("DateTime")]
         public DateTime? Deadline { get; set; }
 
         [StellarDsType("Blob")]

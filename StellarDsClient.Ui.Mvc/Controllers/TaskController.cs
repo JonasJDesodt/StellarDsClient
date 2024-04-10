@@ -29,7 +29,10 @@ namespace StellarDsClient.Ui.Mvc.Controllers
 
             var stellarDsListResult = await readOnlyDataApiService.Get<ListResult>(_listTableId, listId);
 
-            var stellarDsTaskResult = await readOnlyDataApiService.Find<TaskResult>(_taskTableId, pagination.GetQuery() + taskIndexFilter.GetQuery(listId));
+            taskIndexFilter ??= new TaskIndexFilter();
+            taskIndexFilter.ListId = listId;
+
+            var stellarDsTaskResult = await readOnlyDataApiService.Find<TaskResult>(_taskTableId, pagination.GetQuery() + taskIndexFilter.GetQuery());
 
             return View(await stellarDsTaskResult.ToTaskIndexViewModel(stellarDsListResult, readOnlyDataApiService.DownloadBlobFromApi, taskIndexFilter, pagination));
         }

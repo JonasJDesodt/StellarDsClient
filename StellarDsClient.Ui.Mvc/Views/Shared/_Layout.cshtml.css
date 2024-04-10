@@ -52,6 +52,7 @@ body > header {
         grid-column: 1/2;
         font-family: var(--default-font-family-variant);
         display: flex;
+        text-transform: uppercase;
     }
 
         body > header > h1 > ::deep a {

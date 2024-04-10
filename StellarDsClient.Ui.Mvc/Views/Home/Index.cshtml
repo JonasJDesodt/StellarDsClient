@@ -1,8 +1,31 @@
-﻿@{
+﻿@model HomeViewModel
+
+@{
     ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@if (Model.ErrorMessages is not null)
+{
+    <partial name="_ErrorMessagesPartial" model="@Model.ErrorMessages" />
+}
+else
+{
+    <div>
+        <section>
+            <h2>Welcome, @User.Identity?.Name@(Model.ListEntity != null ? ". You last worked on:" : "")</h2>
+
+            @if (Model.ListEntity is not null)
+            {
+                <h3>@Model.ListEntity.Title</h3>
+
+                <partial name="_ListEntityPartial" model="@Model.ListEntity"/>
+
+                <div class="buttons">
+                    <a asp-controller="Task" asp-action="Index" asp-route-listId="@Model.ListEntity.Id" class="button">View</a>
+
+                    <a asp-controller="List" asp-action="Edit" asp-route-id="@Model.ListEntity.Id" class="button">Edit</a>
+                </div>
+            }
+        </section>
+    </div>
+}

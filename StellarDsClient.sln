@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StellarDsClient.Dto", "Stel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StellarDsClient.Generator", "StellarDsClient.Generator\StellarDsClient.Generator.csproj", "{6F8FF596-52E2-414F-9E93-E7559908E344}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{DA290390-9BAF-4BF5-9A70-FEDBAA474099}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +33,6 @@ Global
 		{6F8FF596-52E2-414F-9E93-E7559908E344}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F8FF596-52E2-414F-9E93-E7559908E344}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F8FF596-52E2-414F-9E93-E7559908E344}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DA290390-9BAF-4BF5-9A70-FEDBAA474099}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DA290390-9BAF-4BF5-9A70-FEDBAA474099}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DA290390-9BAF-4BF5-9A70-FEDBAA474099}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DA290390-9BAF-4BF5-9A70-FEDBAA474099}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

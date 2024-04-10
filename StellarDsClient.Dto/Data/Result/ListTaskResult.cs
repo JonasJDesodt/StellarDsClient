@@ -22,14 +22,16 @@ namespace StellarDsClient.Dto.Data.Result
 
         public required string OwnerName { get; set; }
 
-        public required int TaskId { get; set; }
+        //public required int TaskId { get; set; }
 
         public required string TaskTitle { get; set; }
 
-        public required bool TaskFinished { get; set; }
+        public required bool TaskDone { get; set; }
 
         public required int TaskListId { get; set; }
 
         public required DateTime TaskCreated { get; set; }
+
+        public required DateTime TaskUpdated { get; set; }
     }
 }
