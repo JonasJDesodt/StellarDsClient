@@ -24,52 +24,8 @@ namespace StellarDsClient.Ui.Mvc.Controllers
     {
         public async Task<IActionResult> Index()
         {
-            var pagination = new Pagination
-            {
-                Page = 1,
-                PageSize = 1
-            };
+            var stellarDsResult = await dataApiService.GetLastUpdatedList(tableSettings.ListTableId, tableSettings.TaskTableId);
 
-            //todo: use join?
-
-            var listIndexFilter = new ListIndexFilter
-            {
-                Sort = "updated"
-            };
-            
-            var listStellarDsResult = await dataApiService.Find<ListResult>(tableSettings.ListTableId, listIndexFilter.GetQuery() + pagination.GetQuery());
-            if (listStellarDsResult.Data?.FirstOrDefault() is not { } listResult)
-            {
-                return View(new HomeViewModel());
-            }
-            
-
-            var taskIndexFilter = new TaskIndexFilter
-            {
-                Sort = "updated"
-            };
-
-            var taskStellarDsResult = await dataApiService.Find<TaskResult>(tableSettings.TaskTableId, taskIndexFilter.GetQuery() + pagination.GetQuery());
-
-            if (taskStellarDsResult.Data?.FirstOrDefault() is not { } taskResult)
-            {
-                return View(new HomeViewModel());
-            }
-            
-            StellarDsResult<ListResult>? stellarDsResult;
-
-            if (taskResult.Updated > listResult.Updated)
-            {
-                stellarDsResult = await dataApiService.Get<ListResult>(tableSettings.ListTableId, taskResult.ListId);
-            }
-            else
-            {
-                stellarDsResult = new StellarDsResult<ListResult>
-                {
-                    Data = listResult
-                };
-            }
-          
             return View(await stellarDsResult.ToHomeViewModel(dataApiService.DownloadBlobFromApi));
         }
 
