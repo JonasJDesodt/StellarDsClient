@@ -7,9 +7,15 @@ using StellarDsClient.Ui.Mvc.Models.Settings;
 using StellarDsClient.Ui.Mvc.Providers;
 using StellarDsClient.Ui.Mvc.Stores;
 using System.Diagnostics;
+using System.Runtime.InteropServices.Marshalling;
+using StellarDsClient.Builder.Library;
 using StellarDsClient.Sdk.Models;
 
+var dbBuilder = new Builder();
+var stellarDsSettings = await dbBuilder.Run(args);
+
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -38,16 +44,24 @@ if (cookieSettings is null)
 }
 builder.Services.AddSingleton(cookieSettings);
 
-var tableSettings = builder.Configuration.GetSection("TableSettings");
-var tableSettingsDictionary = new TableSettingsDictionary();
-foreach (var keyValuePair in tableSettings.GetChildren())
+//var tableSettings = builder.Configuration.GetSection("TableSettings");
+//var tableSettingsDictionary = new TableSettingsDictionary();
+//foreach (var keyValuePair in tableSettings.GetChildren())
+//{
+//    if (int.TryParse(keyValuePair.Value, out var value))
+//    {
+//        tableSettingsDictionary.Add(keyValuePair.Key.ToLowerInvariant(), value);
+//    }
+//}
+var tableSettings = stellarDsSettings.TableSettings;
+//todo: make dynamic
+var tableSettingsDictionary = new TableSettingsDictionary
 {
-    if (int.TryParse(keyValuePair.Value, out var value))
-    {
-        tableSettingsDictionary.Add(keyValuePair.Key.ToLowerInvariant(), value);
-    }
-}
+    {"list", tableSettings.ListTableId},
+    {"task", tableSettings.TaskTableId}
+};
 builder.Services.AddSingleton(tableSettingsDictionary);
+
 
 builder.Services.AddHttpClient(apiSettings.Name, httpClient =>
 {

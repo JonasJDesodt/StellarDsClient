@@ -12,18 +12,18 @@ else
 {
     <div>
         <section>
-            <h2>Welcome, @User.Identity?.Name@(Model.ListEntity != null ? ". You last worked on:" : "")</h2>
+            <h2>Welcome, @User.Identity?.Name@(Model.List != null ? ". You last worked on:" : "")</h2>
 
-            @if (Model.ListEntity is not null)
+            @if (Model.List is not null)
             {
-                <h3>@Model.ListEntity.Title</h3>
+                <h3>@Model.List.Title</h3>
 
-                <partial name="_ListEntityPartial" model="@Model.ListEntity"/>
+                <partial name="_ListPartial" model="@Model.List"/>
 
                 <div class="buttons">
-                    <a asp-controller="Task" asp-action="Index" asp-route-listId="@Model.ListEntity.Id" class="button">View</a>
+                    <a asp-controller="Task" asp-action="Index" asp-route-listId="@Model.List.Id" class="button">View</a>
 
-                    <a asp-controller="List" asp-action="Edit" asp-route-id="@Model.ListEntity.Id" class="button">Edit</a>
+                    <a asp-controller="List" asp-action="Edit" asp-route-id="@Model.List.Id" class="button">Edit</a>
                 </div>
             }
         </section>

@@ -2,7 +2,7 @@
 using StellarDsClient.Dto.Data.Result;
 using StellarDsClient.Dto.Transfer;
 using StellarDsClient.Ui.Mvc.Delegates;
-using StellarDsClient.Ui.Mvc.Models.EntityModels;
+using StellarDsClient.Ui.Mvc.Models.UiModels;
 using StellarDsClient.Ui.Mvc.Models.Filters;
 using StellarDsClient.Ui.Mvc.Models.FormModels;
 using StellarDsClient.Ui.Mvc.Models.PartialModels;
@@ -29,7 +29,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             {
                 PaginationPartialModel = paginationPartialModel,
                 ListIndexFilter = filter,
-                ListEntities = await Task.WhenAll(listResults.Select(async l => await l.ToListEntityModel(downloadBlobFromApi)).ToList())
+                Lists = await Task.WhenAll(listResults.Select(async l => await l.ToListEntityModel(downloadBlobFromApi)).ToList())
             };
         }
 
@@ -89,33 +89,11 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 
             return new HomeViewModel
             {
-                ListEntity = await stellarDsResult.Data.ToListEntityModel(downloadBlobFromApi),
+                List = await stellarDsResult.Data.ToListEntityModel(downloadBlobFromApi),
             };
         }
 
-
-        public static async Task<TaskIndexViewModel> ToTaskIndexViewModel(this StellarDsResult<IList<TaskResult>> stellarDsTaskResult, StellarDsResult<ListResult> stellarDsListResult, DownloadBlobFromApi downloadBlobFromApi, TaskIndexFilter? taskIndexFilter, Pagination pagination)
-        {
-            var paginationPartialModel = pagination.ToPaginationPartialModel(stellarDsTaskResult);
-
-            if (stellarDsTaskResult.Data is not { } taskResults || stellarDsListResult.Data is not { } listResult)
-            {
-                return new TaskIndexViewModel
-                {
-                    ErrorMessages = [.. stellarDsTaskResult.Messages, .. stellarDsListResult.Messages],
-                };
-            }
-
-            return new TaskIndexViewModel
-            {
-                PaginationPartialModel = paginationPartialModel,
-                TaskResults = taskResults,
-                ListEntity = await listResult.ToListEntityModel(downloadBlobFromApi),
-                TaskIndexFilter = taskIndexFilter
-            };
-        }
-
-        public static TaskIndexViewModel ToTaskIndexViewModel(this StellarDsResult<ListEntityModel> stellarDsResult, Pagination pagination, TaskIndexFilter taskIndexFilter)
+        public static TaskIndexViewModel ToTaskIndexViewModel(this StellarDsResult<ListUiModel> stellarDsResult, Pagination pagination, TaskIndexFilter taskIndexFilter)
         {
             var paginationPartialModel = pagination.ToPaginationPartialModel(stellarDsResult);
 
@@ -130,7 +108,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             return new TaskIndexViewModel
             {
                 PaginationPartialModel = paginationPartialModel,
-                ListEntity = listEntity,
+                List = listEntity,
                 TaskIndexFilter = taskIndexFilter
             };
         }

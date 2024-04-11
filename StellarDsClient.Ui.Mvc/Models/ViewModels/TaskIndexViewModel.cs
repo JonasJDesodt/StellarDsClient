@@ -1,8 +1,8 @@
 ﻿using StellarDsClient.Dto.Data.Result;
 using StellarDsClient.Dto.Transfer;
-using StellarDsClient.Ui.Mvc.Models.EntityModels;
 using StellarDsClient.Ui.Mvc.Models.Filters;
 using StellarDsClient.Ui.Mvc.Models.PartialModels;
+using StellarDsClient.Ui.Mvc.Models.UiModels;
 
 namespace StellarDsClient.Ui.Mvc.Models.ViewModels
 {
@@ -12,9 +12,7 @@ namespace StellarDsClient.Ui.Mvc.Models.ViewModels
 
         public PaginationPartialModel? PaginationPartialModel { get; set; }
 
-        public ListEntityModel? ListEntity { get; set; }
-
-        public IList<TaskResult>? TaskResults { get; set; }
+        public ListUiModel? List { get; set; }
 
         public TaskIndexFilter? TaskIndexFilter { get; set; }
     }

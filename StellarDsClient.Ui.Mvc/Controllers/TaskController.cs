@@ -7,8 +7,6 @@ using StellarDsClient.Ui.Mvc.Attributes;
 using StellarDsClient.Ui.Mvc.Extensions;
 using StellarDsClient.Ui.Mvc.Models.Filters;
 using StellarDsClient.Ui.Mvc.Models.FormModels;
-using StellarDsClient.Ui.Mvc.Models.Settings;
-using StellarDsClient.Ui.Mvc.Models.ViewModels;
 using StellarDsClient.Ui.Mvc.Providers;
 
 namespace StellarDsClient.Ui.Mvc.Controllers

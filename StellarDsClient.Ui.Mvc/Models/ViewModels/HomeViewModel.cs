@@ -1,6 +1,6 @@
 ﻿using StellarDsClient.Dto.Data.Result;
 using StellarDsClient.Dto.Transfer;
-using StellarDsClient.Ui.Mvc.Models.EntityModels;
+using StellarDsClient.Ui.Mvc.Models.UiModels;
 
 namespace StellarDsClient.Ui.Mvc.Models.ViewModels
 {
@@ -8,6 +8,6 @@ namespace StellarDsClient.Ui.Mvc.Models.ViewModels
     {
         public IList<StellarDsErrorMessage>? ErrorMessages { get; set; }
 
-        public ListEntityModel? ListEntity { get; set; }
+        public ListUiModel? List { get; set; }
     }
 }

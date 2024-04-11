@@ -1,8 +1,8 @@
 ﻿using StellarDsClient.Dto.Data.Result;
 
-namespace StellarDsClient.Ui.Mvc.Models.EntityModels
+namespace StellarDsClient.Ui.Mvc.Models.UiModels
 {
-    public class ListEntityModel
+    public class ListUiModel
     {
         public int Id { get; set; }
 

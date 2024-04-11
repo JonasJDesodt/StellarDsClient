@@ -12,7 +12,7 @@
 {
     <partial name="_ErrorMessagesPartial" model="@Model.ErrorMessages"/>
 }
-else if (Model.ListEntities is not null)
+else if (Model.Lists is not null)
 {
     <partial name="_FilterPartial" model="@Model.ListIndexFilter" />
 
@@ -20,19 +20,19 @@ else if (Model.ListEntities is not null)
         <h3>@Model.PaginationPartialModel?.TotalItems result@(Model.PaginationPartialModel?.TotalItems != 1 ? "s" : ""):</h3>
 
         <ul>
-            @foreach (var listEntity in @Model.ListEntities)
+            @foreach (var list in @Model.Lists)
             {
                 <li>
-                    <h4>@listEntity.Title</h4>
+                    <h4>@list.Title</h4>
 
-                    <partial name="_ListEntityPartial" model="@listEntity"/>
+                    <partial name="_ListPartial" model="@list"/>
                     
                     <div class="buttons">
-                        <a asp-controller="Task" asp-action="Index" asp-route-listId="@listEntity.Id" class="button">View</a>
+                        <a asp-controller="Task" asp-action="Index" asp-route-listId="@list.Id" class="button">View</a>
 
-                        @if (listEntity.OwnerId == User.GetId())
+                        @if (list.OwnerId == User.GetId())
                         {
-                            <a asp-controller="List" asp-action="Edit" asp-route-id="@listEntity.Id" class="button">Edit</a>
+                            <a asp-controller="List" asp-action="Edit" asp-route-id="@list.Id" class="button">Edit</a>
                         }
                     </div>
                 </li>

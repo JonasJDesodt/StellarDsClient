@@ -12,7 +12,7 @@
 }
 else if (Model.ListEntity is not null && Model.TaskFormModel is not null)
 {
-    <partial name="_ListEntityPartial" model="@Model.ListEntity" />
+    <partial name="_ListPartial" model="@Model.ListEntity" />
     
     <form method="post" enctype="multipart/form-data">
         <partial name="_CreateEditPartial" model="@Model.TaskFormModel" />

@@ -8,7 +8,7 @@ using StellarDsClient.Ui.Mvc.Models.Settings;
 using StellarDsClient.Ui.Mvc.Models.ViewModels;
 using StellarDsClient.Ui.Mvc.Providers;
 using System.Collections.Generic;
-using StellarDsClient.Ui.Mvc.Models.EntityModels;
+using StellarDsClient.Ui.Mvc.Models.UiModels;
 
 namespace StellarDsClient.Ui.Mvc.Extensions
 {
@@ -113,12 +113,12 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             await dataApiService.UploadFileToApi("list", "Image",listId, multipartFormDataContent);
         }
 
-        internal static async Task<StellarDsResult<ListEntityModel>> GetListWithTasks(this DataApiService<ReadonlyAccessTokenProvider> dataApiService, int listId, Pagination pagination, TaskIndexFilter taskIndexFilter)
+        internal static async Task<StellarDsResult<ListUiModel>> GetListWithTasks(this DataApiService<ReadonlyAccessTokenProvider> dataApiService, int listId, Pagination pagination, TaskIndexFilter taskIndexFilter)
         { 
             var stellarDsListResult = await dataApiService.Get<ListResult>("list", listId);
             if (stellarDsListResult.Data is not { } listResult)
             {
-                return new StellarDsResult<ListEntityModel>
+                return new StellarDsResult<ListUiModel>
                 {
                     Messages = stellarDsListResult.Messages
                 };
@@ -130,7 +130,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             var stellarDsTaskResult = await dataApiService.Find<TaskResult>("task", pagination.GetQuery() + taskIndexFilter.GetQuery());
             if (stellarDsTaskResult.Data is not { } taskResults)
             {
-                return new StellarDsResult<ListEntityModel>
+                return new StellarDsResult<ListUiModel>
                 {
                     Messages = [.. stellarDsListResult.Messages, .. stellarDsTaskResult.Messages]
                 };
@@ -139,7 +139,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             var listTask = await listResult.ToListEntityModel(dataApiService.DownloadBlobFromApi);
             listTask.TaskResults = taskResults;
 
-            return new StellarDsResult<ListEntityModel>
+            return new StellarDsResult<ListUiModel>
             {
                 Data = listTask
             };

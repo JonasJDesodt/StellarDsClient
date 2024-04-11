@@ -2,10 +2,10 @@
 using StellarDsClient.Dto.Data.Result;
 using StellarDsClient.Dto.Transfer;
 using StellarDsClient.Ui.Mvc.Delegates;
-using StellarDsClient.Ui.Mvc.Models.EntityModels;
 using StellarDsClient.Ui.Mvc.Models.Filters;
 using StellarDsClient.Ui.Mvc.Models.FormModels;
 using StellarDsClient.Ui.Mvc.Models.Settings;
+using StellarDsClient.Ui.Mvc.Models.UiModels;
 using StellarDsClient.Ui.Mvc.Models.ViewModels;
 
 namespace StellarDsClient.Ui.Mvc.Extensions
@@ -33,9 +33,9 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             };
         }
 
-        public static async Task<ListEntityModel> ToListEntityModel(this ListResult listResult, DownloadBlobFromApi downloadBlobFromApi)
+        public static async Task<ListUiModel> ToListEntityModel(this ListResult listResult, DownloadBlobFromApi downloadBlobFromApi)
         {
-            return new ListEntityModel
+            return new ListUiModel
             {
                 Created = listResult.Created,
                 Title = listResult.Title,

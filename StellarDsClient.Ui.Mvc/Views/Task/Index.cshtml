@@ -1,7 +1,7 @@
 ﻿@model TaskIndexViewModel
 
 @{
-    ViewData["Title"] = @Model.ListEntity?.Title;
+    ViewData["Title"] = @Model.List?.Title;
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -10,13 +10,13 @@
 {
     <partial name="_ErrorMessagesPartial" model="@Model.ErrorMessages"/>
 }
-else if (Model.ListEntity is not null)
+else if (Model.List is not null)
 {
-    <partial name="_ListEntityPartial" model="@Model.ListEntity"/>
+    <partial name="_ListPartial" model="@Model.List"/>
 
-    @if (@Model.ListEntity.OwnerId == User.GetId())
+    @if (@Model.List.OwnerId == User.GetId())
     {
-        <a asp-action="Create" asp-route-listId="@Model.ListEntity.Id" class="button">Add task</a>
+        <a asp-action="Create" asp-route-listId="@Model.List.Id" class="button">Add task</a>
     }
 
     <partial name="_FilterPartial" model="@Model.TaskIndexFilter" />
@@ -25,7 +25,7 @@ else if (Model.ListEntity is not null)
         <h3>@Model.PaginationPartialModel?.TotalItems result@(Model.PaginationPartialModel?.TotalItems != 1 ? "s" : ""):</h3>
 
         <ul>
-            @foreach (var taskResult in Model.ListEntity.TaskResults)
+            @foreach (var taskResult in Model.List.TaskResults)
             {
                 <li>
                     <h4>@taskResult.Title</h4>
@@ -42,9 +42,9 @@ else if (Model.ListEntity is not null)
                     <p>Created: @taskResult.Created.ToShortDateString()</p>
                     
                     <div class="buttons">
-                        @if (@Model.ListEntity.OwnerId == User.GetId())
+                        @if (@Model.List.OwnerId == User.GetId())
                         {
-                            <a asp-controller="Task" asp-action="Edit" asp-route-id="@taskResult.Id" asp-route-listId="@Model.ListEntity.Id" class="button">Edit</a>
+                            <a asp-controller="Task" asp-action="Edit" asp-route-id="@taskResult.Id" asp-route-listId="@Model.List.Id" class="button">Edit</a>
                         }
                     </div>
                 </li>
