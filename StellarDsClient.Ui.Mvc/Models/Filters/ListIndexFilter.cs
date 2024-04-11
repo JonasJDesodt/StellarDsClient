@@ -16,6 +16,8 @@
 
         public string? Sort { get; set; }
 
+        public bool? SortAscending { get; set; }
+
         public bool? Scoped { get; set; }
     }
 }

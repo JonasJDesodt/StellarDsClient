@@ -34,6 +34,24 @@
             </select>
         </div>
 
+        <div>
+            <p class="label">Sort direction</p>
+
+            <div class="radio-buttons">
+                <div>
+                    <input asp-for="@Model.SortAscending" type="radio" value="true" checked="@(Model.SortAscending is true or null)"/>
+
+                    <label asp-for="@Model.SortAscending">Ascending</label>
+                </div>
+
+                <div>
+                    <input asp-for="@Model.SortAscending" type="radio" value="false" checked="@(Model.SortAscending is false)"/>
+
+                    <label asp-for="@Model.SortAscending">Descending</label>
+                </div>
+            </div>
+        </div>
+
         <div class="buttons">
             <button type="submit">Save</button>
 

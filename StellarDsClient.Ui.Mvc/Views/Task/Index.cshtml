@@ -10,7 +10,7 @@
 {
     <partial name="_ErrorMessagesPartial" model="@Model.ErrorMessages"/>
 }
-else if (Model.ListEntity is not null && Model.TaskResults is not null)
+else if (Model.ListEntity is not null)
 {
     <partial name="_ListEntityPartial" model="@Model.ListEntity"/>
 
@@ -25,7 +25,7 @@ else if (Model.ListEntity is not null && Model.TaskResults is not null)
         <h3>@Model.PaginationPartialModel?.TotalItems result@(Model.PaginationPartialModel?.TotalItems != 1 ? "s" : ""):</h3>
 
         <ul>
-            @foreach (var taskResult in @Model.TaskResults)
+            @foreach (var taskResult in Model.ListEntity.TaskResults)
             {
                 <li>
                     <h4>@taskResult.Title</h4>

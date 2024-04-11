@@ -1,4 +1,6 @@
-﻿namespace StellarDsClient.Ui.Mvc.Models.EntityModels
+﻿using StellarDsClient.Dto.Data.Result;
+
+namespace StellarDsClient.Ui.Mvc.Models.EntityModels
 {
     public class ListEntityModel
     {
@@ -15,5 +17,7 @@
         public required string OwnerId { get; set; }
 
         public required string OwnerName { get; set; }
+
+        public IList<TaskResult> TaskResults = [];
     }
 }

@@ -38,9 +38,9 @@ if (cookieSettings is null)
 }
 builder.Services.AddSingleton(cookieSettings);
 
-var test = builder.Configuration.GetSection("TableSettings");
+var tableSettings = builder.Configuration.GetSection("TableSettings");
 var tableSettingsDictionary = new TableSettingsDictionary();
-foreach (var keyValuePair in test.GetChildren())
+foreach (var keyValuePair in tableSettings.GetChildren())
 {
     if (int.TryParse(keyValuePair.Value, out var value))
     {

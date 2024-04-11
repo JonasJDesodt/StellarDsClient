@@ -7,7 +7,9 @@ namespace StellarDsClient.Ui.Mvc.Extensions
     {
         public static string GetQuery(this ListIndexFilter? listIndexFilter)
         {
-            if (listIndexFilter is null || (string.IsNullOrWhiteSpace(listIndexFilter.Title) && string.IsNullOrWhiteSpace(listIndexFilter.Owner) && listIndexFilter.CreatedStart is null && listIndexFilter.CreatedEnd is null && listIndexFilter.Sort is null))
+            //todo: use model for fields
+            //todo: return if sort is created & sortAscending is true
+            if (listIndexFilter is null || (string.IsNullOrWhiteSpace(listIndexFilter.Title) && string.IsNullOrWhiteSpace(listIndexFilter.Owner) && listIndexFilter.CreatedStart is null && listIndexFilter.CreatedEnd is null && listIndexFilter.DeadlineStart is null && listIndexFilter.DeadlineEnd is null && listIndexFilter.Sort is null && listIndexFilter.SortAscending is null))
             {
                 return string.Empty;
             }
@@ -37,9 +39,18 @@ namespace StellarDsClient.Ui.Mvc.Extensions
                 queries.Add($"Created;smallerThan;{createdEnd:O}|Created;equal;{createdEnd:O}");
             }
 
-            //todo deadline
+            if (listIndexFilter.DeadlineStart is { } deadlineStart)
+            {
 
-            return query + HttpUtility.UrlEncode(string.Join("&", queries)) + $"&sortQuery={listIndexFilter.Sort ?? "created"};desc";
+                queries.Add($"Deadline;largerThan;{deadlineStart:O}|Deadline;equal;{deadlineStart:O}");
+            }
+
+            if (listIndexFilter.DeadlineEnd is { } deadlineEnd)
+            {
+                queries.Add($"Deadline;smallerThan;{deadlineEnd:O}|Deadline;equal;{deadlineEnd:O}");
+            }
+
+            return query + HttpUtility.UrlEncode(string.Join("&", queries)) + $"&sortQuery={listIndexFilter.Sort ?? "created"};{(listIndexFilter.SortAscending is true or null ? "asc" : "desc")}";
         }
 
         public static int GetActiveCount(this ListIndexFilter filter)
@@ -47,11 +58,13 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             var count = 0;
 
             if (filter.Title is not null) count++;
-            if (filter.DeadlineStart is not null) count++;
             if (filter.CreatedEnd is not null) count++;
             if (filter.CreatedStart is not null) count++;
+            if (filter.DeadlineStart is not null) count++;
+            if (filter.DeadlineEnd is not null) count++;
             if (filter.Owner is not null) count++;
             if (filter.Sort is not null && filter.Sort != "created") count++;
+            if (filter.SortAscending is not null && filter.SortAscending == false) count++;
 
             return count;
         }

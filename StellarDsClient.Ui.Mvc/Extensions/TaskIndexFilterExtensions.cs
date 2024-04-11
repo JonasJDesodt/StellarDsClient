@@ -15,7 +15,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
                 return string.Empty;
             }
 
-            if (string.IsNullOrWhiteSpace(taskIndexFilter.Title) && taskIndexFilter.CreatedStart is null && taskIndexFilter.CreatedEnd is null && taskIndexFilter.Sort is null && taskIndexFilter.ListId is null)
+            if (string.IsNullOrWhiteSpace(taskIndexFilter.Title) && taskIndexFilter.CreatedStart is null && taskIndexFilter.CreatedEnd is null && taskIndexFilter.Sort is null && taskIndexFilter.ListId is null && taskIndexFilter.SortAscending is null)
             {
                 return string.Empty;
             }
@@ -45,15 +45,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
                 queries.Add($"ListId;equal;{listId}");
             }
 
-            return query + HttpUtility.UrlEncode(string.Join("&", queries)) + $"&sortQuery={taskIndexFilter.Sort ?? "created"};desc";
-            
-            //return taskIndexFilter.Sort switch
-            //{
-            //    "done" => query + $"&sortQuery=done;desc",
-            //    "title" => query + $"&sortQuery=title;asc",
-            //    "updated" => query + $"&sortQuery=updated;desc",
-            //    _ => query + $"&sortQuery=created;asc"
-            //};
+            return query + HttpUtility.UrlEncode(string.Join("&", queries)) + $"&sortQuery={taskIndexFilter.Sort ?? "created"};{(taskIndexFilter.SortAscending is true or null ? "asc" : "desc")}";
         }
 
         public static int GetActiveCount(this TaskIndexFilter filter)
@@ -64,6 +56,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             if (filter.CreatedStart is not null) count++;
             if (filter.Title is not null) count++;
             if (filter.Sort is not null && filter.Sort != "created") count++;
+            if (filter.SortAscending is not null && filter.SortAscending == false) count++;
 
             return count;
         }

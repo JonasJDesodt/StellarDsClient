@@ -115,6 +115,26 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             };
         }
 
+        public static TaskIndexViewModel ToTaskIndexViewModel(this StellarDsResult<ListEntityModel> stellarDsResult, Pagination pagination, TaskIndexFilter taskIndexFilter)
+        {
+            var paginationPartialModel = pagination.ToPaginationPartialModel(stellarDsResult);
+
+            if (stellarDsResult.Data is not { } listEntity)
+            {
+                return new TaskIndexViewModel
+                {
+                    ErrorMessages = stellarDsResult.Messages
+                };
+            }
+
+            return new TaskIndexViewModel
+            {
+                PaginationPartialModel = paginationPartialModel,
+                ListEntity = listEntity,
+                TaskIndexFilter = taskIndexFilter
+            };
+        }
+
         public static async Task<TaskCreateEditViewModel> ToTaskCreateEditViewModel(this StellarDsResult<TaskResult> stellarDsTaskResult, StellarDsResult<ListResult> stellarDsListResult, DownloadBlobFromApi downloadBlobFromApi, bool hasDeleteRequest = false)
         {
             if (stellarDsTaskResult.Data is not { } taskResult || stellarDsListResult.Data is not { } listResult)

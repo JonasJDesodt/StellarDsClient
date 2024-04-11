@@ -24,14 +24,12 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         {
             pagination ??= new Pagination();
 
-            var stellarDsListResult = await readOnlyDataApiService.Get<ListResult>("list", listId);
-
             taskIndexFilter ??= new TaskIndexFilter();
             taskIndexFilter.ListId = listId;
 
-            var stellarDsTaskResult = await readOnlyDataApiService.Find<TaskResult>("task", pagination.GetQuery() + taskIndexFilter.GetQuery());
-
-            return View(await stellarDsTaskResult.ToTaskIndexViewModel(stellarDsListResult, readOnlyDataApiService.DownloadBlobFromApi, taskIndexFilter, pagination));
+            var stellarDsResult = await readOnlyDataApiService.GetListWithTasks(listId, pagination, taskIndexFilter);
+            
+            return View(stellarDsResult.ToTaskIndexViewModel(pagination, taskIndexFilter));
         }
 
         [HttpGet]
