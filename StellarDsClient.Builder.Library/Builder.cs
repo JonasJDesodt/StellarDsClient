@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using StellarDsClient.Builder.Library.Models;
 using static System.Net.WebRequestMethods;
+using StellarDsClient.Sdk.Settings;
 
 namespace StellarDsClient.Builder.Library
 {
@@ -26,11 +27,31 @@ namespace StellarDsClient.Builder.Library
 
             var builder = WebApplication.CreateBuilder(args); //todo: without args?
             
+            // todo check if all the fields are valid / present
+            var oAuthSettings = builder.Configuration.GetSection(nameof(OAuthSettings)).Get<OAuthSettings>() ?? AppSettingsHelpers.RequestOAuthSettings(localhostPort);
+
+            // todo check if all the fields are valid / present
+            var apiSettings = builder.Configuration.GetSection(nameof(ApiSettings)).Get<ApiSettings>() ?? AppSettingsHelpers.RequestApiSettings();
+
+            // todo check if all the fields are valid / present
+            //todo: use tablesettingsdictionary instead of tablesettings
+            var tableSettings = builder.Configuration.GetSection(nameof(TableSettings)).Get<TableSettings>();
+
+            if (tableSettings is not null)
+            {
+                return new StellarDsSettings
+                {
+                    ApiSettings = apiSettings,
+                    OAuthSettings = oAuthSettings,
+                    TableSettings = tableSettings
+                };
+            }
+    
             //var kestrelConfig = builder.Configuration.GetSection("Kestrel:Endpoints:Http:Url").Value ?? throw new NullReferenceException("KestrelConfiguration is null");
             //var localhostPort = new Uri(kestrelConfig).Port;
 
-            var oAuthSettings = AppSettingsHelpers.RequestOAuthSettings(localhostPort);
-            var apiSettings = AppSettingsHelpers.RequestApiSettings();
+            //var oAuthSettings = AppSettingsHelpers.RequestOAuthSettings(localhostPort);
+            //var apiSettings = AppSettingsHelpers.RequestApiSettings();
             
             // Add services
             // TODO: dispose services?
@@ -47,7 +68,7 @@ namespace StellarDsClient.Builder.Library
                 httpClient.BaseAddress = new Uri(apiSettings.BaseAddress);
             });
 
-            TableSettings? tableSettings = null;
+           // TableSettings? tableSettings = null;
 
             var app = builder.Build();
 

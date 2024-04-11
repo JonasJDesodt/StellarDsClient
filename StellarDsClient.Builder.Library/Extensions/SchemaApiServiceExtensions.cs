@@ -30,8 +30,8 @@ namespace StellarDsClient.Builder.Library.Extensions
 
             return new TableSettings
             {
-                ListTableId = newListMetadata.Id,
-                TaskTableId = newTaskMetadata.Id
+                List = newListMetadata.Id,
+                Task = newTaskMetadata.Id
             };
         }
 

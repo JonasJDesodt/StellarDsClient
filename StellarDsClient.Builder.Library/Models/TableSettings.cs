@@ -2,8 +2,8 @@
 {
     public class TableSettings
     {
-        public int ListTableId { get; set; }
+        public int List { get; set; }
 
-        public int TaskTableId { get; set; }
+        public int Task { get; set; }
     }
 }

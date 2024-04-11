@@ -16,6 +16,8 @@ using StellarDsClient.Ui.Mvc.Providers;
 //TODO
 //TODO: Clear finished/completed lists
 
+//bug: list last worked on only appears if the list has a task
+
 namespace StellarDsClient.Ui.Mvc.Controllers
 {
     [Authorize]

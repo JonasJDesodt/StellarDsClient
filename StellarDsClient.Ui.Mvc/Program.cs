@@ -14,26 +14,30 @@ using StellarDsClient.Sdk.Models;
 var dbBuilder = new Builder();
 var stellarDsSettings = await dbBuilder.Run(args);
 
-var builder = WebApplication.CreateBuilder(args);
 
+
+
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-var apiSettings = builder.Configuration.GetSection(nameof(ApiSettings)).Get<ApiSettings>();
-if (apiSettings is null)
-{
-    Debug.WriteLine($"Unable to create {nameof(ApiSettings)}");
-    return;
-}
+//var apiSettings = builder.Configuration.GetSection(nameof(ApiSettings)).Get<ApiSettings>();
+//if (apiSettings is null)
+//{
+//    Debug.WriteLine($"Unable to create {nameof(ApiSettings)}");
+//    return;
+//}
+var apiSettings = stellarDsSettings.ApiSettings;
 builder.Services.AddSingleton(apiSettings);
 
-var oAuthSettings = builder.Configuration.GetSection(nameof(OAuthSettings)).Get<OAuthSettings>();
-if (oAuthSettings is null)
-{
-    Debug.WriteLine($"Unable to create {nameof(OAuthSettings)}");
-    return;
-}
+//var oAuthSettings = builder.Configuration.GetSection(nameof(OAuthSettings)).Get<OAuthSettings>();
+var oAuthSettings = stellarDsSettings.OAuthSettings;
+//if (oAuthSettings is null)
+//{
+//    Debug.WriteLine($"Unable to create {nameof(OAuthSettings)}");
+//    return;
+//}
 builder.Services.AddSingleton(oAuthSettings);
 
 var cookieSettings = builder.Configuration.GetSection(nameof(CookieSettings)).Get<CookieSettings>();
@@ -57,8 +61,8 @@ var tableSettings = stellarDsSettings.TableSettings;
 //todo: make dynamic
 var tableSettingsDictionary = new TableSettingsDictionary
 {
-    {"list", tableSettings.ListTableId},
-    {"task", tableSettings.TaskTableId}
+    {"list", tableSettings.List},
+    {"task", tableSettings.Task}
 };
 builder.Services.AddSingleton(tableSettingsDictionary);
 
