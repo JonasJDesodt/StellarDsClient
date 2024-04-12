@@ -10,7 +10,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using StellarDsClient.Builder.Library.Models;
-using static System.Net.WebRequestMethods;
 using StellarDsClient.Sdk.Settings;
 
 namespace StellarDsClient.Builder.Library
@@ -20,9 +19,16 @@ namespace StellarDsClient.Builder.Library
         //todo: sync?
         public async Task<StellarDsSettings> Run(string[] args)
         {
-            //todo: get port from launchsettings
-            var localhostPort = 7182;
+            //only works in debug? 
+            var urls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS")?.Split(";");
 
+            if (!int.TryParse(urls?.Single(x => x.StartsWith("https://localhost:")).Split(':').Last(), out var localhostPort))
+            {
+                localhostPort = AppSettingsHelpers.RequestLocalhostPort();
+            };
+ 
+            //todo: test the localhostport?
+            
             var jsonWebTokenHandler = new JsonWebTokenHandler();
 
             var builder = WebApplication.CreateBuilder(args); //todo: without args?
@@ -49,10 +55,7 @@ namespace StellarDsClient.Builder.Library
     
             //var kestrelConfig = builder.Configuration.GetSection("Kestrel:Endpoints:Http:Url").Value ?? throw new NullReferenceException("KestrelConfiguration is null");
             //var localhostPort = new Uri(kestrelConfig).Port;
-
-            //var oAuthSettings = AppSettingsHelpers.RequestOAuthSettings(localhostPort);
-            //var apiSettings = AppSettingsHelpers.RequestApiSettings();
-            
+         
             // Add services
             // TODO: dispose services?
             builder.Services.AddScoped<OAuthApiService>();

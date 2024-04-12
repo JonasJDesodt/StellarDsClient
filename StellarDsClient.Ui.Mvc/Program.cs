@@ -14,30 +14,15 @@ using StellarDsClient.Sdk.Models;
 var dbBuilder = new Builder();
 var stellarDsSettings = await dbBuilder.Run(args);
 
-
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-//var apiSettings = builder.Configuration.GetSection(nameof(ApiSettings)).Get<ApiSettings>();
-//if (apiSettings is null)
-//{
-//    Debug.WriteLine($"Unable to create {nameof(ApiSettings)}");
-//    return;
-//}
 var apiSettings = stellarDsSettings.ApiSettings;
 builder.Services.AddSingleton(apiSettings);
 
-//var oAuthSettings = builder.Configuration.GetSection(nameof(OAuthSettings)).Get<OAuthSettings>();
 var oAuthSettings = stellarDsSettings.OAuthSettings;
-//if (oAuthSettings is null)
-//{
-//    Debug.WriteLine($"Unable to create {nameof(OAuthSettings)}");
-//    return;
-//}
 builder.Services.AddSingleton(oAuthSettings);
 
 var cookieSettings = builder.Configuration.GetSection(nameof(CookieSettings)).Get<CookieSettings>();

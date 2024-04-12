@@ -1,13 +1,12 @@
-﻿using System.Net;
-using System.Net.Http;
+﻿//todo: api returns custom code: 'LimitReached' {"messages":[{"code":"LimitReached","message":"The requests limit of 500 has been reached. Upgrade your project tier to continue.","type":30}],"isSuccess":false}
+
+using System.Net;
 using System.Net.Http.Json;
 using StellarDsClient.Dto.Transfer;
 using StellarDsClient.Sdk.Abstractions;
 using StellarDsClient.Sdk.Extensions;
 using StellarDsClient.Sdk.Models;
 using StellarDsClient.Sdk.Settings;
-
-//todo: api returns custom code: 'LimitReached' {"messages":[{"code":"LimitReached","message":"The requests limit of 500 has been reached. Upgrade your project tier to continue.","type":30}],"isSuccess":false}
 
 namespace StellarDsClient.Sdk
 {
