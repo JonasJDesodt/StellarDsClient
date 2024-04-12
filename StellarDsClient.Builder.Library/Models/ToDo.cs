@@ -1,13 +1,8 @@
-﻿using StellarDsClient.Generator.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using StellarDsClient.Builder.Library.Attributes;
 
-namespace StellarDsClient.Generator.Models
+namespace StellarDsClient.Builder.Library.Models
 {
-    internal class TaskPropertyMapper
+    public class ToDo
     {
         [StellarDsType("NVarChar(255)")]
         public required string Title { get; set; }

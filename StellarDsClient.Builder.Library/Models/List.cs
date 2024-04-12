@@ -2,7 +2,7 @@
 
 namespace StellarDsClient.Builder.Library.Models
 {
-    internal class ListPropertyMapper
+    public class List
     {
         [StellarDsType("NVarChar(255)")]
         public required string Title { get; set; }

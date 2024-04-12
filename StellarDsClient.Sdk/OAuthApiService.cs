@@ -42,6 +42,8 @@ namespace StellarDsClient.Sdk
                     { "refresh_token", refreshToken },
                 }.Concat(_clientParams)));
 
+            var flag = await httpResponse.Content.ReadAsStringAsync();
+
             return await httpResponse.ToOAuthTokens();
         }
     }

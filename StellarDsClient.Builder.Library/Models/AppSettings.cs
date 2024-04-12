@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using StellarDsClient.Sdk.Models;
 using StellarDsClient.Sdk.Settings;
 
 namespace StellarDsClient.Builder.Library.Models
@@ -11,10 +12,10 @@ namespace StellarDsClient.Builder.Library.Models
 
         public required TableSettings TableSettings { get; set; }
 
-        //public required CookieSettings CookieSettings { get; set; }
-
+        //todo: remove?
         public required Logging Logging { get; set; }
 
+        //todo: remove?
         public required string AllowedHosts { get; set; }
     }
 

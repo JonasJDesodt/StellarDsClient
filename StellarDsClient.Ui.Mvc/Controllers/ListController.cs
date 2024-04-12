@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StellarDsClient.Builder.Library.Models;
 using StellarDsClient.Dto.Data.Result;
 using StellarDsClient.Sdk;
 using StellarDsClient.Ui.Mvc.Attributes;
@@ -27,13 +28,13 @@ namespace StellarDsClient.Ui.Mvc.Controllers
 
             if (listIndexFilter?.Scoped is true)
             {
-                var stellarDsResult = await oAuthDataApiService.Find<ListResult>("list", listIndexFilter.GetQuery() + pagination.GetQuery());
+                var stellarDsResult = await oAuthDataApiService.Find<ListResult>(nameof(List), listIndexFilter.GetQuery() + pagination.GetQuery());
 
                 return View(await stellarDsResult.ToListIndexViewModel(readOnlyDataApiService.DownloadBlobFromApi, listIndexFilter, pagination));
             }
             else
             {
-                var stellarDsResult = await readOnlyDataApiService.Find<ListResult>("list", listIndexFilter.GetQuery() + pagination.GetQuery());
+                var stellarDsResult = await readOnlyDataApiService.Find<ListResult>(nameof(List), listIndexFilter.GetQuery() + pagination.GetQuery());
 
                 return View(await stellarDsResult.ToListIndexViewModel(readOnlyDataApiService.DownloadBlobFromApi, listIndexFilter, pagination));
             }
@@ -68,7 +69,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [Route("edit/{id:int}")]
         public async Task<IActionResult> Edit([FromRoute] int id)
         {
-            var stellarDsResult = await oAuthDataApiService.Get<ListResult>("list", id);
+            var stellarDsResult = await oAuthDataApiService.Get<ListResult>(nameof(List), id);
 
             return View(await stellarDsResult.ToListCreateEditViewModel(readOnlyDataApiService.DownloadBlobFromApi));
         }
@@ -92,7 +93,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [Route("delete-request/{id:int}")]
         public async Task<IActionResult> DeleteRequest([FromRoute] int id)
         {
-            var stellarDsResult = await oAuthDataApiService.Get<ListResult>("list", id);
+            var stellarDsResult = await oAuthDataApiService.Get<ListResult>(nameof(List), id);
 
             return View("Edit", await stellarDsResult.ToListCreateEditViewModel(readOnlyDataApiService.DownloadBlobFromApi, true));
         }

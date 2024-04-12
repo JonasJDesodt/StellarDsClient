@@ -4,12 +4,13 @@ using StellarDsClient.Builder.Library.Models;
 using StellarDsClient.Builder.Library.Providers;
 using StellarDsClient.Dto.Schema;
 using StellarDsClient.Sdk;
+using StellarDsClient.Sdk.Models;
 
 namespace StellarDsClient.Builder.Library.Extensions
 {
     internal static class SchemaApiServiceExtensions
     {
-        internal static async Task<TableSettings> BuildDatabase(this SchemaApiService<AccessTokenProvider> schemaApiService)
+        internal static async Task<TableSettingsDictionary> BuildDatabase(this SchemaApiService<AccessTokenProvider> schemaApiService)
         {
             var tablesStellarDsResult = await schemaApiService.FindTables();
             var tableResults = tablesStellarDsResult.Data;
@@ -25,13 +26,13 @@ namespace StellarDsClient.Builder.Library.Extensions
                 Environment.Exit(0);
             }
 
-            var newListMetadata = await schemaApiService.BuildTable<ListPropertyMapper>("list", tableResults);
-            var newTaskMetadata = await schemaApiService.BuildTable<TaskPropertyMapper>("task", tableResults);
+            var newListMetadata = await schemaApiService.BuildTable<List>(nameof(List), tableResults);
+            var newTaskMetadata = await schemaApiService.BuildTable<ToDo>(nameof(ToDo), tableResults);
 
-            return new TableSettings
+            return new TableSettingsDictionary
             {
-                List = newListMetadata.Id,
-                Task = newTaskMetadata.Id
+                {nameof(List), newListMetadata.Id},
+                {nameof(ToDo), newTaskMetadata.Id}
             };
         }
 

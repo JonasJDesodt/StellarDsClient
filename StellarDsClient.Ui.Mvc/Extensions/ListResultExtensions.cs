@@ -1,4 +1,5 @@
-﻿using StellarDsClient.Dto.Data.Request;
+﻿using StellarDsClient.Builder.Library.Models;
+using StellarDsClient.Dto.Data.Request;
 using StellarDsClient.Dto.Data.Result;
 using StellarDsClient.Dto.Transfer;
 using StellarDsClient.Ui.Mvc.Delegates;
@@ -19,7 +20,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
                 Id = listResult.Id,
                 Deadline = listResult.Deadline,
                 Title = listResult.Title,
-                CurrentImage = listResult.Image?.EndsWith("size=0") == false ? await downloadBlobFromApi("list", "image", listResult.Id) : null //todo: using?, use tableSettings to get the tableId
+                CurrentImage = listResult.Image?.EndsWith("size=0") == false ? await downloadBlobFromApi(nameof(List), "Image", listResult.Id) : null //todo: using?, use tableSettings to get the tableId
             };
         }
 
@@ -43,7 +44,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
                 OwnerName = listResult.OwnerName,
                 Deadline = listResult.Deadline,
                 Id = listResult.Id,
-                Image = listResult.Image?.EndsWith("size=0") == false ? await downloadBlobFromApi("list", "image", listResult.Id) : null //todo: using?, use tableSettings to get the tableId
+                Image = listResult.Image?.EndsWith("size=0") == false ? await downloadBlobFromApi(nameof(List), "Image", listResult.Id) : null //todo: using?, use tableSettings to get the tableId
             };
         }
     }

@@ -11,8 +11,13 @@ using System.Runtime.InteropServices.Marshalling;
 using StellarDsClient.Builder.Library;
 using StellarDsClient.Sdk.Models;
 
+#if  DEBUG
 var dbBuilder = new DbBuilder();
 var stellarDsSettings = await dbBuilder.Run(args);
+#else
+//todo: dispose the configurationbilder? or is it always the same instance?
+var stellarDsSettings = new ConfigurationBuilder().AddJsonFile("appsettings.StellarDs.json", false).Build().Get<StellarDsSettings>() ?? throw new NullReferenceException("Unable to get the StellarDsSettings");
+#endif
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,23 +38,7 @@ if (cookieSettings is null)
 }
 builder.Services.AddSingleton(cookieSettings);
 
-//var tableSettings = builder.Configuration.GetSection("TableSettings");
-//var tableSettingsDictionary = new TableSettingsDictionary();
-//foreach (var keyValuePair in tableSettings.GetChildren())
-//{
-//    if (int.TryParse(keyValuePair.Value, out var value))
-//    {
-//        tableSettingsDictionary.Add(keyValuePair.Key.ToLowerInvariant(), value);
-//    }
-//}
-var tableSettings = stellarDsSettings.TableSettings;
-//todo: make dynamic
-var tableSettingsDictionary = new TableSettingsDictionary
-{
-    {"list", tableSettings.List},
-    {"task", tableSettings.Task}
-};
-builder.Services.AddSingleton(tableSettingsDictionary);
+builder.Services.AddSingleton(stellarDsSettings.TableSettings);
 
 
 builder.Services.AddHttpClient(apiSettings.Name, httpClient =>
@@ -109,6 +98,6 @@ app.MapControllerRoute(
 
 app.MapControllerRoute(
     name: "task",
-    pattern: "{controller=Task}/{listId}/{action=Index}/{id?}");
+    pattern: "{controller=ToDo}/{listId}/{action=Index}/{id?}");
 
 app.Run();

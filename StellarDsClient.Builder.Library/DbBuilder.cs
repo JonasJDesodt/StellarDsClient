@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using StellarDsClient.Builder.Library.Models;
+using StellarDsClient.Sdk.Models;
 using StellarDsClient.Sdk.Settings;
 
 namespace StellarDsClient.Builder.Library
@@ -19,8 +20,15 @@ namespace StellarDsClient.Builder.Library
         //todo: sync?
         public async Task<StellarDsSettings> Run(string[] args)
         {
+
+            //var configuration = new ConfigurationBuilder()
+            //    .AddJsonFile("appsettings.json")
+            //    .AddEnvironmentVariables()
+            //    .Build();
+            //var appUrl = configuration["ASPNETCORE_URLS"].Split(";").First();
             //only works in debug? 
             var urls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS")?.Split(";");
+
 
             if (!int.TryParse(urls?.Single(x => x.StartsWith("https://localhost:")).Split(':').Last(), out var localhostPort))
             {
@@ -32,7 +40,10 @@ namespace StellarDsClient.Builder.Library
             var jsonWebTokenHandler = new JsonWebTokenHandler();
 
             var builder = WebApplication.CreateBuilder(args); //todo: without args?
-            
+
+            var configuration = builder.Configuration;
+            configuration.AddJsonFile("appsettings.StellarDs.json", true);
+
             // todo check if all the fields are valid / present
             var oAuthSettings = builder.Configuration.GetSection(nameof(OAuthSettings)).Get<OAuthSettings>() ?? AppSettingsHelpers.RequestOAuthSettings(localhostPort);
 
@@ -41,8 +52,8 @@ namespace StellarDsClient.Builder.Library
 
             // todo check if all the fields are valid / present
             //todo: use tablesettingsdictionary instead of tablesettings
-            var tableSettings = builder.Configuration.GetSection(nameof(TableSettings)).Get<TableSettings>();
-
+            //var tableSettings = builder.Configuration.GetSection(nameof(TableSettings)).Get<TableSettings>();
+            var tableSettings = builder.Configuration.GetSection(nameof(TableSettings)).Get<TableSettingsDictionary>();
             if (tableSettings is not null)
             {
                 return new StellarDsSettings

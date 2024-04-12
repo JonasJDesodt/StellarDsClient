@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Reflection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StellarDsClient.Builder.Library.Models;
 using StellarDsClient.Dto.Data.Request;
 using StellarDsClient.Dto.Data.Result;
 using StellarDsClient.Sdk;
@@ -34,7 +36,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [Route("create")]
         public async Task<IActionResult> Create([FromRoute] int listId)
         {
-            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>("list", listId);
+            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>(nameof(List), listId);
 
             return View(await stellarDsListResult.ToTaskCreateEditViewModel(oAuthDataApiService.DownloadBlobFromApi));
         }
@@ -44,14 +46,14 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [Route("create")]
         public async Task<IActionResult> Create([FromRoute] int listId, [FromForm] TaskFormModel taskFormModel)
         {
-            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>("list", listId);
+            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>(nameof(List), listId);
 
             if (!ModelState.IsValid)
             {
                 return View(await taskFormModel.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi));
             }
 
-            await oAuthDataApiService.Create<CreateTaskRequest, TaskResult>("task", taskFormModel.ToCreateRequest(listId));
+            await oAuthDataApiService.Create<CreateTaskRequest, TaskResult>(nameof(ToDo), taskFormModel.ToCreateRequest(listId));
             //todo: error if no success?
 
             return RedirectToAction("Index", new { listId });
@@ -61,9 +63,9 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [Route("edit/{id:int}")]
         public async Task<IActionResult> Edit([FromRoute] int listId, [FromRoute] int id)
         {
-            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>("list", listId);
+            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>(nameof(List), listId);
 
-            var stellarDsTaskResult = await oAuthDataApiService.Get<TaskResult>("task", id);
+            var stellarDsTaskResult = await oAuthDataApiService.Get<TaskResult>(nameof(ToDo), id);
 
             return View(await stellarDsTaskResult.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi));
         }
@@ -73,7 +75,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [Route("edit/{id:int}")]
         public async Task<IActionResult> Edit([FromRoute] int listId, [FromRoute] int id, [FromForm] TaskFormModel taskFormModel)
         {
-            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>("list", listId);
+            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>(nameof(List), listId);
 
             if (!ModelState.IsValid)
             {
@@ -81,7 +83,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
 
             }
 
-            await oAuthDataApiService.Put<PutTaskRequest, TaskResult>("task", id, taskFormModel.ToPutRequest());
+            await oAuthDataApiService.Put<PutTaskRequest, TaskResult>(nameof(ToDo), id, taskFormModel.ToPutRequest());
             //todo: error if no success?
 
             return RedirectToAction("Index", new { listId });
@@ -91,9 +93,9 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [Route("delete-request/{id:int}")]
         public async Task<IActionResult> DeleteRequest([FromRoute] int listId, [FromRoute] int id)
         {
-            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>("list", listId);
+            var stellarDsListResult = await oAuthDataApiService.Get<ListResult>(nameof(List), listId);
 
-            if ((await oAuthDataApiService.Get<TaskResult>("task", id)) is not { } stellarDbResult)
+            if ((await oAuthDataApiService.Get<TaskResult>(nameof(ToDo), id)) is not { } stellarDbResult)
             {
                 return RedirectToAction("Index", "Task", new { listId }); // todo: error page
             }
@@ -105,9 +107,9 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [Route("delete/{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int listId, [FromRoute] int id)
         {
-            if ((await oAuthDataApiService.Get<TaskResult>("task", id)).Data is {} taskResult && taskResult.ListId == listId)
+            if ((await oAuthDataApiService.Get<TaskResult>(nameof(ToDo), id)).Data is {} taskResult && taskResult.ListId == listId)
             {
-                await oAuthDataApiService.Delete("task", id);
+                await oAuthDataApiService.Delete(nameof(ToDo), id);
             }
             
             return RedirectToAction("Index", new { listId });
