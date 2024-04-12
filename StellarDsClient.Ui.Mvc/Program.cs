@@ -10,12 +10,13 @@ using System.Diagnostics;
 using System.Runtime.InteropServices.Marshalling;
 using StellarDsClient.Builder.Library;
 using StellarDsClient.Sdk.Models;
+using System.Text.Json;
 
-#if  DEBUG
-var dbBuilder = new DbBuilder();
-var stellarDsSettings = await dbBuilder.Run(args);
+
+#if  DEBUG 
+var stellarDsSettings = await new DbBuilder().Run(args);
 #else
-//todo: dispose the configurationbilder? or is it always the same instance?
+//todo: dispose the configurationbuilder? or is it always the same instance?
 var stellarDsSettings = new ConfigurationBuilder().AddJsonFile("appsettings.StellarDs.json", false).Build().Get<StellarDsSettings>() ?? throw new NullReferenceException("Unable to get the StellarDsSettings");
 #endif
 

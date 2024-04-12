@@ -12,24 +12,19 @@ using System.Threading.Tasks;
 using StellarDsClient.Builder.Library.Models;
 using StellarDsClient.Sdk.Models;
 using StellarDsClient.Sdk.Settings;
+using System.Text.Json;
 
 namespace StellarDsClient.Builder.Library
 {
     public class DbBuilder
     {
+        private readonly JsonSerializerOptions _jsonSerializerOptions = new(){ WriteIndented = true };
+
+
         //todo: sync?
         public async Task<StellarDsSettings> Run(string[] args)
         {
-
-            //var configuration = new ConfigurationBuilder()
-            //    .AddJsonFile("appsettings.json")
-            //    .AddEnvironmentVariables()
-            //    .Build();
-            //var appUrl = configuration["ASPNETCORE_URLS"].Split(";").First();
-            //only works in debug? 
             var urls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS")?.Split(";");
-
-
             if (!int.TryParse(urls?.Single(x => x.StartsWith("https://localhost:")).Split(':').Last(), out var localhostPort))
             {
                 localhostPort = AppSettingsHelpers.RequestLocalhostPort();
@@ -143,7 +138,8 @@ namespace StellarDsClient.Builder.Library
                 var lifetime = context.RequestServices.GetRequiredService<IHostApplicationLifetime>();
 
                 lifetime.StopApplication();
-                //dispose app, resources, services????
+                //todo: dispose app, resources, services????
+                //todo => test => await app.DisposeAsync();
             });
 
             var oauthUrl = $"https://stellards.io/oauth?client_id={oAuthSettings.ClientId}&redirect_uri={oAuthSettings.RedirectUri}&response_type=code";
@@ -155,11 +151,26 @@ namespace StellarDsClient.Builder.Library
 
             await app.RunAsync();
 
-            return new StellarDsSettings
+
+            //todo => test => await app.DisposeAsync();
+
+
+
+
+
+            var stellarDsSettings = new StellarDsSettings
             {
                 ApiSettings = apiSettings,
                 OAuthSettings = oAuthSettings,
-                TableSettings = tableSettings ?? throw new NullReferenceException("Unable to create the StellarDsSettings. TableSettings is null") };
+                TableSettings = tableSettings ??
+                                throw new NullReferenceException(
+                                    "Unable to create the StellarDsSettings. TableSettings is null")
+            };
+
+            var jsonString = JsonSerializer.Serialize(stellarDsSettings, _jsonSerializerOptions);
+            await File.WriteAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.StellarDs.json"), jsonString);
+
+            return stellarDsSettings;
         }
     }
 }
