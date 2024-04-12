@@ -1,19 +1,19 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.JsonWebTokens;
-using StellarDsClient.Sdk.Abstractions;
 using StellarDsClient.Sdk;
-using StellarDsClient.Sdk.Settings;
 using StellarDsClient.Ui.Mvc.Models.Settings;
 using StellarDsClient.Ui.Mvc.Providers;
 using StellarDsClient.Ui.Mvc.Stores;
 using System.Diagnostics;
-using System.Runtime.InteropServices.Marshalling;
+
+#if DEBUG
 using StellarDsClient.Builder.Library;
-using StellarDsClient.Sdk.Models;
-using System.Text.Json;
+#else
+using StellarDsClient.Builder.Library.Models;
+#endif
 
 
-#if  DEBUG 
+#if DEBUG
 var stellarDsSettings = await new DbBuilder().Run(args);
 #else
 //todo: dispose the configurationbuilder? or is it always the same instance?
