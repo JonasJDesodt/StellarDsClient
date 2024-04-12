@@ -7,8 +7,10 @@ namespace StellarDsClient.Ui.Mvc.Models.FormModels
     public class ListFormModel : BaseFormModel
     {
         [Required]
+        [MaxLength(100)]
         public required string Title { get; set; }
-        
+
+        [DisallowHistoricDatetime]
         public DateTime? Deadline { get; set; }
 
         [FormFileMaxSize(25)]
