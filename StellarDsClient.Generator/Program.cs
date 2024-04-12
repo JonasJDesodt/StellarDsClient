@@ -14,7 +14,7 @@ using StellarDsClient.Sdk;
 using StellarDsClient.Generator.Providers;
 using System.Runtime.InteropServices;
 
-//TODO: rename the project to 'AspMvcBuilder' or 'Builder.AspMvc'
+//TODO: rename the project to 'AspMvcBuilder' or 'DbBuilder.AspMvc'
 
 var jsonWebTokenHandler = new JsonWebTokenHandler();
 

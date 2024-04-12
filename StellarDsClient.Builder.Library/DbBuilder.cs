@@ -14,7 +14,7 @@ using StellarDsClient.Sdk.Settings;
 
 namespace StellarDsClient.Builder.Library
 {
-    public class Builder
+    public class DbBuilder
     {
         //todo: sync?
         public async Task<StellarDsSettings> Run(string[] args)

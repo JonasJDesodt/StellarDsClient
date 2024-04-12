@@ -11,7 +11,7 @@ using System.Runtime.InteropServices.Marshalling;
 using StellarDsClient.Builder.Library;
 using StellarDsClient.Sdk.Models;
 
-var dbBuilder = new Builder();
+var dbBuilder = new DbBuilder();
 var stellarDsSettings = await dbBuilder.Run(args);
 
 var builder = WebApplication.CreateBuilder(args);
