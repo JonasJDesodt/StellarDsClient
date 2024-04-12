@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /StellarDsClient.Ui.Mvc/appsettings.json
+/StellarDsClient.Ui.Mvc/appsettings.StellarDs.json
