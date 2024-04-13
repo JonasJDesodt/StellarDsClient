@@ -6,7 +6,7 @@ namespace StellarDsClient.Builder.Library.Extensions
     {
         internal static TableResult? GetMetadata(this IList<TableResult> tables, string table)
         {
-            return tables.FirstOrDefault(x => x.Name.Equals(table, StringComparison.InvariantCultureIgnoreCase));
+            return tables.FirstOrDefault(x => x.Name.Equals(table.ToLowerInvariant()));
         }
     }
 }

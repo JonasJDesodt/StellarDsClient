@@ -16,6 +16,7 @@ using StellarDsClient.Builder.Library.Models;
 
 #if DEBUG
 var stellarDsSettings = await new DbBuilder().Run(args);
+Console.WriteLine($"Refresh the localhost page in the browser to go to the StellarDsclient web app.");
 #else
 //todo: dispose the configurationbuilder? or is it always the same instance?
 var stellarDsSettings = new ConfigurationBuilder().AddJsonFile("appsettings.StellarDs.json", false).Build().Get<StellarDsSettings>() ?? throw new NullReferenceException("Unable to get the StellarDsSettings");

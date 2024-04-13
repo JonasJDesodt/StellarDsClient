@@ -19,14 +19,25 @@ namespace StellarDsClient.Sdk
             return await httpResponseMessage.ToStellarDsResult<IList<TableResult>>();
         }
 
-        public async Task<StellarDsResult<TableResult>> CreateTable(string title, bool isMultiTenant)
+        //todo: create request
+        public async Task<StellarDsResult<TableResult>> CreateTable(string title, string description, bool isMultiTenant)
         {
             var httpClient = await GetHttpClientAsync();
 
-            var httpResponseMessage = await httpClient.PostAsJsonAsync($"v1/schema/table?project={apiSettings.Project}", new { name = title, isMultitenant = isMultiTenant });
+            var httpResponseMessage = await httpClient.PostAsJsonAsync($"v1/schema/table?project={apiSettings.Project}", new { name = title, description, isMultitenant = isMultiTenant });
 
             return await httpResponseMessage.ToStellarDsResult<TableResult>();
         }
+
+        public async Task<StellarDsResult<IList<FieldResult>>> GetFields(int tableId)
+        {
+            var httpClient = await GetHttpClientAsync();
+
+            var httpResponseMessage = await httpClient.GetAsync($"v1/schema/table/field?project={apiSettings.Project}&table={tableId}");
+
+            return await httpResponseMessage.ToStellarDsResult<IList<FieldResult>>();
+        }
+
 
         public async Task<StellarDsResult<FieldResult>> CreateField(int tableId, string title, string stellarDsType)
         {

@@ -18,6 +18,10 @@ namespace StellarDsClient.Sdk
             { "client_secret", oAuthSettings.ClientSecret }
         };
 
+
+        public OAuthSettings OAuthSettings => oAuthSettings;
+        
+
         public async Task<OAuthTokens> GetTokensAsync(string authorizationCode)
         {
             var httpResponse = await httpClientFactory

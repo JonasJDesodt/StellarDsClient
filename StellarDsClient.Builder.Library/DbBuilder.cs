@@ -30,7 +30,6 @@ namespace StellarDsClient.Builder.Library
                 throw new NullReferenceException("Unable to retrieve the application url from launchsettings.json");
             }
 
-
             //todo: test the localhostport?
 
             var builder = WebApplication.CreateBuilder(args); //todo: without args?
@@ -55,13 +54,13 @@ namespace StellarDsClient.Builder.Library
                     TableSettings = tableSettings
                 };
             }
-    
+
             // Add services
             // TODO: dispose services?
             builder.Services.AddScoped<OAuthApiService>();
 
-            builder.Services.AddSingleton(new AccessTokenProvider());
-            builder.Services.AddScoped<SchemaApiService<AccessTokenProvider>>();
+            //builder.Services.AddSingleton(new AccessTokenProvider());
+            //builder.Services.AddScoped<SchemaApiService<AccessTokenProvider>>();
 
             builder.Services.AddSingleton(apiSettings);
             builder.Services.AddSingleton(oAuthSettings);
@@ -72,7 +71,9 @@ namespace StellarDsClient.Builder.Library
             });
 
             var app = builder.Build();
-            
+
+            var accessToken = string.Empty;
+
             app.MapGet("/", context =>
             {
                 context.Response.Redirect($"https://stellards.io/oauth?client_id={oAuthSettings.ClientId}&redirect_uri={oAuthSettings.RedirectUri}&response_type=code");
@@ -83,6 +84,7 @@ namespace StellarDsClient.Builder.Library
             //todo: what happens on 'return'? => throw exceptions?
             app.MapGet("/oauth/oauthcallback", async context =>
             {
+
                 if (context.RequestServices.GetService<OAuthApiService>() is not { } oAuthApiService)
                 {
                     throw new NullReferenceException($"Unable to get the {nameof(OAuthApiService)}");
@@ -98,7 +100,7 @@ namespace StellarDsClient.Builder.Library
 
                 var tokens = await oAuthApiService.GetTokensAsync(code);
 
-                if (tokens?.AccessToken is not { } accessToken)
+                if (tokens?.AccessToken is not { } token)
                 {
                     context.Response.StatusCode = 400;
                     await context.Response.WriteAsync("Failed to obtain the access token.");
@@ -118,37 +120,51 @@ namespace StellarDsClient.Builder.Library
                     return;
                 }
 
-                if (context.RequestServices.GetService<AccessTokenProvider>() is not { } accessTokenProvider)
-                {
-                    throw new NullReferenceException($"Unable to get the {nameof(AccessTokenProvider)}");
-                }
+                accessToken = token;
 
-                accessTokenProvider.Set(accessToken);
-
-                if (context.RequestServices.GetService<SchemaApiService<AccessTokenProvider>>() is not { } schemaApiService)
-                {
-                    throw new NullReferenceException($"Unable to get the {nameof(SchemaApiService<AccessTokenProvider>)}");
-                }
-
-                tableSettings = await schemaApiService.BuildDatabase();
-
-                await context.Response.WriteAsync("Refresh the page to open the StellarDsClient web app.");
-
-                //app.Lifetime.StopApplication();
-                var lifetime = context.RequestServices.GetRequiredService<IHostApplicationLifetime>();
-
-                lifetime.StopApplication();
-                //todo: dispose app, resources, services????
-                //todo => test => await app.DisposeAsync();
+                await context.Response.WriteAsync("Please continue in the console. Do not close this browser tab. You will need it later.");
+                
+                app.Lifetime.StopApplication();
             });
 
-            
+
             await app.RunAsync();
 
+            await app.DisposeAsync();
+            //dispose the services??
 
-            //todo => test => await app.DisposeAsync();
 
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                throw new NullReferenceException("There is no access token provided");
+            }
 
+            var serviceProvider = new ServiceCollection();
+
+            serviceProvider.AddHttpClient(apiSettings.Name, httpClient =>
+            {
+                httpClient.BaseAddress = new Uri(apiSettings.BaseAddress);
+            });
+
+            serviceProvider.AddSingleton(new AccessTokenProvider());
+            serviceProvider.AddScoped<SchemaApiService<AccessTokenProvider>>();
+            serviceProvider.AddSingleton(apiSettings);
+
+            var services = serviceProvider.BuildServiceProvider();
+
+            if (services.GetService<AccessTokenProvider>() is not { } accessTokenProvider)
+            {
+                throw new NullReferenceException($"Unable to get the {nameof(AccessTokenProvider)}");
+            }
+            accessTokenProvider.Set(accessToken);
+
+            if (services.GetService<SchemaApiService<AccessTokenProvider>>() is not { } schemaApiService)
+            {
+                throw new NullReferenceException($"Unable to get the {nameof(SchemaApiService<AccessTokenProvider>)}");
+            }
+            
+            tableSettings = await schemaApiService.BuildDatabase();
+            
             return await new StellarDsSettings
             {
                 ApiSettings = apiSettings,
