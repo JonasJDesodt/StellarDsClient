@@ -28,7 +28,7 @@ else if (Model.Lists is not null)
                     <partial name="_ListPartial" model="@list"/>
                     
                     <div class="buttons">
-                        <a asp-controller="Task" asp-action="Index" asp-route-listId="@list.Id" class="button">View</a>
+                        <a asp-controller="ToDo" asp-action="Index" asp-route-listId="@list.Id" class="button">View</a>
 
                         @if (list.OwnerId == User.GetId())
                         {

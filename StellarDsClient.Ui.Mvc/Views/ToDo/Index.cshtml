@@ -46,7 +46,7 @@ else if (Model.List is not null)
                         <div class="buttons">
                             @if (@Model.List.OwnerId == User.GetId())
                             {
-                                <a asp-controller="Task" asp-action="Edit" asp-route-id="@taskResult.Id" asp-route-listId="@Model.List.Id" class="button">Edit</a>
+                                <a asp-controller="ToDo" asp-action="Edit" asp-route-id="@taskResult.Id" asp-route-listId="@Model.List.Id" class="button">Edit</a>
                             }
                         </div>
                     </li>

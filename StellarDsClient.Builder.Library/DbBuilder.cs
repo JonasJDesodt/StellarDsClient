@@ -20,21 +20,18 @@ namespace StellarDsClient.Builder.Library
 {
     public class DbBuilder
     {
-        private readonly JsonSerializerOptions _jsonSerializerOptions = new(){ WriteIndented = true };
-
-
         //todo: sync?
         public async Task<StellarDsSettings> Run(string[] args)
         {
             var urls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS")?.Split(";");
-            if (!int.TryParse(urls?.Single(x => x.StartsWith("https://localhost:")).Split(':').Last(), out var localhostPort))
+            var applicationUrl = urls?.Single(x => x.StartsWith("https://"));
+            if (string.IsNullOrWhiteSpace(applicationUrl))
             {
-                localhostPort = AppSettingsHelpers.RequestLocalhostPort();
-            };
- 
+                throw new NullReferenceException("Unable to retrieve the application url from launchsettings.json");
+            }
+
+
             //todo: test the localhostport?
-            
-            var jsonWebTokenHandler = new JsonWebTokenHandler();
 
             var builder = WebApplication.CreateBuilder(args); //todo: without args?
 
@@ -42,14 +39,12 @@ namespace StellarDsClient.Builder.Library
             configuration.AddJsonFile("appsettings.StellarDs.json", true);
 
             // todo check if all the fields are valid / present
-            var oAuthSettings = builder.Configuration.GetSection(nameof(OAuthSettings)).Get<OAuthSettings>() ?? AppSettingsHelpers.RequestOAuthSettings(localhostPort);
+            var oAuthSettings = builder.Configuration.GetSection(nameof(OAuthSettings)).Get<OAuthSettings>() ?? AppSettingsHelpers.RequestOAuthSettings(applicationUrl);
 
             // todo check if all the fields are valid / present
             var apiSettings = builder.Configuration.GetSection(nameof(ApiSettings)).Get<ApiSettings>() ?? AppSettingsHelpers.RequestApiSettings();
 
             // todo check if all the fields are valid / present
-            //todo: use tablesettingsdictionary instead of tablesettings
-            //var tableSettings = builder.Configuration.GetSection(nameof(TableSettings)).Get<TableSettings>();
             var tableSettings = builder.Configuration.GetSection(nameof(TableSettings)).Get<TableSettingsDictionary>();
             if (tableSettings is not null)
             {
@@ -61,9 +56,6 @@ namespace StellarDsClient.Builder.Library
                 };
             }
     
-            //var kestrelConfig = builder.Configuration.GetSection("Kestrel:Endpoints:Http:Url").Value ?? throw new NullReferenceException("KestrelConfiguration is null");
-            //var localhostPort = new Uri(kestrelConfig).Port;
-         
             // Add services
             // TODO: dispose services?
             builder.Services.AddScoped<OAuthApiService>();
@@ -80,7 +72,7 @@ namespace StellarDsClient.Builder.Library
             });
 
             var app = builder.Build();
-
+            
             app.MapGet("/", context =>
             {
                 context.Response.Redirect($"https://stellards.io/oauth?client_id={oAuthSettings.ClientId}&redirect_uri={oAuthSettings.RedirectUri}&response_type=code");
@@ -88,13 +80,12 @@ namespace StellarDsClient.Builder.Library
                 return Task.CompletedTask;
             });
 
-
             //todo: what happens on 'return'? => throw exceptions?
             app.MapGet("/oauth/oauthcallback", async context =>
             {
                 if (context.RequestServices.GetService<OAuthApiService>() is not { } oAuthApiService)
                 {
-                    return;
+                    throw new NullReferenceException($"Unable to get the {nameof(OAuthApiService)}");
                 }
 
                 var code = context.Request.Query["code"].ToString();
@@ -102,7 +93,7 @@ namespace StellarDsClient.Builder.Library
 
                 if (string.IsNullOrWhiteSpace(code.ToString()))
                 {
-                    return;
+                    throw new NullReferenceException($"Unable to get the authorization code");
                 }
 
                 var tokens = await oAuthApiService.GetTokensAsync(code);
@@ -117,9 +108,7 @@ namespace StellarDsClient.Builder.Library
 
                 try
                 {
-                    jsonWebTokenHandler.ReadJsonWebToken(tokens.AccessToken);
-
-                    await context.Response.WriteAsync("The access token is a valid JsonWebToken. You can close the browser. Refresh the page to open the StellarDsClient website.");
+                    new JsonWebTokenHandler().ReadJsonWebToken(tokens.AccessToken);
                 }
                 catch (Exception exception)
                 {
@@ -131,18 +120,21 @@ namespace StellarDsClient.Builder.Library
 
                 if (context.RequestServices.GetService<AccessTokenProvider>() is not { } accessTokenProvider)
                 {
-                    return;
+                    throw new NullReferenceException($"Unable to get the {nameof(AccessTokenProvider)}");
                 }
 
                 accessTokenProvider.Set(accessToken);
 
                 if (context.RequestServices.GetService<SchemaApiService<AccessTokenProvider>>() is not { } schemaApiService)
                 {
-                    return;
+                    throw new NullReferenceException($"Unable to get the {nameof(SchemaApiService<AccessTokenProvider>)}");
                 }
 
                 tableSettings = await schemaApiService.BuildDatabase();
 
+                await context.Response.WriteAsync("Refresh the page to open the StellarDsClient web app.");
+
+                //app.Lifetime.StopApplication();
                 var lifetime = context.RequestServices.GetRequiredService<IHostApplicationLifetime>();
 
                 lifetime.StopApplication();
@@ -150,28 +142,19 @@ namespace StellarDsClient.Builder.Library
                 //todo => test => await app.DisposeAsync();
             });
 
-
-
+            
             await app.RunAsync();
 
 
             //todo => test => await app.DisposeAsync();
 
 
-
-
-
-            var stellarDsSettings = new StellarDsSettings
+            return await new StellarDsSettings
             {
                 ApiSettings = apiSettings,
                 OAuthSettings = oAuthSettings,
                 TableSettings = tableSettings ?? throw new NullReferenceException("Unable to create the StellarDsSettings. TableSettings is null")
-            };
-
-            var jsonString = JsonSerializer.Serialize(stellarDsSettings, _jsonSerializerOptions);
-            await File.WriteAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.StellarDs.json"), jsonString);
-
-            return stellarDsSettings;
+            }.CreateJsonFile();
         }
     }
 }

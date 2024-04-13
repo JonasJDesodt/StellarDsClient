@@ -62,7 +62,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
                 return RedirectToAction("SignOut", "OAuth");//todo: add message?
             }
 
-            return RedirectToAction("Index", "Task", new { ListId = await oAuthDataApiService.CreateListWithBlob(listFormModel, ownerId, ownerName) });
+            return RedirectToAction("Index", "ToDo", new { ListId = await oAuthDataApiService.CreateListWithBlob(listFormModel, ownerId, ownerName) });
         }
 
         [HttpGet]

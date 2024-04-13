@@ -46,7 +46,7 @@ namespace StellarDsClient.Builder.Library.Helpers
             };
         }
 
-        public static OAuthSettings RequestOAuthSettings(int port)
+        public static OAuthSettings RequestOAuthSettings(string applicationUrl)
         {
             Console.Write("Client Id: ");
             var clientId = Console.ReadLine();
@@ -72,7 +72,7 @@ namespace StellarDsClient.Builder.Library.Helpers
                 ClientId = clientId,
                 ClientSecret = clientSecret,
                 Name = "OAuth",
-                RedirectUri = $"https://localhost:{port}/oauth/oauthcallback",
+                RedirectUri = $"{applicationUrl}/oauth/oauthcallback",
             };
         }
 

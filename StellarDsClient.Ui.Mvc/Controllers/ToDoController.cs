@@ -16,7 +16,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
     [Authorize]
     [Route("tasks/{listId:int}")]
     [ProvideOAuthBaseAddress]
-    public class TaskController(DataApiService<ReadonlyAccessTokenProvider> readOnlyDataApiService, DataApiService<OAuthTokenProvider> oAuthDataApiService) : Controller
+    public class ToDoController(DataApiService<ReadonlyAccessTokenProvider> readOnlyDataApiService, DataApiService<OAuthTokenProvider> oAuthDataApiService) : Controller
     {
         [HttpGet]
         [Route("index")]
@@ -97,7 +97,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
 
             if ((await oAuthDataApiService.Get<TaskResult>(nameof(ToDo), id)) is not { } stellarDbResult)
             {
-                return RedirectToAction("Index", "Task", new { listId }); // todo: error page
+                return RedirectToAction("Index", "ToDo", new { listId }); // todo: error page
             }
 
             return View("Edit", await stellarDbResult.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi,true));

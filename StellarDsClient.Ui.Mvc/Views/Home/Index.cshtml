@@ -21,7 +21,7 @@ else
                 <partial name="_ListPartial" model="@Model.List"/>
 
                 <div class="buttons">
-                    <a asp-controller="Task" asp-action="Index" asp-route-listId="@Model.List.Id" class="button">View</a>
+                    <a asp-controller="ToDo" asp-action="Index" asp-route-listId="@Model.List.Id" class="button">View</a>
 
                     <a asp-controller="List" asp-action="Edit" asp-route-id="@Model.List.Id" class="button">Edit</a>
                 </div>

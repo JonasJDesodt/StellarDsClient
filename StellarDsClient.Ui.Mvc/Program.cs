@@ -5,6 +5,7 @@ using StellarDsClient.Ui.Mvc.Models.Settings;
 using StellarDsClient.Ui.Mvc.Providers;
 using StellarDsClient.Ui.Mvc.Stores;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 #if DEBUG
 using StellarDsClient.Builder.Library;
@@ -98,7 +99,7 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
-    name: "task",
+    name: "toDo",
     pattern: "{controller=ToDo}/{listId}/{action=Index}/{id?}");
 
 app.Run();
