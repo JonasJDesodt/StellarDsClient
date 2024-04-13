@@ -11,10 +11,9 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             return $"&offset={(pagination.Page - 1) * pagination.PageSize}&take={pagination.PageSize}";
         }
 
-        //to do: TotalCount param instead of StellarDsResult
-        public static PaginationPartialModel ToPaginationPartialModel<T>(this Pagination pagination, StellarDsResult<T> stellarDsResult) where T : class
+        public static PaginationPartialModel ToPaginationPartialModel(this Pagination pagination, int totalCount) 
         {
-            return new PaginationPartialModel(pagination.Page, pagination.PageSize, stellarDsResult.Count);
+            return new PaginationPartialModel(pagination.Page, pagination.PageSize, totalCount);
         }
     }
 }

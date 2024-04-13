@@ -13,6 +13,8 @@ using StellarDsClient.Builder.Library.Models;
 using StellarDsClient.Sdk.Models;
 using StellarDsClient.Sdk.Settings;
 using System.Text.Json;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace StellarDsClient.Builder.Library
 {
@@ -77,9 +79,15 @@ namespace StellarDsClient.Builder.Library
                 httpClient.BaseAddress = new Uri(apiSettings.BaseAddress);
             });
 
-           // TableSettings? tableSettings = null;
-
             var app = builder.Build();
+
+            app.MapGet("/", context =>
+            {
+                context.Response.Redirect($"https://stellards.io/oauth?client_id={oAuthSettings.ClientId}&redirect_uri={oAuthSettings.RedirectUri}&response_type=code");
+
+                return Task.CompletedTask;
+            });
+
 
             //todo: what happens on 'return'? => throw exceptions?
             app.MapGet("/oauth/oauthcallback", async context =>
@@ -142,12 +150,7 @@ namespace StellarDsClient.Builder.Library
                 //todo => test => await app.DisposeAsync();
             });
 
-            var oauthUrl = $"https://stellards.io/oauth?client_id={oAuthSettings.ClientId}&redirect_uri={oAuthSettings.RedirectUri}&response_type=code";
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = oauthUrl,
-                UseShellExecute = true
-            });
+
 
             await app.RunAsync();
 
@@ -162,9 +165,7 @@ namespace StellarDsClient.Builder.Library
             {
                 ApiSettings = apiSettings,
                 OAuthSettings = oAuthSettings,
-                TableSettings = tableSettings ??
-                                throw new NullReferenceException(
-                                    "Unable to create the StellarDsSettings. TableSettings is null")
+                TableSettings = tableSettings ?? throw new NullReferenceException("Unable to create the StellarDsSettings. TableSettings is null")
             };
 
             var jsonString = JsonSerializer.Serialize(stellarDsSettings, _jsonSerializerOptions);

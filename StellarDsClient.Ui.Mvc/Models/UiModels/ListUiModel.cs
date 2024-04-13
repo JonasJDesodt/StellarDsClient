@@ -19,5 +19,9 @@ namespace StellarDsClient.Ui.Mvc.Models.UiModels
         public required string OwnerName { get; set; }
 
         public IList<TaskResult> TaskResults = [];
+
+        public required int TotalTaskResults;
+
+        //todo: include pagination here??
     }
 }

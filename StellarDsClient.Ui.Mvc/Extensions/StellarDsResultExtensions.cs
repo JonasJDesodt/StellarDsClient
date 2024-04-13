@@ -16,7 +16,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
     {
         public static async Task<ListIndexViewModel> ToListIndexViewModel(this StellarDsResult<IList<ListResult>> stellarDsResult, DownloadBlobFromApi downloadBlobFromApi, ListIndexFilter? filter, Pagination pagination)
         {
-            var paginationPartialModel = pagination.ToPaginationPartialModel(stellarDsResult);
+            var paginationPartialModel = pagination.ToPaginationPartialModel(stellarDsResult.Count);
 
             if (stellarDsResult.Data is not { } listResults)
             {
@@ -96,7 +96,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 
         public static TaskIndexViewModel ToTaskIndexViewModel(this StellarDsResult<ListUiModel> stellarDsResult, Pagination pagination, TaskIndexFilter taskIndexFilter)
         {
-            var paginationPartialModel = pagination.ToPaginationPartialModel(stellarDsResult);
+            var paginationPartialModel = pagination.ToPaginationPartialModel(stellarDsResult.Data?.TotalTaskResults ?? 0); //todo: handle null check better
 
             if (stellarDsResult.Data is not { } listEntity)
             {

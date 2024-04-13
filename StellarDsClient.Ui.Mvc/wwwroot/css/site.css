@@ -16,6 +16,8 @@
     --default-footer-foreground: #000;
     --default-footer-logo-height: 1.5em;
     --default-title-foreground-variant: #009ee3;
+    --default-gap-biggest: 4em;
+    --default-gap-bigger: 2em;
     --default-gap-big: 1.5em;
     --default-gap-medium: 1em;
     --default-gap-small: .5em;
@@ -55,6 +57,13 @@
     font-family: var(--default-font-family);
     margin: 0;
     padding: 0;
+
+
+    word-break: break-word; /* todo: temp fix, deal with long words in titles */
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
 }
 
 .field-validation-error {
@@ -237,5 +246,31 @@ section {
     body.overlay {
         min-height: 100vh;
         overflow: auto;
+    }
+
+    section.content {
+        display: grid;
+        row-gap: var(--default-gap-bigger);
+        column-gap: var(--default-gap-biggest);
+    }
+
+    section#filters > form {
+        display: flex;
+    }
+
+    section#filters > #toggle-filters > span.open {
+        display: none;
+    }
+
+    section#filters > #toggle-filters > span.closed {
+        display: none;
+    }
+
+    section#filters.open > #toggle-filters > span.open {
+        display: none;
+    }
+
+    section#filters.open > #toggle-filters > span.closed {
+        display: none;
     }
 }

@@ -122,7 +122,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             {
                 return new StellarDsResult<ListUiModel>
                 {
-                    Messages = stellarDsListResult.Messages
+                    Messages = stellarDsListResult.Messages,
                 };
             }
             
@@ -139,7 +139,8 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             }
             
             var listTask = await listResult.ToListEntityModel(dataApiService.DownloadBlobFromApi);
-            listTask.TaskResults = taskResults;
+            listTask.TaskResults = taskResults; //todo
+            listTask.TotalTaskResults = stellarDsTaskResult.Count; //todo
 
             return new StellarDsResult<ListUiModel>
             {

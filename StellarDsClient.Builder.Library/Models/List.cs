@@ -4,7 +4,7 @@ namespace StellarDsClient.Builder.Library.Models
 {
     public class List
     {
-        [StellarDsType("NVarChar(255)")]
+        [StellarDsType("NVarChar(100)")]
         public required string Title { get; set; }
 
         [StellarDsType("DateTime")]

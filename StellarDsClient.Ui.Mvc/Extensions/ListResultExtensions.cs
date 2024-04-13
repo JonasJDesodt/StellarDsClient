@@ -44,7 +44,8 @@ namespace StellarDsClient.Ui.Mvc.Extensions
                 OwnerName = listResult.OwnerName,
                 Deadline = listResult.Deadline,
                 Id = listResult.Id,
-                Image = listResult.Image?.EndsWith("size=0") == false ? await downloadBlobFromApi(nameof(List), "Image", listResult.Id) : null //todo: using?, use tableSettings to get the tableId
+                Image = listResult.Image?.EndsWith("size=0") == false ? await downloadBlobFromApi(nameof(List), "Image", listResult.Id) : null, //todo: using?, use tableSettings to get the tableId
+                TotalTaskResults = 0 //todo
             };
         }
     }
