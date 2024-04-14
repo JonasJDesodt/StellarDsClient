@@ -13,6 +13,5 @@ namespace StellarDsClient.Builder.Library.Extensions
             
             return tokens.AccessToken;
         }
-
     }
 }

@@ -4,42 +4,44 @@
     ViewData["Title"] = "Lists";
 }
 
-<h2>@ViewData["Title"]</h2>
-
-<a asp-action="Create" class="button">Create</a>
-
 @if (Model.ErrorMessages is not null)
 {
     <partial name="_ErrorMessagesPartial" model="@Model.ErrorMessages"/>
 }
 else if (Model.Lists is not null)
 {
-    <partial name="_FilterPartial" model="@Model.ListIndexFilter" />
+    <section class="content">
+        <h2>@ViewData["Title"]</h2>
 
-    <section id="results">
-        <h3>@Model.PaginationPartialModel?.TotalItems result@(Model.PaginationPartialModel?.TotalItems != 1 ? "s" : ""):</h3>
+        <a asp-action="Create" class="button">Create</a>
 
-        <ul>
-            @foreach (var list in @Model.Lists)
-            {
-                <li>
-                    <h4>@list.Title</h4>
+        <partial name="_FilterPartial" model="@Model.ListIndexFilter" />
 
-                    <partial name="_ListPartial" model="@list"/>
+        <section id="results">
+            <h3>@Model.PaginationPartialModel?.TotalItems result@(Model.PaginationPartialModel?.TotalItems != 1 ? "s" : ""):</h3>
+
+            <ul>
+                @foreach (var list in @Model.Lists)
+                {
+                    <li>
+                        <h4>@list.Title</h4>
+
+                        <partial name="_ListPartial" model="@list"/>
                     
-                    <div class="buttons">
-                        <a asp-controller="ToDo" asp-action="Index" asp-route-listId="@list.Id" class="button">View</a>
+                        <div class="buttons">
+                            <a asp-controller="ToDo" asp-action="Index" asp-route-listId="@list.Id" class="button">View</a>
 
-                        @if (list.OwnerId == User.GetId())
-                        {
-                            <a asp-controller="List" asp-action="Edit" asp-route-id="@list.Id" class="button">Edit</a>
-                        }
-                    </div>
-                </li>
-            }
-        </ul>
+                            @if (list.OwnerId == User.GetId())
+                            {
+                                <a asp-controller="List" asp-action="Edit" asp-route-id="@list.Id" class="button">Edit</a>
+                            }
+                        </div>
+                    </li>
+                }
+            </ul>
 
-        <partial name="_PaginationPartial" model="@Model.PaginationPartialModel" />
+            <partial name="_PaginationPartial" model="@Model.PaginationPartialModel" />
+        </section>
     </section>
 }
 

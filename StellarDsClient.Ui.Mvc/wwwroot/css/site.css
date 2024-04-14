@@ -8,7 +8,10 @@
     --default-button-font-size: .9em;
     --default-button-foreground: #fff;
     --default-element-padding: .5em;
+
     --default-main-background: #fff;
+    --default-main-background: #eee;
+
     --default-font-family: Roboto, sans-serif;
     --default-font-family-variant: 'PermanentMarker', 'Yu Gothic UI', Helvetica, sans-serif;
     --default-footer-background: #fff;
@@ -72,7 +75,7 @@
     font-style: italic;
 }
 
-h1.active, a.active {
+h1.active, a.active, li.active {
     color: var(--default-active-foreground);
 }
 
@@ -140,7 +143,9 @@ div.buttons {
 div.radio-buttons {
     display: flex;
     flex-direction: row;
-    gap: var(--default-gap-big)
+    gap: var(--default-gap-big);
+
+    background: #fff; /* todo: var */
 }
 
     div.radio-buttons > div {
@@ -272,5 +277,11 @@ section {
 
     section#filters.open > #toggle-filters > span.closed {
         display: none;
+    }
+
+    section#results > ul > li {
+        background: #fff; /* todo: var */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: var( --default-gap-medium);
     }
 }

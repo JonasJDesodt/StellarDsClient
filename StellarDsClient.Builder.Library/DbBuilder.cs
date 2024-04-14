@@ -16,12 +16,11 @@ namespace StellarDsClient.Builder.Library
     {
         public const string StellarDsSettingsPath = "appsettings.StellarDs.json";
 
-        //todo: sync?
-        public async Task<StellarDsSettings> Run(string[] args, List<Type> models)
+        public async Task<StellarDsSettings> Run(List<Type> models)
         {
             models.EnsureStellarDsTableAnnotations();
 
-            var builder = WebApplication.CreateBuilder(args); //todo: without args?
+            var builder = WebApplication.CreateBuilder();
 
             builder.Configuration.AddJsonFile(StellarDsSettingsPath, true);
 
@@ -43,7 +42,7 @@ namespace StellarDsClient.Builder.Library
 
             var app = builder.Build();
 
-            var accessToken = string.Empty;
+            string accessToken = null!;
 
             app.MapGet("/", context =>
             {
@@ -56,7 +55,7 @@ namespace StellarDsClient.Builder.Library
             {
                 var oAuthApiService = context.GetOauthApiService();
 
-                //var state = context.Request.Query["state"]; // todo?! not implemented by StellarDs
+                //note: the state parameter is not implemented by StellarDs
                 
                 accessToken = await oAuthApiService.GetAccessToken(context.GetAuthorizationCode());
 
@@ -68,7 +67,7 @@ namespace StellarDsClient.Builder.Library
 
             await app.RunAsync();
 
-            await app.DisposeAsync(); //todo: check if necessary, ServiceProvider is disposed on Lifetime.StopApplication()
+            await app.DisposeAsync(); 
 
 
             var serviceProvider = new ServiceCollection()
