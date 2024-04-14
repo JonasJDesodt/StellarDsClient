@@ -3,19 +3,10 @@ using StellarDsClient.Builder.Library.Extensions;
 using StellarDsClient.Builder.Library.Helpers;
 using StellarDsClient.Builder.Library.Providers;
 using StellarDsClient.Sdk;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using StellarDsClient.Builder.Library.Models;
 using StellarDsClient.Sdk.Models;
 using StellarDsClient.Sdk.Settings;
-using System.Text.Json;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using StellarDsClient.Builder.Library.Attributes;
 
 namespace StellarDsClient.Builder.Library
@@ -45,8 +36,7 @@ namespace StellarDsClient.Builder.Library
 
             var builder = WebApplication.CreateBuilder(args); //todo: without args?
 
-            var configuration = builder.Configuration;
-            configuration.AddJsonFile("appsettings.StellarDs.json", true);
+            builder.Configuration.AddJsonFile("appsettings.StellarDs.json", true);
 
             var oAuthSettings = builder.Configuration.GetSection(nameof(OAuthSettings)).Get<OAuthSettings>() ?? AppSettingsHelpers.RequestOAuthSettings(applicationUrl);
 
@@ -138,14 +128,15 @@ namespace StellarDsClient.Builder.Library
 
             await app.RunAsync();
 
-            await app.DisposeAsync();
-            //dispose the services??
+            await app.DisposeAsync(); //todo: check if necessary, ServiceProvider is disposed on Lifetime.StopApplication()
 
-
+            
             if (string.IsNullOrWhiteSpace(accessToken))
             {
                 throw new NullReferenceException("There is no access token provided");
             }
+
+
 
             var serviceProvider = new ServiceCollection();
 
@@ -157,6 +148,10 @@ namespace StellarDsClient.Builder.Library
             serviceProvider.AddSingleton(new AccessTokenProvider());
             serviceProvider.AddScoped<SchemaApiService<AccessTokenProvider>>();
             serviceProvider.AddSingleton(apiSettings);
+
+
+
+
 
             var services = serviceProvider.BuildServiceProvider();
 
