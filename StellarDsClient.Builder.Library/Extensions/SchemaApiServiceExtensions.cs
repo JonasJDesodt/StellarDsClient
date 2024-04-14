@@ -12,7 +12,7 @@ namespace StellarDsClient.Builder.Library.Extensions
     {
         private const string Description = "StellarDsClient table";
 
-        internal static async Task<TableSettingsDictionary> BuildDatabase(this SchemaApiService<AccessTokenProvider> schemaApiService, List<Type> models)
+        internal static async Task<TableSettingsDictionary> BuildDataStore(this SchemaApiService<AccessTokenProvider> schemaApiService, List<Type> models)
         {
             var tablesStellarDsResult = await schemaApiService.FindTables();
 

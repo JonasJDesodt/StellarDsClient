@@ -7,7 +7,11 @@ namespace StellarDsClient.Builder.Library.Extensions
 {
     internal static class ServiceCollectionExtensions
     {
-        internal static ServiceCollection AddDbBuilderServices(this ServiceCollection serviceCollection, ApiSettings apiSettings)
+        internal static ServiceProvider GetDataStoreBuilderServiceProvider(this ServiceCollection serviceCollection, ApiSettings apiSettings)
+        {
+            return serviceCollection.AddDsBuilderServices(apiSettings).BuildServiceProvider();
+        }
+        internal static ServiceCollection AddDsBuilderServices(this ServiceCollection serviceCollection, ApiSettings apiSettings)
         {
             serviceCollection
                 .AddSingleton(new AccessTokenProvider())

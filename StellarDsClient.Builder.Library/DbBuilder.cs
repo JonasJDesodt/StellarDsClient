@@ -129,50 +129,29 @@ namespace StellarDsClient.Builder.Library
             await app.RunAsync();
 
             await app.DisposeAsync(); //todo: check if necessary, ServiceProvider is disposed on Lifetime.StopApplication()
-
             
             if (string.IsNullOrWhiteSpace(accessToken))
             {
                 throw new NullReferenceException("There is no access token provided");
             }
+            
+            var serviceProvider = new ServiceCollection()
+                .GetDataStoreBuilderServiceProvider(apiSettings)
+                .SetAccessToken(accessToken);
+            
+            tableSettings = await new ServiceCollection()
+                .GetDataStoreBuilderServiceProvider(apiSettings)
+                .SetAccessToken(accessToken)
+                .GetSchemaApiService()
+                .BuildDataStore(models);
 
-
-
-            var serviceProvider = new ServiceCollection();
-
-            serviceProvider.AddHttpClient(apiSettings.Name, httpClient =>
-            {
-                httpClient.BaseAddress = new Uri(apiSettings.BaseAddress);
-            });
-
-            serviceProvider.AddSingleton(new AccessTokenProvider());
-            serviceProvider.AddScoped<SchemaApiService<AccessTokenProvider>>();
-            serviceProvider.AddSingleton(apiSettings);
-
-
-
-
-
-            var services = serviceProvider.BuildServiceProvider();
-
-            if (services.GetService<AccessTokenProvider>() is not { } accessTokenProvider)
-            {
-                throw new NullReferenceException($"Unable to get the {nameof(AccessTokenProvider)}");
-            }
-            accessTokenProvider.Set(accessToken);
-
-            if (services.GetService<SchemaApiService<AccessTokenProvider>>() is not { } schemaApiService)
-            {
-                throw new NullReferenceException($"Unable to get the {nameof(SchemaApiService<AccessTokenProvider>)}");
-            }
-
-            tableSettings = await schemaApiService.BuildDatabase(models);
+            await serviceProvider.DisposeAsync();
 
             return await new StellarDsSettings
             {
                 ApiSettings = apiSettings,
                 OAuthSettings = oAuthSettings,
-                TableSettings = tableSettings ?? throw new NullReferenceException("Unable to create the StellarDsSettings. TableSettings is null")
+                TableSettings = tableSettings 
             }.CreateJsonFile();
         }
     }
