@@ -1,9 +1,7 @@
 ﻿using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using System.Xml;
 using StellarDsClient.Builder.Library.Attributes;
-using StellarDsClient.Builder.Library.Models;
 using StellarDsClient.Builder.Library.Providers;
+using StellarDsClient.Builder.Library.Records;
 using StellarDsClient.Dto.Schema;
 using StellarDsClient.Sdk;
 using StellarDsClient.Sdk.Models;
@@ -14,7 +12,7 @@ namespace StellarDsClient.Builder.Library.Extensions
     {
         private const string Description = "StellarDsClient table";
 
-        internal static async Task<TableSettingsDictionary> BuildDatabase(this SchemaApiService<AccessTokenProvider> schemaApiService)
+        internal static async Task<TableSettingsDictionary> BuildDatabase(this SchemaApiService<AccessTokenProvider> schemaApiService, List<Type> models)
         {
             var tablesStellarDsResult = await schemaApiService.FindTables();
 
@@ -30,8 +28,6 @@ namespace StellarDsClient.Builder.Library.Extensions
 
                 Environment.Exit(0);
             }
-
-            List<Type> models = [typeof(List), typeof(ToDo)];
 
             if (await schemaApiService.FindMatchingTables(tableResults, models) is { } matchingTables)
             {
@@ -58,8 +54,9 @@ namespace StellarDsClient.Builder.Library.Extensions
                 return null;
             }
 
-            //todo: make IsMultitenant & description attributes to put on the models
-            var metadataMatches = tableResults.Where(x => x is { IsMultitenant: true, Id: > 0, Description: Description }).ToList();
+            //loop over tablesResults / metedataMatches twice => prevents getting the fields for all the tables
+
+            var metadataMatches = tableResults.Where(t => models.Select(m => m.GetCustomAttribute<StellarDsTable>() ?? throw new NullReferenceException($"Model not annotated with attribute {nameof(StellarDsTable)}")).Any(s => s.IsMultiTenant == t.IsMultitenant && s.Description == t.Description)).ToList();
 
             if (metadataMatches.Count < models.Count)
             {
@@ -67,7 +64,7 @@ namespace StellarDsClient.Builder.Library.Extensions
             }
 
             var results = new List<TableModelMatch>();
-
+            
             foreach (var metadata in metadataMatches)
             {
                 var stellarDsResult = await schemaApiService.GetFields(metadata.Id);
@@ -76,8 +73,7 @@ namespace StellarDsClient.Builder.Library.Extensions
 
                 results.AddRange(from model in models where fields.Validate(model) select new TableModelMatch(model, metadata));
             }
-
-
+            
             //api does not provide the tableId in the fieldResult => can't loop over models and use where to 
 
             var tableSettings = new TableSettingsDictionary();
@@ -97,42 +93,28 @@ namespace StellarDsClient.Builder.Library.Extensions
                 {
                     throw new ArgumentException("The id is not of type integer");
                 }
-                
+
                 tableSettings.Add(group.Key.Name, id);
             }
-            
+
             //todo: check if foreign keys match?
 
             return tableSettings;
         }
 
-        //todo: move to fieldresultextensions file
-        private static bool Validate(this IList<FieldResult> fieldResults, Type model)
-        {
-            foreach (var property in model.GetProperties())
-            {
-                var stellarDsType = property.GetCustomAttribute<StellarDsType>()?.Name ?? property.PropertyType.ToString();
-
-                if (fieldResults.Count(x => x.Name.Equals(property.Name.ToLowerInvariant()) && x.Type.Equals(stellarDsType)) != 1)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private static async Task<TableResult> BuildTable(this SchemaApiService<AccessTokenProvider> schemaApiService, IList<TableResult> tableResults, Type model)
+        private static async Task<TableResult> BuildTable(this SchemaApiService<AccessTokenProvider> schemaApiService, IEnumerable<TableResult> tableResults, Type model)
         {
             Console.WriteLine($"Enter a name for the {model.Name} table: ");
             var name = Console.ReadLine();
 
-            if (string.IsNullOrWhiteSpace(name) || tableResults.Any(x => x.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase )))
+            if (string.IsNullOrWhiteSpace(name) || tableResults.Any(x => x.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
             {
                 throw new NullReferenceException("No title provided or the name is already taken.");
             }
-            
-            var metadataStellarDsResult = await schemaApiService.CreateTable(name, Description, true);
+
+            var settings = model.GetCustomAttribute<StellarDsTable>() ?? throw new NullReferenceException($"Model not annotated with attribute {nameof(StellarDsTable)}");
+
+            var metadataStellarDsResult = await schemaApiService.CreateTable(name, settings.Description, settings.IsMultiTenant);
             var newMetadata = metadataStellarDsResult.Data;
 
             if (newMetadata is null)
@@ -148,7 +130,7 @@ namespace StellarDsClient.Builder.Library.Extensions
 
             foreach (var property in model.GetProperties())
             {
-                var stellarDsType = property.GetCustomAttribute<StellarDsType>()?.Name ?? property.PropertyType.ToString();
+                var stellarDsType = property.GetCustomAttribute<StellarDsProperty>()?.Type ?? property.PropertyType.ToString();
 
                 var fieldMetadataStellarDsResult = await schemaApiService.CreateField(newMetadata.Id, property.Name.ToLowerInvariant(), stellarDsType);
 
@@ -169,6 +151,4 @@ namespace StellarDsClient.Builder.Library.Extensions
             return newMetadata;
         }
     }
-
-    internal record TableModelMatch(Type Model, TableResult TableResult); 
 }

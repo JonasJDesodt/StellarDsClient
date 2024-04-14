@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using StellarDsClient.Builder.Library.Models;
@@ -15,14 +16,24 @@ using StellarDsClient.Sdk.Settings;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using StellarDsClient.Builder.Library.Attributes;
 
 namespace StellarDsClient.Builder.Library
 {
     public class DbBuilder
     {
         //todo: sync?
-        public async Task<StellarDsSettings> Run(string[] args)
+        public async Task<StellarDsSettings> Run(string[] args, List<Type> models)
         {
+            //todo: create record with the settings + the model?
+            models.ForEach(m =>
+            {
+                if (m.GetCustomAttribute<StellarDsTable>() is null)
+                {
+                    throw new NullReferenceException($"The {m.Name} model is not annotated with the {nameof(StellarDsTable)} attribute");
+                }
+            });
+
             var urls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS")?.Split(";");
             var applicationUrl = urls?.Single(x => x.StartsWith("https://"));
             if (string.IsNullOrWhiteSpace(applicationUrl))
@@ -37,15 +48,12 @@ namespace StellarDsClient.Builder.Library
             var configuration = builder.Configuration;
             configuration.AddJsonFile("appsettings.StellarDs.json", true);
 
-            // todo check if all the fields are valid / present
             var oAuthSettings = builder.Configuration.GetSection(nameof(OAuthSettings)).Get<OAuthSettings>() ?? AppSettingsHelpers.RequestOAuthSettings(applicationUrl);
 
-            // todo check if all the fields are valid / present
             var apiSettings = builder.Configuration.GetSection(nameof(ApiSettings)).Get<ApiSettings>() ?? AppSettingsHelpers.RequestApiSettings();
 
-            // todo check if all the fields are valid / present
             var tableSettings = builder.Configuration.GetSection(nameof(TableSettings)).Get<TableSettingsDictionary>();
-            if (tableSettings is not null)
+            if (tableSettings is not null && tableSettings.Validate(models))
             {
                 return new StellarDsSettings
                 {
@@ -123,7 +131,7 @@ namespace StellarDsClient.Builder.Library
                 accessToken = token;
 
                 await context.Response.WriteAsync("Please continue in the console. Do not close this browser tab. You will need it later.");
-                
+
                 app.Lifetime.StopApplication();
             });
 
@@ -162,9 +170,9 @@ namespace StellarDsClient.Builder.Library
             {
                 throw new NullReferenceException($"Unable to get the {nameof(SchemaApiService<AccessTokenProvider>)}");
             }
-            
-            tableSettings = await schemaApiService.BuildDatabase();
-            
+
+            tableSettings = await schemaApiService.BuildDatabase(models);
+
             return await new StellarDsSettings
             {
                 ApiSettings = apiSettings,

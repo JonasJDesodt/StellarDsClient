@@ -9,13 +9,15 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 
 #if DEBUG
 using StellarDsClient.Builder.Library;
+using StellarDsClient.Builder.Library.Models;
+
 #else
 using StellarDsClient.Builder.Library.Models;
 #endif
 
 
 #if DEBUG
-var stellarDsSettings = await new DbBuilder().Run(args);
+var stellarDsSettings = await new DbBuilder().Run(args, [typeof(List), typeof(ToDo)]);
 Console.WriteLine($"Refresh the localhost page in the browser to go to the StellarDsclient web app.");
 #else
 //todo: dispose the configurationbuilder? or is it always the same instance?

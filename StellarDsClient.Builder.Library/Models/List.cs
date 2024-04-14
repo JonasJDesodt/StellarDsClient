@@ -2,27 +2,28 @@
 
 namespace StellarDsClient.Builder.Library.Models
 {
+    [StellarDsTable(true, "StellarDsClient table")]
     public class List
     {
-        [StellarDsType("NVarChar(100)")]
+        [StellarDsProperty("NVarChar(100)")]
         public required string Title { get; set; }
 
-        [StellarDsType("DateTime")]
+        [StellarDsProperty("DateTime")]
         public required DateTime Created { get; set; }
 
-        [StellarDsType("DateTime")]
+        [StellarDsProperty("DateTime")]
         public required DateTime Updated { get; set; }
 
-        [StellarDsType("DateTime")]
+        [StellarDsProperty("DateTime")]
         public DateTime? Deadline { get; set; }
 
-        [StellarDsType("Blob")]
+        [StellarDsProperty("Blob")]
         public string? Image { get; set; }
 
-        [StellarDsType("NVarChar(255)")]
+        [StellarDsProperty("NVarChar(255)")]
         public required string OwnerId { get; set; }
 
-        [StellarDsType("NVarChar(255)")]
+        [StellarDsProperty("NVarChar(255)")]
         public required string OwnerName { get; set; }
     }
 }

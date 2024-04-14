@@ -20,7 +20,7 @@ namespace StellarDsClient.Sdk
         }
 
         //todo: create request
-        public async Task<StellarDsResult<TableResult>> CreateTable(string title, string description, bool isMultiTenant)
+        public async Task<StellarDsResult<TableResult>> CreateTable(string title, string? description, bool isMultiTenant)
         {
             var httpClient = await GetHttpClientAsync();
 

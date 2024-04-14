@@ -2,21 +2,22 @@
 
 namespace StellarDsClient.Builder.Library.Models
 {
+    [StellarDsTable(true, "StellarDsClient table")]
     public class ToDo
     {
-        [StellarDsType("NVarChar(255)")]
+        [StellarDsProperty("NVarChar(255)")]
         public required string Title { get; set; }
 
-        [StellarDsType("Boolean")]
+        [StellarDsProperty("Boolean")]
         public bool Done { get; set; }
 
-        [StellarDsType("Int")]
+        [StellarDsProperty("Int")]
         public required int ListId { get; set; }
 
-        [StellarDsType("DateTime")]
+        [StellarDsProperty("DateTime")]
         public required DateTime Created { get; set; }
 
-        [StellarDsType("DateTime")]
+        [StellarDsProperty("DateTime")]
         public required DateTime Updated { get; set; }
     }
 }
