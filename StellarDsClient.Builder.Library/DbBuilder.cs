@@ -14,6 +14,8 @@ namespace StellarDsClient.Builder.Library
 {
     public class DbBuilder
     {
+        public const string StellarDsSettingsPath = "appsettings.StellarDs.json";
+
         //todo: sync?
         public async Task<StellarDsSettings> Run(string[] args, List<Type> models)
         {
@@ -21,7 +23,7 @@ namespace StellarDsClient.Builder.Library
 
             var builder = WebApplication.CreateBuilder(args); //todo: without args?
 
-            builder.Configuration.AddJsonFile("appsettings.StellarDs.json", true);
+            builder.Configuration.AddJsonFile(StellarDsSettingsPath, true);
 
             var apiSettings = builder.Configuration.GetApiSettings();
             var oAuthSettings = builder.Configuration.GetOAuthSettings();
@@ -50,45 +52,13 @@ namespace StellarDsClient.Builder.Library
                 return Task.CompletedTask;
             });
 
-            //todo: what happens on 'return'? => throw exceptions?
             app.MapGet("/oauth/oauthcallback", async context =>
             {
-                if (context.RequestServices.GetService<OAuthApiService>() is not { } oAuthApiService)
-                {
-                    throw new NullReferenceException($"Unable to get the {nameof(OAuthApiService)}");
-                }
+                var oAuthApiService = context.GetOauthApiService();
 
-                var code = context.Request.Query["code"].ToString();
-                var state = context.Request.Query["state"]; // todo?!
-
-                if (string.IsNullOrWhiteSpace(code.ToString()))
-                {
-                    throw new NullReferenceException($"Unable to get the authorization code");
-                }
-
-                var tokens = await oAuthApiService.GetTokensAsync(code);
-
-                if (tokens?.AccessToken is not { } token)
-                {
-                    context.Response.StatusCode = 400;
-                    await context.Response.WriteAsync("Failed to obtain the access token.");
-
-                    return;
-                }
-
-                try
-                {
-                    new JsonWebTokenHandler().ReadJsonWebToken(tokens.AccessToken);
-                }
-                catch (Exception exception)
-                {
-                    context.Response.StatusCode = 400;
-                    await context.Response.WriteAsync($"The access token is not a valid JsonWebToken {exception.Message}. You can close the browser.");
-
-                    return;
-                }
-
-                accessToken = token;
+                //var state = context.Request.Query["state"]; // todo?! not implemented by StellarDs
+                
+                accessToken = await oAuthApiService.GetAccessToken(context.GetAuthorizationCode());
 
                 await context.Response.WriteAsync("Please continue in the console. Do not close this browser tab. You will need it later.");
 

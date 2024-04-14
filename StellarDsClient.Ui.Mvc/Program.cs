@@ -18,7 +18,7 @@ using StellarDsClient.Builder.Library.Models;
 
 
 #if DEBUG
-var stellarDsSettings = await new DbBuilder().Run(args, [typeof(List), typeof(ToDo), typeof(ListResult)]);
+var stellarDsSettings = await new DbBuilder().Run(args, [typeof(List), typeof(ToDo)]);
 Console.WriteLine($"Refresh the localhost page in the browser to go to the StellarDsclient web app.");
 #else
 //todo: dispose the configurationbuilder? or is it always the same instance?
