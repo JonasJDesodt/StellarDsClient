@@ -35,14 +35,13 @@ namespace StellarDsClient.Builder.Library
             //todo: test the localhostport?
 
             var builder = WebApplication.CreateBuilder(args); //todo: without args?
-
+            
             builder.Configuration.AddJsonFile("appsettings.StellarDs.json", true);
 
-            var oAuthSettings = builder.Configuration.GetSection(nameof(OAuthSettings)).Get<OAuthSettings>() ?? AppSettingsHelpers.RequestOAuthSettings(applicationUrl);
+            var apiSettings = builder.Configuration.GetApiSettings();
+            var oAuthSettings = builder.Configuration.GetOAuthSettings(applicationUrl);
+            var tableSettings = builder.Configuration.GetTableSettings();
 
-            var apiSettings = builder.Configuration.GetSection(nameof(ApiSettings)).Get<ApiSettings>() ?? AppSettingsHelpers.RequestApiSettings();
-
-            var tableSettings = builder.Configuration.GetSection(nameof(TableSettings)).Get<TableSettingsDictionary>();
             if (tableSettings is not null && tableSettings.Validate(models))
             {
                 return new StellarDsSettings
@@ -53,20 +52,16 @@ namespace StellarDsClient.Builder.Library
                 };
             }
 
-            // Add services
-            // TODO: dispose services?
-            builder.Services.AddScoped<OAuthApiService>();
+            //builder.Services.AddScoped<OAuthApiService>();
 
-            //builder.Services.AddSingleton(new AccessTokenProvider());
-            //builder.Services.AddScoped<SchemaApiService<AccessTokenProvider>>();
 
-            builder.Services.AddSingleton(apiSettings);
-            builder.Services.AddSingleton(oAuthSettings);
+            //builder.Services.AddSingleton(apiSettings);
+            //builder.Services.AddSingleton(oAuthSettings);
 
-            builder.Services.AddHttpClient(apiSettings.Name, httpClient =>
-            {
-                httpClient.BaseAddress = new Uri(apiSettings.BaseAddress);
-            });
+            //builder.Services.AddHttpClient(apiSettings.Name, httpClient =>
+            //{
+            //    httpClient.BaseAddress = new Uri(apiSettings.BaseAddress);
+            //});
 
             var app = builder.Build();
 
@@ -129,19 +124,13 @@ namespace StellarDsClient.Builder.Library
             await app.RunAsync();
 
             await app.DisposeAsync(); //todo: check if necessary, ServiceProvider is disposed on Lifetime.StopApplication()
-            
-            if (string.IsNullOrWhiteSpace(accessToken))
-            {
-                throw new NullReferenceException("There is no access token provided");
-            }
-            
+
+
             var serviceProvider = new ServiceCollection()
                 .GetDataStoreBuilderServiceProvider(apiSettings)
                 .SetAccessToken(accessToken);
-            
-            tableSettings = await new ServiceCollection()
-                .GetDataStoreBuilderServiceProvider(apiSettings)
-                .SetAccessToken(accessToken)
+
+            tableSettings = await serviceProvider
                 .GetSchemaApiService()
                 .BuildDataStore(models);
 
@@ -151,7 +140,7 @@ namespace StellarDsClient.Builder.Library
             {
                 ApiSettings = apiSettings,
                 OAuthSettings = oAuthSettings,
-                TableSettings = tableSettings 
+                TableSettings = tableSettings
             }.CreateJsonFile();
         }
     }

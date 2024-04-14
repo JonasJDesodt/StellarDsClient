@@ -8,6 +8,12 @@ namespace StellarDsClient.Builder.Library.Extensions
     {
         internal static ServiceProvider SetAccessToken(this ServiceProvider serviceProvider, string accessToken)
         {
+            if (string.IsNullOrWhiteSpace(accessToken)) //todo: check if valid jwt token?
+            {
+                throw new NullReferenceException("There is no access token provided");
+            }
+
+
             if (serviceProvider.GetService<AccessTokenProvider>() is not { } accessTokenProvider)
             {
                 throw new NullReferenceException($"Unable to get the {nameof(AccessTokenProvider)}");
