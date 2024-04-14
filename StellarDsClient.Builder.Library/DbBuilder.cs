@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.JsonWebTokens;
+﻿using System.Diagnostics.Contracts;
+using Microsoft.IdentityModel.JsonWebTokens;
 using StellarDsClient.Builder.Library.Extensions;
 using StellarDsClient.Builder.Library.Helpers;
 using StellarDsClient.Builder.Library.Providers;
@@ -16,30 +17,14 @@ namespace StellarDsClient.Builder.Library
         //todo: sync?
         public async Task<StellarDsSettings> Run(string[] args, List<Type> models)
         {
-            //todo: create record with the settings + the model?
-            models.ForEach(m =>
-            {
-                if (m.GetCustomAttribute<StellarDsTable>() is null)
-                {
-                    throw new NullReferenceException($"The {m.Name} model is not annotated with the {nameof(StellarDsTable)} attribute");
-                }
-            });
-
-            var urls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS")?.Split(";");
-            var applicationUrl = urls?.Single(x => x.StartsWith("https://"));
-            if (string.IsNullOrWhiteSpace(applicationUrl))
-            {
-                throw new NullReferenceException("Unable to retrieve the application url from launchsettings.json");
-            }
-
-            //todo: test the localhostport?
+            models.EnsureStellarDsTableAnnotations();
 
             var builder = WebApplication.CreateBuilder(args); //todo: without args?
-            
+
             builder.Configuration.AddJsonFile("appsettings.StellarDs.json", true);
 
             var apiSettings = builder.Configuration.GetApiSettings();
-            var oAuthSettings = builder.Configuration.GetOAuthSettings(applicationUrl);
+            var oAuthSettings = builder.Configuration.GetOAuthSettings();
             var tableSettings = builder.Configuration.GetTableSettings();
 
             if (tableSettings is not null && tableSettings.Validate(models))
@@ -52,16 +37,7 @@ namespace StellarDsClient.Builder.Library
                 };
             }
 
-            //builder.Services.AddScoped<OAuthApiService>();
-
-
-            //builder.Services.AddSingleton(apiSettings);
-            //builder.Services.AddSingleton(oAuthSettings);
-
-            //builder.Services.AddHttpClient(apiSettings.Name, httpClient =>
-            //{
-            //    httpClient.BaseAddress = new Uri(apiSettings.BaseAddress);
-            //});
+            builder.AddServices(apiSettings, oAuthSettings);
 
             var app = builder.Build();
 
@@ -77,7 +53,6 @@ namespace StellarDsClient.Builder.Library
             //todo: what happens on 'return'? => throw exceptions?
             app.MapGet("/oauth/oauthcallback", async context =>
             {
-
                 if (context.RequestServices.GetService<OAuthApiService>() is not { } oAuthApiService)
                 {
                     throw new NullReferenceException($"Unable to get the {nameof(OAuthApiService)}");
