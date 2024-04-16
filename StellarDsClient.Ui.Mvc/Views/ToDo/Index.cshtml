@@ -13,6 +13,8 @@ else if (Model.List is not null)
     <section class="content">
         <h2>@ViewData["Title"]</h2>
         
+        <partial name="_ListPartial" model="@Model.List" />
+
         <div class="buttons">
             <button id="return-button" class="warning">Return</button>
 
@@ -22,8 +24,6 @@ else if (Model.List is not null)
             }
         </div>
 
-        <partial name="_ListPartial" model="@Model.List" />
-        
         <partial name="_FilterPartial" model="@Model.TaskIndexFilter" />
 
         <section id="results">

@@ -128,9 +128,13 @@ button {
             background: var(--warning-button-background-hover);
         }
 
+form > div.buttons, section#results > ul > li > div.buttons {
+    align-self: flex-end;
+}
+
+
 div.buttons {
     align-items: center;
-    align-self: flex-end;
     display: flex;
     flex-direction: row;
     gap: var(--default-gap-small);
@@ -255,11 +259,6 @@ section {
                 gap: var(--default-gap-small);
             }
 
-        section.content > div {
-            display: flex;
-            flex-direction: row;
-        }
-
 @media (min-width: 768px) {
     html {
         font-size: 16px;
@@ -300,5 +299,16 @@ section {
         background: #fff; /* todo: var */
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         padding: var( --default-gap-medium);
+    }
+
+
+
+    section.content > button#return-button {
+        justify-self: flex-start;
+    }
+
+    section.content > form {
+        justify-self: flex-start;
+        width: 50%;
     }
 }

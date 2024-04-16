@@ -10,17 +10,19 @@
 }
 else
 {
-    <h2>@ViewData["Title"]</h2>
+    <section class="content">
+        <h2>@ViewData["Title"]</h2>
 
-    <button id="return-button" class="warning">Return</button>
+        <button id="return-button" class="warning">Return</button>
 
-    <form method="post" enctype="multipart/form-data">
-        <partial name="_CreateEditPartial" model="@Model.ListFormModel"/>
+        <form method="post" enctype="multipart/form-data">
+            <partial name="_CreateEditPartial" model="@Model.ListFormModel"/>
 
-        <div class="buttons">
-            <button type="submit">Create</button>
+            <div class="buttons">
+                <button type="submit">Create</button>
 
-            <a asp-controller="List" asp-action="Create" class="button warning">Clear</a>
-        </div>
-    </form>
+                <a asp-controller="List" asp-action="Create" class="button warning">Clear</a>
+            </div>
+        </form>
+    </section>
 }
