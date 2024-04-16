@@ -28,7 +28,7 @@ namespace StellarDsClient.Builder.Library
             var oAuthSettings = builder.Configuration.GetOAuthSettings();
             var tableSettings = builder.Configuration.GetTableSettings();
 
-            if (tableSettings is not null && tableSettings.Validate(models))
+            if (!builder.Configuration.GetSection(nameof(StellarDsSettings.ValidateDatabaseOnLaunch)).Get<bool>() && tableSettings is not null && tableSettings.Validate(models))
             {
                 return new StellarDsSettings
                 {
@@ -56,7 +56,7 @@ namespace StellarDsClient.Builder.Library
                 var oAuthApiService = context.GetOauthApiService();
 
                 //the state parameter is not implemented by StellarDs
-                
+
                 accessToken = await oAuthApiService.GetAccessToken(context.GetAuthorizationCode());
 
                 await context.Response.WriteAsync("Please continue in the console. Do not close this browser tab. You will need it later.");
@@ -67,16 +67,29 @@ namespace StellarDsClient.Builder.Library
 
             await app.RunAsync();
 
-            await app.DisposeAsync(); 
+            await app.DisposeAsync();
 
 
             var serviceProvider = new ServiceCollection()
                 .GetDataStoreBuilderServiceProvider(apiSettings)
                 .SetAccessToken(accessToken);
 
-            tableSettings = await serviceProvider
-                .GetSchemaApiService()
-                .BuildDataStore(models);
+            var schemaApiService = serviceProvider.GetSchemaApiService();
+
+            if (tableSettings is not null && await schemaApiService.ValidateDataStore(models, tableSettings) )
+            {
+                var stellarDsSettings = new StellarDsSettings
+                {
+                    ApiSettings = apiSettings,
+                    OAuthSettings = oAuthSettings,
+                    TableSettings = tableSettings,
+                    ValidateDatabaseOnLaunch = false
+                };
+
+                return await stellarDsSettings.CreateJsonFile();
+            }
+
+            tableSettings = await schemaApiService.BuildDataStore(models);
 
             await serviceProvider.DisposeAsync();
 
@@ -84,7 +97,8 @@ namespace StellarDsClient.Builder.Library
             {
                 ApiSettings = apiSettings,
                 OAuthSettings = oAuthSettings,
-                TableSettings = tableSettings
+                TableSettings = tableSettings,
+                ValidateDatabaseOnLaunch = false
             }.CreateJsonFile();
         }
     }

@@ -3,7 +3,6 @@ using StellarDsClient.Dto.Transfer;
 using StellarDsClient.Sdk.Abstractions;
 using StellarDsClient.Sdk.Extensions;
 using StellarDsClient.Sdk.Settings;
-using System.Net.Http;
 using System.Net.Http.Json;
 
 namespace StellarDsClient.Sdk
@@ -19,6 +18,15 @@ namespace StellarDsClient.Sdk
             return await httpResponseMessage.ToStellarDsResult<IList<TableResult>>();
         }
 
+        public async Task<StellarDsResult<TableResult>> GetTable(int id)
+        {
+            var httpClient = await GetHttpClientAsync();
+
+            var httpResponseMessage = await httpClient.GetAsync($"v1/schema/table?project={apiSettings.Project}&table={id}");
+
+            return await httpResponseMessage.ToStellarDsResult<TableResult>();
+        }
+
         //todo: create request
         public async Task<StellarDsResult<TableResult>> CreateTable(string title, string? description, bool isMultiTenant)
         {
@@ -28,7 +36,7 @@ namespace StellarDsClient.Sdk
 
             return await httpResponseMessage.ToStellarDsResult<TableResult>();
         }
-
+        
         public async Task<StellarDsResult<IList<FieldResult>>> GetFields(int tableId)
         {
             var httpClient = await GetHttpClientAsync();

@@ -14,7 +14,7 @@ using StellarDsClient.Dto.Data.Result;
 #endif
 
 //todo: filters: show/hide buttons on desktop still work
-//todo: check tier? (blobs)
+//todo: check tier? (blobs) => or set option to run without blobs
 //todo: check permissions
 //todo: try/catch on dbBuilder + dispose the configurationbuilder? (when not in debug) or is it always the same instance?
 //todo: chose dsBuilder or dbBuilder

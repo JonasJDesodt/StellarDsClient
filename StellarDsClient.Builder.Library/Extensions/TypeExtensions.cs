@@ -8,7 +8,7 @@ namespace StellarDsClient.Builder.Library.Extensions
         internal static List<Type> EnsureStellarDsTableAnnotations(this List<Type> models)
         {
 
-            //todo: create record with the settings + the model?
+            //todo: create record with the settings + the model? // todo: check if the properties are decorated? decoration on datetime & int not required, but required on string 
             models.ForEach(m =>
             {
                 if (m.GetCustomAttribute<StellarDsTable>() is null)

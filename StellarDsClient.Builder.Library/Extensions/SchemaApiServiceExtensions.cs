@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.Metrics;
+using System.Reflection;
 using StellarDsClient.Builder.Library.Attributes;
 using StellarDsClient.Builder.Library.Providers;
 using StellarDsClient.Builder.Library.Records;
@@ -11,6 +12,34 @@ namespace StellarDsClient.Builder.Library.Extensions
     internal static class SchemaApiServiceExtensions
     {
         private const string Description = "StellarDsClient table";
+
+        internal static async Task<bool> ValidateDataStore(this SchemaApiService<AccessTokenProvider> schemaApiService, List<Type> models, TableSettingsDictionary tableSettings)
+        {
+            if (!tableSettings.Validate(models))
+            {
+                return false;
+            }
+
+            foreach (var model in models)
+            {
+                if ((await schemaApiService.GetTable(tableSettings[model.Name])).Data is not { } tableResult)
+                {
+                    return false;
+                }
+
+                if ((await schemaApiService.GetFields(tableResult.Id)).Data is not { } fields)
+                {
+                    return false;
+                }
+
+                if (!fields.Validate(model))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         internal static async Task<TableSettingsDictionary> BuildDataStore(this SchemaApiService<AccessTokenProvider> schemaApiService, List<Type> models)
         {
@@ -26,15 +55,28 @@ namespace StellarDsClient.Builder.Library.Extensions
                     Console.WriteLine(message.Code + ": " + message.Message);
                 }
 
-                Environment.Exit(0);
+                Environment.Exit(0); //todo: exception or return null?
             }
 
             if (await schemaApiService.FindMatchingTables(tableResults, models) is { } matchingTables)
             {
+                if (matchingTables.Count == models.Count)
+                {
+                    return matchingTables;
+                }
+
+                Console.WriteLine("One or more new tables will be created");
+
+                foreach (var model in models.Where(m => !matchingTables.ContainsKey(m.Name)))
+                {
+                    var tableMetadata = await schemaApiService.BuildTable(tableResults, model);
+                    matchingTables.Add(model.Name, tableMetadata.Id);
+                }
+
                 return matchingTables;
             }
 
-            Console.WriteLine("There have been no tables found that match the models");
+            Console.WriteLine("No matching tables found. All tables will be build.");
 
             var newTables = new TableSettingsDictionary();
 
@@ -56,6 +98,7 @@ namespace StellarDsClient.Builder.Library.Extensions
 
             //loop over tablesResults / metedataMatches twice => prevents getting the fields for all the tables
 
+            //todo: what's with the any? surely this can be done more efficient?
             var metadataMatches = tableResults.Where(t => models.Select(m => m.GetCustomAttribute<StellarDsTable>() ?? throw new NullReferenceException($"Model not annotated with attribute {nameof(StellarDsTable)}")).Any(s => s.IsMultiTenant == t.IsMultitenant && s.Description == t.Description)).ToList();
 
             if (metadataMatches.Count < models.Count)
@@ -64,19 +107,27 @@ namespace StellarDsClient.Builder.Library.Extensions
             }
 
             var results = new List<TableModelMatch>();
-            
+
             foreach (var metadata in metadataMatches)
             {
                 var stellarDsResult = await schemaApiService.GetFields(metadata.Id);
 
+                //todo: return null instead of throwing exception?
                 var fields = stellarDsResult.Data ?? throw new NullReferenceException(string.Join("\n", stellarDsResult.Messages.Select(e => e.Message)));
 
-                results.AddRange(from model in models where fields.Validate(model) select new TableModelMatch(model, metadata));
+                results.AddRange(
+                    from model in models
+                    where fields.Validate(model)
+                    select new TableModelMatch(model, metadata));
             }
-            
+
             //api does not provide the tableId in the fieldResult => can't loop over models and use where to 
 
-            var tableSettings = new TableSettingsDictionary();
+
+
+            var newTableSettings = new TableSettingsDictionary();
+
+            const string createNewTable = "new";
 
             var grouped = results.GroupBy(x => x.Model);
             foreach (var group in grouped)
@@ -87,19 +138,25 @@ namespace StellarDsClient.Builder.Library.Extensions
                     Console.WriteLine($"\t {{id: {match.TableResult.Id} name: {match.TableResult.Name}}}");
                 }
 
-                Console.WriteLine($"Assign a table by selecting the id: ");
+                Console.WriteLine($"Assign a table by selecting the id or enter '{createNewTable}' to create a new table: ");
                 var input = Console.ReadLine();
+                
+                if (input?.Equals(createNewTable, StringComparison.InvariantCultureIgnoreCase) is true)
+                {
+                    continue;
+                }
+
                 if (!int.TryParse(input, out var id))
                 {
                     throw new ArgumentException("The id is not of type integer");
                 }
 
-                tableSettings.Add(group.Key.Name, id);
+                newTableSettings.Add(group.Key.Name, id);
             }
 
             //todo: check if foreign keys match?
 
-            return tableSettings;
+            return newTableSettings;
         }
 
         private static async Task<TableResult> BuildTable(this SchemaApiService<AccessTokenProvider> schemaApiService, IEnumerable<TableResult> tableResults, Type model)
@@ -125,7 +182,7 @@ namespace StellarDsClient.Builder.Library.Extensions
                     Console.WriteLine(message.Code + ": " + message.Message);
                 }
 
-                Environment.Exit(0);
+                Environment.Exit(0); //todo: exception
             }
 
             foreach (var property in model.GetProperties())
@@ -145,7 +202,7 @@ namespace StellarDsClient.Builder.Library.Extensions
                     Console.WriteLine(message.Code + ": " + message.Message);
                 }
 
-                Environment.Exit(0);
+                Environment.Exit(0); //todo: exception
             }
 
             return newMetadata;
