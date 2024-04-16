@@ -4,7 +4,7 @@
     ViewData["Title"] = $"Edit {Model.ListFormModel?.Title}";
 }
 
-<h2>@ViewData["Title"]</h2>
+
 
 @if (Model.ErrorMessages is not null)
 {
@@ -12,8 +12,12 @@
 }
 else if (Model.ListFormModel is not null)
 {
+    <h2>@ViewData["Title"]</h2>
+
+    <button id="return-button" class="warning">Return</button>
+
     <form method="post" enctype="multipart/form-data">
-        <partial name="_CreateEditPartial" model="@Model.ListFormModel" />
+        <partial name="_CreateEditPartial" model="@Model.ListFormModel"/>
 
         @if (!Model.ListFormModel.HasDeleteRequest)
         {

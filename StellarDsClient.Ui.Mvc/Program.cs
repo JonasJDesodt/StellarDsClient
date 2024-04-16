@@ -16,13 +16,15 @@ using StellarDsClient.Dto.Data.Result;
 //todo: filters: show/hide buttons on desktop still work
 //todo: check tier? (blobs)
 //todo: check permissions
-
+//todo: try/catch on dbBuilder + dispose the configurationbuilder? (when not in debug) or is it always the same instance?
+//todo: chose dsBuilder or dbBuilder
+//todo: filter between dates
+//todo: db models in separate project
 
 #if DEBUG
 var stellarDsSettings = await new DbBuilder().Run([typeof(List), typeof(ToDo)]);
 Console.WriteLine($"Refresh the localhost page in the browser to go to the StellarDsclient web app.");
 #else
-//todo: dispose the configurationbuilder? or is it always the same instance?
 var stellarDsSettings = new ConfigurationBuilder().AddJsonFile("appsettings.StellarDs.json", false).Build().Get<StellarDsSettings>() ?? throw new NullReferenceException("Unable to get the StellarDsSettings");
 #endif
 

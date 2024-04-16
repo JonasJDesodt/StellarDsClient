@@ -16,7 +16,7 @@ namespace StellarDsClient.Builder.Library
     {
         public const string StellarDsSettingsPath = "appsettings.StellarDs.json";
 
-        public async Task<StellarDsSettings> Run(List<Type> models)
+        public async Task<StellarDsSettings> Run(List<Type> models) //todo: rename
         {
             models.EnsureStellarDsTableAnnotations();
 
@@ -55,7 +55,7 @@ namespace StellarDsClient.Builder.Library
             {
                 var oAuthApiService = context.GetOauthApiService();
 
-                //note: the state parameter is not implemented by StellarDs
+                //the state parameter is not implemented by StellarDs
                 
                 accessToken = await oAuthApiService.GetAccessToken(context.GetAuthorizationCode());
 

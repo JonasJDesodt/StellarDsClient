@@ -4,16 +4,18 @@
     ViewData["Title"] = $"{Model.ListEntity?.Title ?? "List"}: edit {Model.TaskFormModel?.Title}";
 }
 
-<h2>@ViewData["Title"]</h2>
-
 @if (Model.ErrorMessages is not null)
 {
     <partial name="_ErrorMessagesPartial" model="@Model.ErrorMessages" />
 }
 else if (Model.ListEntity is not null && Model.TaskFormModel is not null)
 {
+    <h2>@ViewData["Title"]</h2>
+
     <partial name="_ListPartial" model="@Model.ListEntity" />
     
+    <button id="return-button" class="warning">Return</button>
+
     <form method="post" enctype="multipart/form-data">
         <partial name="_CreateEditPartial" model="@Model.TaskFormModel" />
 

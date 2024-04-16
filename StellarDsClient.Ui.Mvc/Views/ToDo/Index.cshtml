@@ -12,14 +12,18 @@ else if (Model.List is not null)
 {
     <section class="content">
         <h2>@ViewData["Title"]</h2>
+        
+        <div class="buttons">
+            <button id="return-button" class="warning">Return</button>
+
+            @if (@Model.List.OwnerId == User.GetId())
+            {
+                <a asp-action="Create" asp-route-listId="@Model.List.Id" class="button">Add task</a>
+            }
+        </div>
 
         <partial name="_ListPartial" model="@Model.List" />
-
-        @if (@Model.List.OwnerId == User.GetId())
-        {
-            <a asp-action="Create" asp-route-listId="@Model.List.Id" class="button">Add task</a>
-        }
-
+        
         <partial name="_FilterPartial" model="@Model.TaskIndexFilter" />
 
         <section id="results">
@@ -30,18 +34,20 @@ else if (Model.List is not null)
                 {
                     <li>
                         <h4>@taskResult.Title</h4>
-
-                        <p>
-                        Status:
-                        @if (taskResult.Done)
-                        {
-                            <span class="done">Done</span>
-                        }
-                        else
-                        {
-                            <span>To do</span>
-                        }
-                        <p>Created: @taskResult.Created.ToShortDateString()</p>
+                        
+                        <div class="data">
+                            <p>
+                            Status:
+                            @if (taskResult.Done)
+                            {
+                                <span class="done">Done</span>
+                            }
+                            else
+                            {
+                                <span>To do</span>
+                            }
+                            <p>Created: @taskResult.Created.ToShortDateString()</p>
+                        </div>
 
                         <div class="buttons">
                             @if (@Model.List.OwnerId == User.GetId())

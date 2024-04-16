@@ -4,16 +4,18 @@
     ViewData["Title"] = "Create list";
 }
 
-<h2>@ViewData["Title"]</h2>
-
 @if (Model.ErrorMessages is not null)
 {
     <partial name="_ErrorMessagesPartial" model="@Model.ErrorMessages" />
 }
 else
 {
+    <h2>@ViewData["Title"]</h2>
+
+    <button id="return-button" class="warning">Return</button>
+
     <form method="post" enctype="multipart/form-data">
-        <partial name="_CreateEditPartial" model="@Model.ListFormModel" />
+        <partial name="_CreateEditPartial" model="@Model.ListFormModel"/>
 
         <div class="buttons">
             <button type="submit">Create</button>

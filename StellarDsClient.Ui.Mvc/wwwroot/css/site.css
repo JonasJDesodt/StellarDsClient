@@ -8,10 +8,8 @@
     --default-button-font-size: .9em;
     --default-button-foreground: #fff;
     --default-element-padding: .5em;
-
     --default-main-background: #fff;
     --default-main-background: #eee;
-
     --default-font-family: Roboto, sans-serif;
     --default-font-family-variant: 'PermanentMarker', 'Yu Gothic UI', Helvetica, sans-serif;
     --default-footer-background: #fff;
@@ -60,8 +58,6 @@
     font-family: var(--default-font-family);
     margin: 0;
     padding: 0;
-
-
     word-break: break-word; /* todo: temp fix, deal with long words in titles */
     -webkit-hyphens: auto;
     -moz-hyphens: auto;
@@ -144,7 +140,6 @@ div.radio-buttons {
     display: flex;
     flex-direction: row;
     gap: var(--default-gap-big);
-
     background: #fff; /* todo: var */
 }
 
@@ -173,6 +168,17 @@ input, select, div.radio-buttons {
     border: var(--default-border-thin-light);
     padding: var(--default-element-padding);
 }
+
+    input:focus, select:focus {
+        border: 1px solid #000; /* todo: var? */
+        outline: none;
+    }
+
+
+    div.radio-buttons > div > label {
+        font-weight: normal;
+        font-size: .8em;
+    }
 
 label, p.label {
     font-weight: bold;
@@ -242,6 +248,17 @@ section {
             section#results > ul > li:not(:last-of-type) {
                 border-bottom: var(--default-divider-thin-light);
             }
+
+            section#results > ul > li > div.data {
+                display: flex;
+                flex-direction: column;
+                gap: var(--default-gap-small);
+            }
+
+        section.content > div {
+            display: flex;
+            flex-direction: row;
+        }
 
 @media (min-width: 768px) {
     html {

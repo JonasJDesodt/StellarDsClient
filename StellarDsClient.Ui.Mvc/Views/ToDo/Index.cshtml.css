@@ -30,10 +30,9 @@ p > span {
             grid-row: 2/3;
         }
 
-        section.content > ::deep a {
+        section.content > div{
             grid-column: 1/3;
             grid-row: 3/4;
-            justify-self: start;
         }
 
         section.content > section#filters {
