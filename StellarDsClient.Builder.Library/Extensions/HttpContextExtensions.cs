@@ -5,6 +5,7 @@ namespace StellarDsClient.Builder.Library.Extensions
 {
     internal static class HttpContextExtensions
     {
+        //todo: generic extension that throws exception if the service could not be retrieved?
         internal static OAuthApiService GetOauthApiService(this HttpContext httpContext)
         {
             if (httpContext.RequestServices.GetService<OAuthApiService>() is not { } oAuthApiService)

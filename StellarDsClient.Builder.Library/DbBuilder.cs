@@ -1,4 +1,6 @@
-﻿using System.Diagnostics.Contracts;
+﻿#if DEBUG
+
+using System.Diagnostics.Contracts;
 using Microsoft.IdentityModel.JsonWebTokens;
 using StellarDsClient.Builder.Library.Extensions;
 using StellarDsClient.Builder.Library.Helpers;
@@ -12,16 +14,16 @@ using StellarDsClient.Builder.Library.Attributes;
 
 namespace StellarDsClient.Builder.Library
 {
-    public class DbBuilder
+    public static class DbBuilder
     {
         public const string StellarDsSettingsPath = "appsettings.StellarDs.json";
 
-        public async Task<StellarDsSettings> Run(List<Type> models) //todo: rename
+        public static async Task<StellarDsSettings> Run(List<Type> models) //todo: rename
         {
             models.EnsureStellarDsTableAnnotations();
 
             var builder = WebApplication.CreateBuilder();
-
+          
             builder.Configuration.AddJsonFile(StellarDsSettingsPath, true);
 
             var apiSettings = builder.Configuration.GetApiSettings();
@@ -34,7 +36,8 @@ namespace StellarDsClient.Builder.Library
                 {
                     ApiSettings = apiSettings,
                     OAuthSettings = oAuthSettings,
-                    TableSettings = tableSettings
+                    TableSettings = tableSettings,
+                    ValidateDatabaseOnLaunch = false
                 };
             }
 
@@ -46,7 +49,9 @@ namespace StellarDsClient.Builder.Library
 
             app.MapGet("/", context =>
             {
-                context.Response.Redirect($"https://stellards.io/oauth?client_id={oAuthSettings.ClientId}&redirect_uri={oAuthSettings.RedirectUri}&response_type=code");
+                context
+                    .Response
+                    .Redirect($"https://stellards.io/oauth?client_id={oAuthSettings.ClientId}&redirect_uri={oAuthSettings.RedirectUri}&response_type=code");
 
                 return Task.CompletedTask;
             });
@@ -103,3 +108,5 @@ namespace StellarDsClient.Builder.Library
         }
     }
 }
+
+#endif

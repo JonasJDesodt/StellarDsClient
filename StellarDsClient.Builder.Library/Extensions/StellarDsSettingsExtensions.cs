@@ -12,6 +12,7 @@ namespace StellarDsClient.Builder.Library.Extensions
             var jsonString = JsonSerializer.Serialize(stellarDsSettings, JsonSerializerOptions);
 
             await File.WriteAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.StellarDs.json"), jsonString);
+            //todo: const for pathstring
 
             return stellarDsSettings;
         }

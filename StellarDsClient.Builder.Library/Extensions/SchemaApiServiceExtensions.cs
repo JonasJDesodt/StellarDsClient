@@ -121,10 +121,6 @@ namespace StellarDsClient.Builder.Library.Extensions
                     select new TableModelMatch(model, metadata));
             }
 
-            //api does not provide the tableId in the fieldResult => can't loop over models and use where to 
-
-
-
             var newTableSettings = new TableSettingsDictionary();
 
             const string createNewTable = "new";

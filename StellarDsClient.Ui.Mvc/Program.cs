@@ -20,10 +20,12 @@ using StellarDsClient.Dto.Data.Result;
 //todo: chose dsBuilder or dbBuilder
 //todo: filter between dates
 //todo: db models in separate project
+//todo: debug section in StellarDsSettings?
+//todo: sign in the dsBuilder?
 
 #if DEBUG
-var stellarDsSettings = await new DbBuilder().Run([typeof(List), typeof(ToDo)]);
-Console.WriteLine($"Refresh the localhost page in the browser to go to the StellarDsclient web app.");
+var stellarDsSettings = await DbBuilder.Run([typeof(List), typeof(ToDo)]);
+Console.WriteLine($"Refresh the localhost page in the browser to go to the StellarDsClient web app.");
 #else
 var stellarDsSettings = new ConfigurationBuilder().AddJsonFile("appsettings.StellarDs.json", false).Build().Get<StellarDsSettings>() ?? throw new NullReferenceException("Unable to get the StellarDsSettings");
 #endif

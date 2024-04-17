@@ -6,6 +6,8 @@ namespace StellarDsClient.Builder.Library.Extensions
 {
     internal static class ServiceProviderExtensions
     {
+        //todo: use generic extension to get the services from the serviceprovider & throw exceptions if necessary
+
         internal static ServiceProvider SetAccessToken(this ServiceProvider serviceProvider, string accessToken)
         {
             if (string.IsNullOrWhiteSpace(accessToken)) //todo: check if valid jwt token?

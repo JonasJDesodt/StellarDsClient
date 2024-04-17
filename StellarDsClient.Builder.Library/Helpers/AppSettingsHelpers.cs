@@ -92,39 +92,5 @@ namespace StellarDsClient.Builder.Library.Helpers
 
             return port;
         }
-
-        public static void WriteAppSettings(TableSettings tableSettings, ApiSettings apiSettings, OAuthSettings oAuthSettings)
-        {
-            var appSettings = new AppSettings
-            {
-                ApiSettings = apiSettings,
-                OAuthSettings = oAuthSettings,
-                TableSettings = tableSettings,
-                Logging = new Logging
-                {
-                    LogLevel = new LogLevel
-                    {
-                        Default = "Information",
-                        MicrosoftAspNetCore = "Warning"
-                    }
-                },
-                AllowedHosts = "*"
-            };
-            
-            var jsonString = JsonSerializer.Serialize(appSettings, JsonSerializerOptions);
-
-            var folderPath = Path.Combine(AppContext.BaseDirectory, "GeneratedFiles");
-
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
-
-            var fullPath = Path.Combine(folderPath, "appsettings.json");
-
-            File.WriteAllText(fullPath, jsonString);
-
-            Console.WriteLine($"appsettings.json file path: {fullPath}");
-        }
     }
 }
