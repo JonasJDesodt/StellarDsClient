@@ -10,8 +10,6 @@
 
         public required string Project { get; set; }
 
-        //public required string ClientId { get; set; }
-
         public required string ReadOnlyToken { get; set; }
     }
 }

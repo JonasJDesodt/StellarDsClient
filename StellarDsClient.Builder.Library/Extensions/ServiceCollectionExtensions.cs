@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using StellarDsClient.Builder.Library.Providers;
+﻿using StellarDsClient.Builder.Library.Providers;
 using StellarDsClient.Sdk;
 using StellarDsClient.Sdk.Settings;
 

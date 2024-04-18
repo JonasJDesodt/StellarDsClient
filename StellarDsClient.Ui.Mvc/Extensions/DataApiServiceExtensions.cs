@@ -1,7 +1,4 @@
-﻿using StellarDsClient.Dto.Data.Request;
-using StellarDsClient.Dto.Data.Result;
-using StellarDsClient.Dto.Transfer;
-using StellarDsClient.Sdk;
+﻿using StellarDsClient.Sdk;
 using StellarDsClient.Ui.Mvc.Models.Filters;
 using StellarDsClient.Ui.Mvc.Models.FormModels;
 using StellarDsClient.Ui.Mvc.Models.Settings;
@@ -10,7 +7,10 @@ using StellarDsClient.Ui.Mvc.Providers;
 using System.Collections.Generic;
 using System.Reflection;
 using StellarDsClient.Ui.Mvc.Models.UiModels;
-using StellarDsClient.Builder.Library.Models;
+using StellarDsClient.Models.Request;
+using StellarDsClient.Models.Result;
+using StellarDsClient.Sdk.Dto.Transfer;
+using StellarDsClient.Models.Mappers;
 
 namespace StellarDsClient.Ui.Mvc.Extensions
 {

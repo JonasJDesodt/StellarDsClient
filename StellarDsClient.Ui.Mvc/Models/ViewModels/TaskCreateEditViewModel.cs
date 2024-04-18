@@ -1,4 +1,4 @@
-﻿using StellarDsClient.Dto.Transfer;
+﻿using StellarDsClient.Sdk.Dto.Transfer;
 using StellarDsClient.Ui.Mvc.Models.FormModels;
 using StellarDsClient.Ui.Mvc.Models.UiModels;
 

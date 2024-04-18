@@ -1,5 +1,4 @@
-﻿using StellarDsClient.Dto.Data.Request;
-using StellarDsClient.Dto.Data.Result;
+﻿using StellarDsClient.Models.Request;
 using StellarDsClient.Ui.Mvc.Delegates;
 using StellarDsClient.Ui.Mvc.Models.FormModels;
 using StellarDsClient.Ui.Mvc.Models.ViewModels;

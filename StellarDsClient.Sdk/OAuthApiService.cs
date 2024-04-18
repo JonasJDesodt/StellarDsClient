@@ -1,8 +1,8 @@
 ﻿using Microsoft.IdentityModel.JsonWebTokens;
-using StellarDsClient.Dto.Transfer;
 using StellarDsClient.Sdk.Abstractions;
 using StellarDsClient.Sdk.Extensions;
 using StellarDsClient.Sdk.Settings;
+using StellarDsClient.Sdk.Dto.Transfer;
 
 namespace StellarDsClient.Sdk
 {

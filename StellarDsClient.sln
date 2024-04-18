@@ -7,13 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StellarDsClient.Ui.Mvc", "S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StellarDsClient.Sdk", "StellarDsClient.Sdk\StellarDsClient.Sdk.csproj", "{FEB1FFCE-B2C5-4F7A-A7EF-629EC5D4F9CE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StellarDsClient.Dto", "StellarDsClient.Dto\StellarDsClient.Dto.csproj", "{F2CAD004-1DFC-4327-9F94-34C2E8258FAC}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StellarDsClient.Models", "StellarDsClient.Models\StellarDsClient.Models.csproj", "{FD63CA73-45D2-4050-9DDB-7B87030F799A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StellarDsClient.Builder.Library", "StellarDsClient.Builder.Library\StellarDsClient.Builder.Library.csproj", "{06417749-0F91-4860-812D-4C6DE2DE53F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StellarDsClient.Builder", "StellarDsClient.Builder\StellarDsClient.Builder.csproj", "{C183E320-807E-482C-AC7C-1AF4974E7EE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StellarDsClient.Builder", "StellarDsClient.Builder\StellarDsClient.Builder.csproj", "{C183E320-807E-482C-AC7C-1AF4974E7EE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +27,6 @@ Global
 		{FEB1FFCE-B2C5-4F7A-A7EF-629EC5D4F9CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEB1FFCE-B2C5-4F7A-A7EF-629EC5D4F9CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FEB1FFCE-B2C5-4F7A-A7EF-629EC5D4F9CE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F2CAD004-1DFC-4327-9F94-34C2E8258FAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F2CAD004-1DFC-4327-9F94-34C2E8258FAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F2CAD004-1DFC-4327-9F94-34C2E8258FAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F2CAD004-1DFC-4327-9F94-34C2E8258FAC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FD63CA73-45D2-4050-9DDB-7B87030F799A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FD63CA73-45D2-4050-9DDB-7B87030F799A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD63CA73-45D2-4050-9DDB-7B87030F799A}.Release|Any CPU.ActiveCfg = Release|Any CPU

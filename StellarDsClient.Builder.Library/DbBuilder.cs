@@ -1,16 +1,7 @@
 ﻿#if DEBUG
 
-using System.Diagnostics.Contracts;
-using Microsoft.IdentityModel.JsonWebTokens;
 using StellarDsClient.Builder.Library.Extensions;
-using StellarDsClient.Builder.Library.Helpers;
-using StellarDsClient.Builder.Library.Providers;
-using StellarDsClient.Sdk;
-using System.Reflection;
-using StellarDsClient.Builder.Library.Models;
-using StellarDsClient.Sdk.Models;
 using StellarDsClient.Sdk.Settings;
-using StellarDsClient.Builder.Library.Attributes;
 
 namespace StellarDsClient.Builder.Library
 {

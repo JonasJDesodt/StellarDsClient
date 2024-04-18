@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using StellarDsClient.Ui.Mvc.Models;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
-using StellarDsClient.Dto.Data.Result;
-using StellarDsClient.Dto.Transfer;
 using StellarDsClient.Sdk;
 using StellarDsClient.Sdk.Settings;
 using StellarDsClient.Ui.Mvc.Attributes;

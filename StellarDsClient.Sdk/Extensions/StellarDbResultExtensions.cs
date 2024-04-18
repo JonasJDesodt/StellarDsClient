@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using StellarDsClient.Dto.Transfer;
+using StellarDsClient.Sdk.Dto.Transfer;
 
 namespace StellarDsClient.Sdk.Extensions
 {
@@ -12,7 +12,7 @@ namespace StellarDsClient.Sdk.Extensions
             return result;
         }
 
-        public static StellarDsResult<T> Unauthorized<T>(this StellarDsResult<T> result) where T : class
+        public static Dto.Transfer.StellarDsResult<T> Unauthorized<T>(this Dto.Transfer.StellarDsResult<T> result) where T : class
         {
             result.AddUnauthorized();
 
@@ -40,7 +40,7 @@ namespace StellarDsClient.Sdk.Extensions
             return result;
         }
 
-        public static StellarDsResult<T> TooManyRequests<T>(this StellarDsResult<T> result) where T : class
+        public static Dto.Transfer.StellarDsResult<T> TooManyRequests<T>(this Dto.Transfer.StellarDsResult<T> result) where T : class
         {
             result.AddTooManyRequests();
 
@@ -60,7 +60,7 @@ namespace StellarDsClient.Sdk.Extensions
             ];
         }
 
-        public static StellarDsResult<T> ToNonNullable<T>(this StellarDsResult<T>? result) where T : class
+        public static Dto.Transfer.StellarDsResult<T> ToNonNullable<T>(this Dto.Transfer.StellarDsResult<T>? result) where T : class
         {
             ArgumentNullException.ThrowIfNull(result);
 

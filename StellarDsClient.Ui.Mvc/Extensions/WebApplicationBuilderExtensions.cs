@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.JsonWebTokens;
 using StellarDsClient.Sdk;
-using StellarDsClient.Sdk.Models;
 using StellarDsClient.Sdk.Settings;
 using StellarDsClient.Ui.Mvc.Models.Settings;
 using StellarDsClient.Ui.Mvc.Providers;
 using StellarDsClient.Ui.Mvc.Stores;
 using System.Diagnostics;
-using StellarDsClient.Builder.Library.Models;
 
 namespace StellarDsClient.Ui.Mvc.Extensions
 {

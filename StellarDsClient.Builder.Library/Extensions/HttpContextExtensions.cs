@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.DataProtection.KeyManagement.Internal;
-using StellarDsClient.Sdk;
+﻿using StellarDsClient.Sdk;
 
 namespace StellarDsClient.Builder.Library.Extensions
 {

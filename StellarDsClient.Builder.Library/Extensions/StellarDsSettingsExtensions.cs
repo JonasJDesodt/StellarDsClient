@@ -1,5 +1,5 @@
-﻿using StellarDsClient.Builder.Library.Models;
-using System.Text.Json;
+﻿using System.Text.Json;
+using StellarDsClient.Sdk.Settings;
 
 namespace StellarDsClient.Builder.Library.Extensions
 {

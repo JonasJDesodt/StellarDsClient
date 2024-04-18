@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Server.Kestrel.Transport.NamedPipes;
-using StellarDsClient.Builder.Library.Models;
-using StellarDsClient.Dto.Data.Result;
-using StellarDsClient.Dto.Transfer;
-using StellarDsClient.Ui.Mvc.Delegates;
+﻿using StellarDsClient.Ui.Mvc.Delegates;
 using StellarDsClient.Ui.Mvc.Models.UiModels;
 using StellarDsClient.Ui.Mvc.Models.Filters;
 using StellarDsClient.Ui.Mvc.Models.FormModels;
 using StellarDsClient.Ui.Mvc.Models.PartialModels;
 using StellarDsClient.Ui.Mvc.Models.Settings;
 using StellarDsClient.Ui.Mvc.Models.ViewModels;
+using StellarDsClient.Models.Result;
+using StellarDsClient.Sdk.Dto.Transfer;
+using StellarDsClient.Models.Mappers;
 
 namespace StellarDsClient.Ui.Mvc.Extensions
 {

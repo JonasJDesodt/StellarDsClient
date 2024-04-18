@@ -1,6 +1,7 @@
 ﻿using StellarDsClient.Builder.Library.Attributes;
+using System;
 
-namespace StellarDsClient.Builder.Library.Models
+namespace StellarDsClient.Models.Mappers
 {
     [StellarDsTable(true, "StellarDsClient table")]
     public class List

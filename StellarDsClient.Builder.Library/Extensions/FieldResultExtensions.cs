@@ -1,6 +1,6 @@
 ﻿using StellarDsClient.Builder.Library.Attributes;
-using StellarDsClient.Dto.Schema;
 using System.Reflection;
+using StellarDsClient.Sdk.Dto.Schema;
 
 namespace StellarDsClient.Builder.Library.Extensions
 {

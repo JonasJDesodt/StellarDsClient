@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using StellarDsClient.Builder.Library.Models;
-using StellarDsClient.Dto.Data.Result;
+using StellarDsClient.Models.Mappers;
+using StellarDsClient.Models.Result;
 using StellarDsClient.Sdk;
 using StellarDsClient.Ui.Mvc.Attributes;
 using StellarDsClient.Ui.Mvc.Extensions;

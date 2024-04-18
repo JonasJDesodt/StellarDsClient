@@ -1,4 +1,4 @@
-﻿using StellarDsClient.Dto.Data.Result;
+﻿using StellarDsClient.Models.Result;
 using StellarDsClient.Ui.Mvc.Models.FormModels;
 
 namespace StellarDsClient.Ui.Mvc.Extensions

@@ -1,5 +1,4 @@
-﻿using StellarDsClient.Dto.Data.Result;
-using StellarDsClient.Dto.Transfer;
+﻿using StellarDsClient.Sdk.Dto.Transfer;
 using StellarDsClient.Ui.Mvc.Models.Filters;
 using StellarDsClient.Ui.Mvc.Models.PartialModels;
 using StellarDsClient.Ui.Mvc.Models.UiModels;

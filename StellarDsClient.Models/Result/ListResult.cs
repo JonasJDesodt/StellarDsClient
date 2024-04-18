@@ -1,8 +1,8 @@
-﻿using StellarDsClient.Models.Result;
+﻿using System;
 
-namespace StellarDsClient.Ui.Mvc.Models.UiModels
+namespace StellarDsClient.Models.Result
 {
-    public class ListUiModel
+    public class ListResult
     {
         public int Id { get; set; }
 
@@ -10,18 +10,14 @@ namespace StellarDsClient.Ui.Mvc.Models.UiModels
 
         public required DateTime Created { get; set; }
 
+        public required DateTime Updated { get; set; }
+
         public DateTime? Deadline { get; set; }
 
-        public byte[]? Image { get; set; }
+        public string? Image { get; set; }
 
         public required string OwnerId { get; set; }
 
         public required string OwnerName { get; set; }
-
-        public IList<TaskResult> TaskResults = [];
-
-        public required int TotalTaskResults;
-
-        //todo: include pagination here??
     }
 }

@@ -1,8 +1,8 @@
 ﻿namespace StellarDsClient.Builder.Library.Attributes
 {
     [AttributeUsage(AttributeTargets.Property)]
-    internal class StellarDsProperty(string type) : Attribute
+    public class StellarDsProperty(string type) : Attribute //todo: internal? or move to sdk?
     {
-        internal string Type => type;
+       public string Type => type;
     }
 }

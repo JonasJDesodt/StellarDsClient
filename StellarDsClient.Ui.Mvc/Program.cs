@@ -1,16 +1,8 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.IdentityModel.JsonWebTokens;
-using StellarDsClient.Sdk;
-using StellarDsClient.Ui.Mvc.Models.Settings;
-using StellarDsClient.Ui.Mvc.Providers;
-using StellarDsClient.Ui.Mvc.Stores;
-using System.Diagnostics;
-using StellarDsClient.Builder.Library.Models;
 using StellarDsClient.Ui.Mvc.Extensions;
 
 #if DEBUG
 using StellarDsClient.Builder.Library;
-using StellarDsClient.Dto.Data.Result;
+using StellarDsClient.Models.Mappers;
 #endif
 
 //todo: filters: show/hide buttons on desktop still work

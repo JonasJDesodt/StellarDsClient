@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StellarDsClient.Sdk.Models
+namespace StellarDsClient.Sdk.Settings
 {
-    public class TableSettingsDictionary : Dictionary<string, int>;
+    public class TableSettings : Dictionary<string, int>;
 }

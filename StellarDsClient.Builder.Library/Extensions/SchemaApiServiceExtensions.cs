@@ -1,11 +1,10 @@
-﻿using System.Diagnostics.Metrics;
-using System.Reflection;
+﻿using System.Reflection;
 using StellarDsClient.Builder.Library.Attributes;
 using StellarDsClient.Builder.Library.Providers;
 using StellarDsClient.Builder.Library.Records;
-using StellarDsClient.Dto.Schema;
 using StellarDsClient.Sdk;
-using StellarDsClient.Sdk.Models;
+using StellarDsClient.Sdk.Dto.Schema;
+using StellarDsClient.Sdk.Settings;
 
 namespace StellarDsClient.Builder.Library.Extensions
 {
@@ -13,7 +12,7 @@ namespace StellarDsClient.Builder.Library.Extensions
     {
         private const string Description = "StellarDsClient table";
 
-        internal static async Task<bool> ValidateDataStore(this SchemaApiService<AccessTokenProvider> schemaApiService, List<Type> models, TableSettingsDictionary tableSettings)
+        internal static async Task<bool> ValidateDataStore(this SchemaApiService<AccessTokenProvider> schemaApiService, List<Type> models, TableSettings tableSettings)
         {
             if (!tableSettings.Validate(models))
             {
@@ -41,7 +40,7 @@ namespace StellarDsClient.Builder.Library.Extensions
             return true;
         }
 
-        internal static async Task<TableSettingsDictionary> BuildDataStore(this SchemaApiService<AccessTokenProvider> schemaApiService, List<Type> models)
+        internal static async Task<TableSettings> BuildDataStore(this SchemaApiService<AccessTokenProvider> schemaApiService, List<Type> models)
         {
             var tablesStellarDsResult = await schemaApiService.FindTables();
 
@@ -78,7 +77,7 @@ namespace StellarDsClient.Builder.Library.Extensions
 
             Console.WriteLine("No matching tables found. All tables will be build.");
 
-            var newTables = new TableSettingsDictionary();
+            var newTables = new TableSettings();
 
             foreach (var model in models)
             {
@@ -89,7 +88,7 @@ namespace StellarDsClient.Builder.Library.Extensions
             return newTables;
         }
 
-        private static async Task<TableSettingsDictionary?> FindMatchingTables(this SchemaApiService<AccessTokenProvider> schemaApiService, ICollection<TableResult> tableResults, ICollection<Type> models)
+        private static async Task<TableSettings?> FindMatchingTables(this SchemaApiService<AccessTokenProvider> schemaApiService, ICollection<TableResult> tableResults, ICollection<Type> models)
         {
             if (tableResults.Count < models.Count)
             {
@@ -121,7 +120,7 @@ namespace StellarDsClient.Builder.Library.Extensions
                     select new TableModelMatch(model, metadata));
             }
 
-            var newTableSettings = new TableSettingsDictionary();
+            var newTableSettings = new TableSettings();
 
             const string createNewTable = "new";
 

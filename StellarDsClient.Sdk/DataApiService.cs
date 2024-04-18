@@ -2,28 +2,27 @@
 
 using System.Net;
 using System.Net.Http.Json;
-using StellarDsClient.Dto.Transfer;
 using StellarDsClient.Sdk.Abstractions;
+using StellarDsClient.Sdk.Dto.Transfer;
 using StellarDsClient.Sdk.Extensions;
-using StellarDsClient.Sdk.Models;
 using StellarDsClient.Sdk.Settings;
 
 namespace StellarDsClient.Sdk
 {
-    public class DataApiService<TTokenProvider>(IHttpClientFactory httpClientFactory, ApiSettings apiSettings, TTokenProvider tokenProvider, TableSettingsDictionary tableSettings) where TTokenProvider : ITokenProvider
+    public class DataApiService<TTokenProvider>(IHttpClientFactory httpClientFactory, ApiSettings apiSettings, TTokenProvider tokenProvider, TableSettings tableSettings) where TTokenProvider : ITokenProvider
     {
         private readonly string _requestUriBase = $"/{apiSettings.Version}/data/table";
 
-        public async Task<StellarDsResult<IList<TResult>>> Find<TResult>(string table, string query) where TResult : class
+        public async Task<Dto.Transfer.StellarDsResult<IList<TResult>>> Find<TResult>(string table, string query) where TResult : class
         {
             return await GetAsync<IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]) + query);
         }
 
-        public async Task<StellarDsResult<TResult>> Get<TResult>(string table, int id) where TResult : class
+        public async Task<Dto.Transfer.StellarDsResult<TResult>> Get<TResult>(string table, int id) where TResult : class
         {   
             var result = await GetAsync<IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]) + $"&whereQuery=id;equal;{id}");
 
-            return new StellarDsResult<TResult>
+            return new Dto.Transfer.StellarDsResult<TResult>
             {
                 Count = result.Count,
                 IsSuccess = result.IsSuccess,
@@ -32,11 +31,11 @@ namespace StellarDsClient.Sdk
             };
         }
 
-        public async Task<StellarDsResult<TResult>> Create<TRequest, TResult>(string table, TRequest request) where TRequest : class where TResult : class
+        public async Task<Dto.Transfer.StellarDsResult<TResult>> Create<TRequest, TResult>(string table, TRequest request) where TRequest : class where TResult : class
         {
             var result = await PostAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]), [request]);
 
-            return new StellarDsResult<TResult>
+            return new Dto.Transfer.StellarDsResult<TResult>
             {
                 Count = result.Count,
                 IsSuccess = result.IsSuccess,
@@ -45,17 +44,17 @@ namespace StellarDsClient.Sdk
             };
         }
 
-        public async Task<StellarDsResult<IList<TResult>>> Create<TRequest, TResult>(string table, IList<TRequest> requests) where TRequest : class where TResult : class
+        public async Task<Dto.Transfer.StellarDsResult<IList<TResult>>> Create<TRequest, TResult>(string table, IList<TRequest> requests) where TRequest : class where TResult : class
         {
             return await PostAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]), requests);
         }
 
-        public async Task<StellarDsResult<IList<TResult>>> Put<TRequest, TResult>(string table, int id, TRequest request) where TRequest : class where TResult : class
+        public async Task<Dto.Transfer.StellarDsResult<IList<TResult>>> Put<TRequest, TResult>(string table, int id, TRequest request) where TRequest : class where TResult : class
         {
             return await PutAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]), [id], request);
         }
 
-        public async Task<StellarDsResult<IList<TResult>>> Put<TRequest, TResult>(int tableId, IList<int> ids, TRequest request) where TRequest : class where TResult : class
+        public async Task<Dto.Transfer.StellarDsResult<IList<TResult>>> Put<TRequest, TResult>(int tableId, IList<int> ids, TRequest request) where TRequest : class where TResult : class
         {
             return await PutAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableId), ids, request);
         }
@@ -126,21 +125,21 @@ namespace StellarDsClient.Sdk
                 .AddAuthorization(await tokenProvider.Get());
         }
 
-        private static async Task<StellarDsResult<TResult>> GetAsync<TResult>(HttpClient httpClient, string uri) where TResult : class
+        private static async Task<Dto.Transfer.StellarDsResult<TResult>> GetAsync<TResult>(HttpClient httpClient, string uri) where TResult : class
         {
             var httpResponseMessage = await httpClient.GetAsync(uri);
 
             return await httpResponseMessage.ToStellarDsResult<TResult>();
         }
 
-        private static async Task<StellarDsResult<TResult>> PostAsJsonAsync<TRequest, TResult>(HttpClient httpClient, string uri, IList<TRequest> requests) where TRequest : class where TResult : class
+        private static async Task<Dto.Transfer.StellarDsResult<TResult>> PostAsJsonAsync<TRequest, TResult>(HttpClient httpClient, string uri, IList<TRequest> requests) where TRequest : class where TResult : class
         {
             var httpResponseMessage = await httpClient.PostAsJsonAsync(uri, new { records = requests });
 
             return await httpResponseMessage.ToStellarDsResult<TResult>();
         }
 
-        private static async Task<StellarDsResult<TResult>> PutAsJsonAsync<TRequest, TResult>(HttpClient httpClient, string uri, IList<int> ids, TRequest request) where TRequest : class where TResult : class
+        private static async Task<Dto.Transfer.StellarDsResult<TResult>> PutAsJsonAsync<TRequest, TResult>(HttpClient httpClient, string uri, IList<int> ids, TRequest request) where TRequest : class where TResult : class
         {
             var httpResponseMessage = await httpClient.PutAsJsonAsync(uri, new { idList = ids, record = request });
 

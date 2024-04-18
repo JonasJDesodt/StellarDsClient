@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.JsonWebTokens;
-using StellarDsClient.Dto.Transfer;
 using StellarDsClient.Sdk;
 using StellarDsClient.Sdk.Abstractions;
 using StellarDsClient.Ui.Mvc.Stores;
 using System.Security.Claims;
 using System.Security;
+using StellarDsClient.Sdk.Dto.Transfer;
 using StellarDsClient.Ui.Mvc.Extensions;
 
 namespace StellarDsClient.Ui.Mvc.Providers

@@ -1,4 +1,4 @@
-﻿using StellarDsClient.Dto.Schema;
+﻿using StellarDsClient.Sdk.Dto.Schema;
 
 namespace StellarDsClient.Builder.Library.Extensions
 {

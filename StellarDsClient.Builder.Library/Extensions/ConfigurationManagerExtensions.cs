@@ -1,7 +1,6 @@
 ﻿using StellarDsClient.Builder.Library.Helpers;
-using StellarDsClient.Builder.Library.Models;
-using StellarDsClient.Sdk.Models;
 using StellarDsClient.Sdk.Settings;
+using TableSettings = StellarDsClient.Sdk.Settings.TableSettings;
 
 namespace StellarDsClient.Builder.Library.Extensions
 {
@@ -17,9 +16,9 @@ namespace StellarDsClient.Builder.Library.Extensions
             return configurationManager.GetSection(nameof(ApiSettings)).Get<ApiSettings>() ?? AppSettingsHelpers.RequestApiSettings();
         }
 
-        internal static TableSettingsDictionary? GetTableSettings(this ConfigurationManager configurationManager)
+        internal static TableSettings? GetTableSettings(this ConfigurationManager configurationManager)
         {
-            return configurationManager.GetSection(nameof(TableSettings)).Get<TableSettingsDictionary>();
+            return configurationManager.GetSection(nameof(TableSettings)).Get<TableSettings>();
         }
     }
 }

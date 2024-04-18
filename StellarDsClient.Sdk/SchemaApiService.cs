@@ -1,15 +1,15 @@
-﻿using StellarDsClient.Dto.Schema;
-using StellarDsClient.Dto.Transfer;
-using StellarDsClient.Sdk.Abstractions;
+﻿using StellarDsClient.Sdk.Abstractions;
 using StellarDsClient.Sdk.Extensions;
 using StellarDsClient.Sdk.Settings;
 using System.Net.Http.Json;
+using StellarDsClient.Sdk.Dto.Schema;
+
 
 namespace StellarDsClient.Sdk
 {
     public class SchemaApiService<TTokenProvider>(IHttpClientFactory httpClientFactory, ApiSettings apiSettings, TTokenProvider tokenProvider) where TTokenProvider : ITokenProvider
     {
-        public async Task<StellarDsResult<IList<TableResult>>> FindTables()
+        public async Task<Dto.Transfer.StellarDsResult<IList<TableResult>>> FindTables()
         {
             var httpClient = await GetHttpClientAsync();
 
@@ -18,7 +18,7 @@ namespace StellarDsClient.Sdk
             return await httpResponseMessage.ToStellarDsResult<IList<TableResult>>();
         }
 
-        public async Task<StellarDsResult<TableResult>> GetTable(int id)
+        public async Task<Dto.Transfer.StellarDsResult<TableResult>> GetTable(int id)
         {
             var httpClient = await GetHttpClientAsync();
 
@@ -28,7 +28,7 @@ namespace StellarDsClient.Sdk
         }
 
         //todo: create request
-        public async Task<StellarDsResult<TableResult>> CreateTable(string title, string? description, bool isMultiTenant)
+        public async Task<Dto.Transfer.StellarDsResult<TableResult>> CreateTable(string title, string? description, bool isMultiTenant)
         {
             var httpClient = await GetHttpClientAsync();
 
@@ -37,7 +37,7 @@ namespace StellarDsClient.Sdk
             return await httpResponseMessage.ToStellarDsResult<TableResult>();
         }
         
-        public async Task<StellarDsResult<IList<FieldResult>>> GetFields(int tableId)
+        public async Task<Dto.Transfer.StellarDsResult<IList<FieldResult>>> GetFields(int tableId)
         {
             var httpClient = await GetHttpClientAsync();
 
@@ -47,7 +47,7 @@ namespace StellarDsClient.Sdk
         }
 
 
-        public async Task<StellarDsResult<FieldResult>> CreateField(int tableId, string title, string stellarDsType)
+        public async Task<Dto.Transfer.StellarDsResult<FieldResult>> CreateField(int tableId, string title, string stellarDsType)
         {
             var httpClient = await GetHttpClientAsync();
 

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using StellarDsClient.Builder.Library.Providers;
+﻿using StellarDsClient.Builder.Library.Providers;
 using StellarDsClient.Sdk;
 
 namespace StellarDsClient.Builder.Library.Extensions

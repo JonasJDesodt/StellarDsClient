@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
-using StellarDsClient.Dto.Transfer;
+using StellarDsClient.Sdk.Dto.Transfer;
 
 namespace StellarDsClient.Sdk.Extensions
 {
@@ -23,12 +23,12 @@ namespace StellarDsClient.Sdk.Extensions
             return httpResponseMessage;
         }
 
-        public static async Task<StellarDsResult<TResult>> ToStellarDsResult<TResult>(this HttpResponseMessage httpResponseMessage) where TResult : class
+        public static async Task<Dto.Transfer.StellarDsResult<TResult>> ToStellarDsResult<TResult>(this HttpResponseMessage httpResponseMessage) where TResult : class
         {
             var result = await httpResponseMessage
                 .EnsureSerializableContent()
                 .Content
-                .ReadFromJsonAsync<StellarDsResult<TResult>>();
+                .ReadFromJsonAsync<Dto.Transfer.StellarDsResult<TResult>>();
 
             return result.ToNonNullable();
         }

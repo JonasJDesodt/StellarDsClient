@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\StellarDsClient.Builder.Library\StellarDsClient.Builder.Library.csproj" />
+  </ItemGroup>
+
 </Project>

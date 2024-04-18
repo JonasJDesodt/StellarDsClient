@@ -1,16 +1,12 @@
 ﻿using System.Text.Json;
 using Microsoft.IdentityModel.JsonWebTokens;
-using StellarDsClient.Builder.Library.Models;
 using StellarDsClient.Sdk.Settings;
-using LogLevel = StellarDsClient.Builder.Library.Models.LogLevel;
 
 namespace StellarDsClient.Builder.Library.Helpers
 {
     internal class AppSettingsHelpers
     {
-        private static readonly JsonSerializerOptions JsonSerializerOptions = new() { WriteIndented = true };
-
-        public static ApiSettings RequestApiSettings()
+        internal static ApiSettings RequestApiSettings()
         {
             Console.Write("Project id: ");
             var projectId = Console.ReadLine();
@@ -46,7 +42,7 @@ namespace StellarDsClient.Builder.Library.Helpers
             };
         }
 
-        public static OAuthSettings RequestOAuthSettings(string applicationUrl)
+        internal static OAuthSettings RequestOAuthSettings(string applicationUrl)
         {
             Console.Write("Client Id: ");
             var clientId = Console.ReadLine();
@@ -76,7 +72,7 @@ namespace StellarDsClient.Builder.Library.Helpers
             };
         }
 
-        public static int RequestLocalhostPort()
+        internal static int RequestLocalhostPort()
         {
             Console.Write("Localhost port: ");
             var localHostPort = Console.ReadLine();
