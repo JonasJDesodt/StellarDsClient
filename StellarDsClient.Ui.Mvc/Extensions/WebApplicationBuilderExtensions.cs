@@ -11,6 +11,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 {
     internal static class WebApplicationBuilderExtensions 
     {
+        //todo: move to sdk? 
         internal static WebApplicationBuilder AddStellarDsClientServices(this WebApplicationBuilder builder, StellarDsSettings stellarDsSettings)
         {
             var apiSettings = stellarDsSettings.ApiSettings;

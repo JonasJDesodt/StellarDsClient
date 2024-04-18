@@ -4,8 +4,6 @@ using StellarDsClient.Ui.Mvc.Models.Filters;
 
 namespace StellarDsClient.Ui.Mvc.Extensions
 {
-   
-
     public static class ListIndexFilterExtensions
     {
         public static string GetQuery(this ListIndexFilter? listIndexFilter)
