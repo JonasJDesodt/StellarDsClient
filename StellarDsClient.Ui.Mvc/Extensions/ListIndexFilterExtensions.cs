@@ -1,13 +1,15 @@
 ﻿using System.Web;
+using StellarDsClient.Models.Mappers;
 using StellarDsClient.Ui.Mvc.Models.Filters;
 
 namespace StellarDsClient.Ui.Mvc.Extensions
 {
+   
+
     public static class ListIndexFilterExtensions
     {
         public static string GetQuery(this ListIndexFilter? listIndexFilter)
         {
-            //todo: use model for fields
             //todo: return if sort is created & sortAscending is true
             if (listIndexFilter is null || (string.IsNullOrWhiteSpace(listIndexFilter.Title) && string.IsNullOrWhiteSpace(listIndexFilter.Owner) && listIndexFilter.CreatedStart is null && listIndexFilter.CreatedEnd is null && listIndexFilter.DeadlineStart is null && listIndexFilter.DeadlineEnd is null && listIndexFilter.Sort is null && listIndexFilter.SortAscending is null))
             {
@@ -20,34 +22,34 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 
             if (!string.IsNullOrWhiteSpace(listIndexFilter.Title))
             {
-                queries.Add($"Title;like;%{listIndexFilter.Title}%");
+                queries.Add($"{nameof(List.Title)};like;%{listIndexFilter.Title}%");
             }
 
             if (!string.IsNullOrWhiteSpace(listIndexFilter.Owner))
             {
-                queries.Add($"OwnerName;like;%{listIndexFilter.Owner}%");
+                queries.Add($"{nameof(List.OwnerName)};like;%{listIndexFilter.Owner}%");
             }
 
             if (listIndexFilter.CreatedStart is { } createdStart)
             {
 
-                queries.Add($"Created;largerThan;{createdStart:O}|Created;equal;{createdStart:O}");
+                queries.Add($"{nameof(List.Created)};largerThan;{createdStart:O}|{nameof(List.Created)};equal;{createdStart:O}");
             }
 
             if (listIndexFilter.CreatedEnd is { } createdEnd)
             {
-                queries.Add($"Created;smallerThan;{createdEnd:O}|Created;equal;{createdEnd:O}");
+                queries.Add($"{nameof(List.Created)};smallerThan;{createdEnd:O}|{nameof(List.Created)};equal;{createdEnd:O}");
             }
 
             if (listIndexFilter.DeadlineStart is { } deadlineStart)
             {
 
-                queries.Add($"Deadline;largerThan;{deadlineStart:O}|Deadline;equal;{deadlineStart:O}");
+                queries.Add($"{nameof(List.Deadline)};largerThan;{deadlineStart:O}|{nameof(List.Deadline)};equal;{deadlineStart:O}");
             }
 
             if (listIndexFilter.DeadlineEnd is { } deadlineEnd)
             {
-                queries.Add($"Deadline;smallerThan;{deadlineEnd:O}|Deadline;equal;{deadlineEnd:O}");
+                queries.Add($"{nameof(List.Deadline)};smallerThan;{deadlineEnd:O}|{nameof(List.Deadline)};equal;{deadlineEnd:O}");
             }
 
             return query + HttpUtility.UrlEncode(string.Join("&", queries)) + $"&sortQuery={listIndexFilter.Sort ?? "created"};{(listIndexFilter.SortAscending is true or null ? "asc" : "desc")}";

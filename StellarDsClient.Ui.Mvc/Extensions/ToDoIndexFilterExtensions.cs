@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 using System.Web;
+using StellarDsClient.Models.Mappers;
 using StellarDsClient.Ui.Mvc.Models.Filters;
 
 namespace StellarDsClient.Ui.Mvc.Extensions
 {
-    public static class TaskIndexFilterExtensions
+    public static class ToDoIndexFilterExtensions
     {
         public static string GetQuery(this TaskIndexFilter? taskIndexFilter)
         {
@@ -26,23 +28,23 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 
             if (!string.IsNullOrWhiteSpace(taskIndexFilter.Title))
             {
-                queries.Add($"Title;like;%{taskIndexFilter.Title}%");
+                queries.Add($"{nameof(ToDo.Title)};like;%{taskIndexFilter.Title}%");
             }
 
             if (taskIndexFilter.CreatedStart is { } createdStart)
             {
 
-                queries.Add($"Created;largerThan;{createdStart:O}|Created;equal;{createdStart:O}");
+                queries.Add($"{nameof(ToDo.Created)};largerThan;{createdStart:O}|{nameof(ToDo.Created)};equal;{createdStart:O}");
             }
 
             if (taskIndexFilter.CreatedEnd is { } createdEnd)
             {
-                queries.Add($"Created;smallerThan;{createdEnd:O}|Created;equal;{createdEnd:O}");
+                queries.Add($"{nameof(ToDo.Created)};smallerThan;{createdEnd:O}|{nameof(ToDo.Created)};equal;{createdEnd:O}");
             }
 
             if (taskIndexFilter.ListId is { } listId)
             {
-                queries.Add($"ListId;equal;{listId}");
+                queries.Add($"{nameof(ToDo.ListId)};equal;{listId}");
             }
 
             return query + HttpUtility.UrlEncode(string.Join("&", queries)) + $"&sortQuery={taskIndexFilter.Sort ?? "created"};{(taskIndexFilter.SortAscending is true or null ? "asc" : "desc")}";
