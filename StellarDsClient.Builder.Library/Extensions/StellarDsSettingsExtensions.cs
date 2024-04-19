@@ -7,14 +7,14 @@ namespace StellarDsClient.Builder.Library.Extensions
     {
         private static readonly JsonSerializerOptions JsonSerializerOptions = new() { WriteIndented = true };
 
-        internal static async Task<StellarDsSettings> CreateJsonFile(this StellarDsSettings stellarDsSettings)
+        internal static async Task<StellarDsCredentials> CreateJsonFile(this StellarDsCredentials stellarDsCredentials)
         {
-            var jsonString = JsonSerializer.Serialize(stellarDsSettings, JsonSerializerOptions);
+            var jsonString = JsonSerializer.Serialize(stellarDsCredentials, JsonSerializerOptions);
 
             await File.WriteAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.StellarDs.json"), jsonString);
             //todo: const for pathstring
 
-            return stellarDsSettings;
+            return stellarDsCredentials;
         }
     }
 }

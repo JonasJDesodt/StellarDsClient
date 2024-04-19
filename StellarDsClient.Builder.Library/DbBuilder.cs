@@ -1,5 +1,9 @@
 ﻿#if DEBUG
 
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using StellarDsClient.Builder.Library.Extensions;
 using StellarDsClient.Sdk.Settings;
 
@@ -9,10 +13,10 @@ namespace StellarDsClient.Builder.Library
     {
         public const string StellarDsSettingsPath = "appsettings.StellarDs.json";
 
-        public static async Task<StellarDsSettings> Run(List<Type> models) //todo: rename
+        public static async Task<StellarDsCredentials> Run(List<Type> models) //todo: rename
         {
             models.EnsureStellarDsTableAnnotations();
-
+            
             var builder = WebApplication.CreateBuilder();
           
             builder.Configuration.AddJsonFile(StellarDsSettingsPath, true);
@@ -21,12 +25,12 @@ namespace StellarDsClient.Builder.Library
             var oAuthSettings = builder.Configuration.GetOAuthSettings();
             var tableSettings = builder.Configuration.GetTableSettings();
 
-            if (!builder.Configuration.GetSection(nameof(StellarDsSettings.ValidateDatabaseOnLaunch)).Get<bool>() && tableSettings is not null && tableSettings.Validate(models))
+            if (!builder.Configuration.GetSection(nameof(StellarDsCredentials.ValidateDatabaseOnLaunch)).Get<bool>() && tableSettings is not null && tableSettings.Validate(models))
             {
-                return new StellarDsSettings
+                return new StellarDsCredentials
                 {
-                    ApiSettings = apiSettings,
-                    OAuthSettings = oAuthSettings,
+                    ApiCredentials = apiSettings,
+                    OAuthCredentials = oAuthSettings,
                     TableSettings = tableSettings,
                     ValidateDatabaseOnLaunch = false
                 };
@@ -74,10 +78,10 @@ namespace StellarDsClient.Builder.Library
 
             if (tableSettings is not null && await schemaApiService.ValidateDataStore(models, tableSettings) )
             {
-                var stellarDsSettings = new StellarDsSettings
+                var stellarDsSettings = new StellarDsCredentials
                 {
-                    ApiSettings = apiSettings,
-                    OAuthSettings = oAuthSettings,
+                    ApiCredentials = apiSettings,
+                    OAuthCredentials = oAuthSettings,
                     TableSettings = tableSettings,
                     ValidateDatabaseOnLaunch = false
                 };
@@ -89,10 +93,10 @@ namespace StellarDsClient.Builder.Library
 
             await serviceProvider.DisposeAsync();
 
-            return await new StellarDsSettings
+            return await new StellarDsCredentials
             {
-                ApiSettings = apiSettings,
-                OAuthSettings = oAuthSettings,
+                ApiCredentials = apiSettings,
+                OAuthCredentials = oAuthSettings,
                 TableSettings = tableSettings,
                 ValidateDatabaseOnLaunch = false
             }.CreateJsonFile();

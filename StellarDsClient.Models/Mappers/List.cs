@@ -1,5 +1,5 @@
-﻿using StellarDsClient.Builder.Library.Attributes;
-using System;
+﻿using System;
+using StellarDsClient.Sdk.Attributes;
 
 namespace StellarDsClient.Models.Mappers
 {

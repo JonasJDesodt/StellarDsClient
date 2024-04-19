@@ -6,7 +6,7 @@ using StellarDsClient.Sdk.Dto.Transfer;
 
 namespace StellarDsClient.Sdk
 {
-    public class OAuthApiService(IHttpClientFactory httpClientFactory, ApiSettings apiSettings, OAuthSettings oAuthSettings)
+    public class OAuthApiService(IHttpClientFactory httpClientFactory, ApiSettings apiSettings, OAuthCredentials oAuthCredentials)
     {
         private readonly string _httpClientName = apiSettings.Name;
 
@@ -14,13 +14,9 @@ namespace StellarDsClient.Sdk
 
         private readonly Dictionary<string, string> _clientParams = new()
         {
-            { "client_id", oAuthSettings.ClientId },
-            { "client_secret", oAuthSettings.ClientSecret }
+            { "client_id", oAuthCredentials.ClientId },
+            { "client_secret", oAuthCredentials.ClientSecret }
         };
-
-
-        public OAuthSettings OAuthSettings => oAuthSettings;
-        
 
         public async Task<OAuthTokens> GetTokensAsync(string authorizationCode)
         {
@@ -30,7 +26,7 @@ namespace StellarDsClient.Sdk
                 {
                     { "grant_type", "authorization_code" },
                     { "code", authorizationCode },
-                    { "redirect_uri", oAuthSettings.RedirectUri},
+                    { "redirect_uri", oAuthCredentials.RedirectUri},
                 }.Concat(_clientParams)));
 
             return await httpResponse.ToOAuthTokens();

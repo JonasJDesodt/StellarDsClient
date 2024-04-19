@@ -11,26 +11,24 @@ namespace StellarDsClient.Sdk.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddStellarDsSettings(this IServiceCollection serviceCollection, StellarDsSettings stellarDsSettings)
+        public static IServiceCollection AddStellarDsSettings(this IServiceCollection serviceCollection, StellarDsCredentials stellarDsCredentials)
         {
-            serviceCollection.AddSingleton(stellarDsSettings.ApiSettings);
+            serviceCollection.AddSingleton(stellarDsCredentials.ApiCredentials);
 
-            serviceCollection.AddSingleton(stellarDsSettings.OAuthSettings);
+            serviceCollection.AddSingleton(stellarDsCredentials.OAuthCredentials);
 
-            serviceCollection.AddSingleton(stellarDsSettings.TableSettings);
-            
+            serviceCollection.AddSingleton(stellarDsCredentials.TableSettings);
+
             return serviceCollection;
         }
 
-        public static IServiceCollection AddHttpClients(this IServiceCollection serviceCollection, StellarDsSettings stellarDsSettings)
+        public static IServiceCollection AddStellarDsHttpClients(this IServiceCollection serviceCollection, ApiSettings apiSettings, OAuthSettings oAuthSettings)
         {
-            var apiSettings = stellarDsSettings.ApiSettings;
             serviceCollection.AddHttpClient(apiSettings.Name, httpClient =>
             {
                 httpClient.BaseAddress = new Uri(apiSettings.BaseAddress);
             });
 
-            var oAuthSettings = stellarDsSettings.OAuthSettings;
             serviceCollection.AddHttpClient(oAuthSettings.Name, httpClient =>
             {
                 httpClient.BaseAddress = new Uri(oAuthSettings.BaseAddress);

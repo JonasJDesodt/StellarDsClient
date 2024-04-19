@@ -11,6 +11,9 @@
 		<ProjectReference Include="..\StellarDsClient.Sdk\StellarDsClient.Sdk.csproj" />
 	</ItemGroup>
 
+
+
+
 	<ItemGroup>
 	  <Folder Include="Models\" />
 	</ItemGroup>

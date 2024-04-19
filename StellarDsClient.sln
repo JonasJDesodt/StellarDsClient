@@ -11,9 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StellarDsClient.Models", "S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StellarDsClient.Builder.Library", "StellarDsClient.Builder.Library\StellarDsClient.Builder.Library.csproj", "{06417749-0F91-4860-812D-4C6DE2DE53F8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StellarDsClient.Builder", "StellarDsClient.Builder\StellarDsClient.Builder.csproj", "{C183E320-807E-482C-AC7C-1AF4974E7EE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StellarDsClient.Ui.Blazor", "StellarDsClient.Ui.Blazor\StellarDsClient.Ui.Blazor.csproj", "{32306118-4A1C-47DB-83DD-F38BCC40A81C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StellarDsClient.Ui.Blazor", "StellarDsClient.Ui.Blazor\StellarDsClient.Ui.Blazor.csproj", "{32306118-4A1C-47DB-83DD-F38BCC40A81C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StellarDsClient.Builder.Api", "StellarDsClient.Builder.Api\StellarDsClient.Builder.Api.csproj", "{8145A0E0-ED47-40F1-8AB6-86543B456DA9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,14 +37,14 @@ Global
 		{06417749-0F91-4860-812D-4C6DE2DE53F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06417749-0F91-4860-812D-4C6DE2DE53F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06417749-0F91-4860-812D-4C6DE2DE53F8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C183E320-807E-482C-AC7C-1AF4974E7EE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C183E320-807E-482C-AC7C-1AF4974E7EE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C183E320-807E-482C-AC7C-1AF4974E7EE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C183E320-807E-482C-AC7C-1AF4974E7EE1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{32306118-4A1C-47DB-83DD-F38BCC40A81C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{32306118-4A1C-47DB-83DD-F38BCC40A81C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32306118-4A1C-47DB-83DD-F38BCC40A81C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32306118-4A1C-47DB-83DD-F38BCC40A81C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8145A0E0-ED47-40F1-8AB6-86543B456DA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8145A0E0-ED47-40F1-8AB6-86543B456DA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8145A0E0-ED47-40F1-8AB6-86543B456DA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8145A0E0-ED47-40F1-8AB6-86543B456DA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

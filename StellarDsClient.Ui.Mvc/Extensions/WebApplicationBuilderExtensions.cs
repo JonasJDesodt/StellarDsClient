@@ -12,20 +12,27 @@ namespace StellarDsClient.Ui.Mvc.Extensions
     internal static class WebApplicationBuilderExtensions 
     {
         //todo: move to sdk? 
-        internal static WebApplicationBuilder AddStellarDsClientServices(this WebApplicationBuilder builder, StellarDsSettings stellarDsSettings)
+        internal static WebApplicationBuilder AddStellarDsClientServices(this WebApplicationBuilder builder)
         {
-            var apiSettings = stellarDsSettings.ApiSettings;
-            builder.Services.AddSingleton(apiSettings);
+            var stellarDsCredentials = new ConfigurationBuilder().AddJsonFile("appsettings.StellarDsCredentials.json", false).Build().Get<StellarDsCredentials>() ??
+                                              throw new NullReferenceException("Unable to get the StellarDsCredentials from appsettings.StellarDsCredentials.json");
+            
+            var apiCredentials = stellarDsCredentials.ApiCredentials;
+            builder.Services.AddSingleton(apiCredentials);
 
-            var oAuthSettings = stellarDsSettings.OAuthSettings;
-            builder.Services.AddSingleton(oAuthSettings);
+            var oAuthCredentials = stellarDsCredentials.OAuthCredentials;
+            builder.Services.AddSingleton(oAuthCredentials);
 
             var cookieSettings = builder.Configuration.GetSection(nameof(CookieSettings)).Get<CookieSettings>() ?? throw new NullReferenceException($"Unable to get the {nameof(CookieSettings)}");
-
             builder.Services.AddSingleton(cookieSettings);
 
-            builder.Services.AddSingleton(stellarDsSettings.TableSettings);
+            builder.Services.AddSingleton(stellarDsCredentials.TableSettings);
 
+            var apiSettings = builder.Configuration.GetSection(nameof(ApiSettings)).Get<ApiSettings>() ?? throw new NullReferenceException("Unable to get ApiSettings from appsettings.json");
+            builder.Services.AddSingleton(apiSettings);
+
+            var oAuthSettings = builder.Configuration.GetSection(nameof(OAuthSettings)).Get<OAuthSettings>() ?? throw new NullReferenceException("Unable to get OAuthSettings from appsettings.json");
+            builder.Services.AddSingleton(oAuthSettings);
 
             builder.Services.AddHttpClient(apiSettings.Name, httpClient =>
             {
@@ -36,8 +43,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             {
                 httpClient.BaseAddress = new Uri(oAuthSettings.BaseAddress);
             });
-
-
+            
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<JsonWebTokenHandler>(); //TODO why is this added as a service? there is no need for it in the console app?!
 

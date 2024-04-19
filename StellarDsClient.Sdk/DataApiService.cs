@@ -9,7 +9,7 @@ using StellarDsClient.Sdk.Settings;
 
 namespace StellarDsClient.Sdk
 {
-    public class DataApiService<TTokenProvider>(IHttpClientFactory httpClientFactory, ApiSettings apiSettings, TTokenProvider tokenProvider, TableSettings tableSettings) where TTokenProvider : ITokenProvider
+    public class DataApiService<TTokenProvider>(IHttpClientFactory httpClientFactory, ApiSettings apiSettings, ApiCredentials apiCredentials, TTokenProvider tokenProvider, TableSettings tableSettings) where TTokenProvider : ITokenProvider
     {
         private readonly string _requestUriBase = $"/{apiSettings.Version}/data/table";
 
@@ -105,17 +105,17 @@ namespace StellarDsClient.Sdk
 
         private string GetDefaultRequestUri(int table)
         {
-            return $"{_requestUriBase}?project={apiSettings.Project}&table={table}";
+            return $"{_requestUriBase}?project={apiCredentials.Project}&table={table}";
         }
 
         private string GetDeleteRequestUri(int table)
         {
-            return $"{_requestUriBase}/delete?project={apiSettings.Project}&table={table}";
+            return $"{_requestUriBase}/delete?project={apiCredentials.Project}&table={table}";
         }
 
         private string GetBlobRequestUri(int table, string field, int record)
         {
-            return $"{_requestUriBase}/blob?project={apiSettings.Project}&table={table}&field={field}&record={record}";
+            return $"{_requestUriBase}/blob?project={apiCredentials.Project}&table={table}&field={field}&record={record}";
         }
 
         private async Task<HttpClient> GetHttpClientAsync()

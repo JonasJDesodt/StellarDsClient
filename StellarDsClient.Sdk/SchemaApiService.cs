@@ -2,18 +2,21 @@
 using StellarDsClient.Sdk.Extensions;
 using StellarDsClient.Sdk.Settings;
 using System.Net.Http.Json;
+using System.Reflection;
+using StellarDsClient.Sdk.Attributes;
 using StellarDsClient.Sdk.Dto.Schema;
+using StellarDsClient.Sdk.Dto.Transfer;
 
 
 namespace StellarDsClient.Sdk
 {
-    public class SchemaApiService<TTokenProvider>(IHttpClientFactory httpClientFactory, ApiSettings apiSettings, TTokenProvider tokenProvider) where TTokenProvider : ITokenProvider
+    public class SchemaApiService<TTokenProvider>(IHttpClientFactory httpClientFactory, ApiSettings apiSettings, ApiCredentials apiCredentials, TTokenProvider tokenProvider) where TTokenProvider : ITokenProvider
     {
         public async Task<Dto.Transfer.StellarDsResult<IList<TableResult>>> FindTables()
         {
             var httpClient = await GetHttpClientAsync();
 
-            var httpResponseMessage = await httpClient.GetAsync($"v1/schema/table?project={apiSettings.Project}");
+            var httpResponseMessage = await httpClient.GetAsync($"v1/schema/table?project={apiCredentials.Project}");
   
             return await httpResponseMessage.ToStellarDsResult<IList<TableResult>>();
         }
@@ -22,7 +25,7 @@ namespace StellarDsClient.Sdk
         {
             var httpClient = await GetHttpClientAsync();
 
-            var httpResponseMessage = await httpClient.GetAsync($"v1/schema/table?project={apiSettings.Project}&table={id}");
+            var httpResponseMessage = await httpClient.GetAsync($"v1/schema/table?project={apiCredentials.Project}&table={id}");
 
             return await httpResponseMessage.ToStellarDsResult<TableResult>();
         }
@@ -32,7 +35,7 @@ namespace StellarDsClient.Sdk
         {
             var httpClient = await GetHttpClientAsync();
 
-            var httpResponseMessage = await httpClient.PostAsJsonAsync($"v1/schema/table?project={apiSettings.Project}", new { name = title, description, isMultitenant = isMultiTenant });
+            var httpResponseMessage = await httpClient.PostAsJsonAsync($"v1/schema/table?project={apiCredentials.Project}", new { name = title, description, isMultitenant = isMultiTenant });
 
             return await httpResponseMessage.ToStellarDsResult<TableResult>();
         }
@@ -41,7 +44,7 @@ namespace StellarDsClient.Sdk
         {
             var httpClient = await GetHttpClientAsync();
 
-            var httpResponseMessage = await httpClient.GetAsync($"v1/schema/table/field?project={apiSettings.Project}&table={tableId}");
+            var httpResponseMessage = await httpClient.GetAsync($"v1/schema/table/field?project={apiCredentials.Project}&table={tableId}");
 
             return await httpResponseMessage.ToStellarDsResult<IList<FieldResult>>();
         }
@@ -51,16 +54,35 @@ namespace StellarDsClient.Sdk
         {
             var httpClient = await GetHttpClientAsync();
 
-            var httpResponseMessage = await httpClient.PostAsJsonAsync($"v1/schema/table/field?project={apiSettings.Project}&table={tableId}", new { name = title, type = stellarDsType });
+            var httpResponseMessage = await httpClient.PostAsJsonAsync($"v1/schema/table/field?project={apiCredentials.Project}&table={tableId}", new { name = title, type = stellarDsType });
 
             return await httpResponseMessage.ToStellarDsResult<FieldResult>();
+        }
+
+        public async Task<StellarDsResult<TableResult>> CreateTable(Type model, string name)
+        {
+            var metaData =  model.GetCustomAttribute<StellarDsTable>() ?? throw new NullReferenceException($"{nameof(model)} is not decorated with a StellarDsTable attribute");
+            
+            var stellarDsResult = await CreateTable(name.ToLowerInvariant(), metaData.Description, metaData.IsMultiTenant);
+
+            if (stellarDsResult.Data is not { } tableResult) return stellarDsResult;
+
+            foreach (var property in model.GetProperties())
+            {
+                var stellarDsType = property.GetCustomAttribute<StellarDsProperty>()?.Type ?? throw new NullReferenceException($"{nameof(property)} is not decorated with a StellarDsProperty attribute.");
+
+                //todo: do something with the stellarDsresult
+                await CreateField(tableResult.Id, property.Name.ToLowerInvariant(), stellarDsType);
+            }
+
+            return stellarDsResult;
         }
 
         public async Task DeleteTable(int id)
         {
             var httpClient = await GetHttpClientAsync();
 
-            (await httpClient.DeleteAsync($"v1/schema/table?project={apiSettings.Project}&table={id}")).EnsureSuccessStatusCode();
+            (await httpClient.DeleteAsync($"v1/schema/table?project={apiCredentials.Project}&table={id}")).EnsureSuccessStatusCode();
         }
 
         private async Task<HttpClient> GetHttpClientAsync()
