@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 /StellarDsClient.Ui.Mvc/appsettings.json
 /StellarDsClient.Ui.Mvc/appsettings.StellarDs.json
+/StellarDsClient.Ui.Blazor/Program.cs
+/StellarDsClient.Ui.Mvc/appsettings.StellarDsCredentials.json
