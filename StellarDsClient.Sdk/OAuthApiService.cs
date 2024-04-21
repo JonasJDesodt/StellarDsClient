@@ -6,8 +6,13 @@ using StellarDsClient.Sdk.Dto.Transfer;
 
 namespace StellarDsClient.Sdk
 {
-    public class OAuthApiService(IHttpClientFactory httpClientFactory, ApiSettings apiSettings, OAuthCredentials oAuthCredentials)
+    public class OAuthApiService(IHttpClientFactory httpClientFactory, ApiSettings apiSettings, OAuthCredentials oAuthCredentials, OAuthSettings oAuthSettings)
     {
+        public string ClientId => oAuthCredentials.ClientId;
+        public string RedirectUri => oAuthCredentials.RedirectUri;
+        public string OAuthBaseAddress => oAuthSettings.BaseAddress;
+        
+
         private readonly string _httpClientName = apiSettings.Name;
 
         private readonly string _requestUri = $"/{apiSettings.Version}/oauth/token";
@@ -17,6 +22,7 @@ namespace StellarDsClient.Sdk
             { "client_id", oAuthCredentials.ClientId },
             { "client_secret", oAuthCredentials.ClientSecret }
         };
+
 
         public async Task<OAuthTokens> GetTokensAsync(string authorizationCode)
         {

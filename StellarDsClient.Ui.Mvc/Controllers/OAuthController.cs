@@ -8,8 +8,9 @@ using StellarDsClient.Ui.Mvc.Providers;
 namespace StellarDsClient.Ui.Mvc.Controllers
 {
     [ProvideOAuthBaseAddress]
-    public class OAuthController(OAuthApiService oAuthApiService, OAuthTokenProvider oAuthTokenProvider, OAuthSettings oAuthSettings, OAuthCredentials oAuthCredentials) : Controller
+    public class OAuthController(OAuthApiService oAuthApiService, OAuthTokenProvider oAuthTokenProvider) : Controller
     {
+
         [HttpGet]
         public IActionResult Index([FromQuery] string returnUrl)
         {
@@ -23,7 +24,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         {
             TempData["returnUrl"] = TempData["returnUrl"] ?? returnUrl ;
 
-            return Redirect($"{oAuthSettings.BaseAddress}/oauth?client_id={oAuthCredentials.ClientId}&redirect_uri={oAuthCredentials.RedirectUri}&response_type=code");
+            return Redirect($"{oAuthApiService.OAuthBaseAddress}/oauth?client_id={oAuthApiService.ClientId}&redirect_uri={oAuthApiService.RedirectUri}&response_type=code");
         }
 
         [HttpGet]
