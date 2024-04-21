@@ -64,6 +64,8 @@ namespace StellarDsClient.Ui.Mvc.Builders
 
             var minimalWebApplicationBuilder = WebApplication.CreateBuilder();
 
+            var cookieSettings = minimalWebApplicationBuilder.Configuration.GetSection(nameof(CookieSettings)).Get<CookieSettings>() ?? throw new NullReferenceException($"Unable to get the {nameof(CookieSettings)}");
+            var oAuthSettings = minimalWebApplicationBuilder.Configuration.GetSection(nameof(OAuthSettings)).Get<OAuthSettings>() ?? throw new NullReferenceException("Unable to get the OAuthSettings from appsettings.json.");
             var apiSettings = minimalWebApplicationBuilder.Configuration.GetSection(nameof(ApiSettings)).Get<ApiSettings>() ?? throw new NullReferenceException("Unable to get the ApiSettings from appsettings.json.");
 
             minimalWebApplicationBuilder.Services.AddHttpClient(apiSettings.Name, httpClient =>
@@ -81,7 +83,6 @@ namespace StellarDsClient.Ui.Mvc.Builders
                     options.SlidingExpiration = false;
                 });
 
-            var cookieSettings = minimalWebApplicationBuilder.Configuration.GetSection(nameof(CookieSettings)).Get<CookieSettings>() ?? throw new NullReferenceException($"Unable to get the {nameof(CookieSettings)}");
 
             var minimalWebApplication = minimalWebApplicationBuilder.Build();
 
@@ -94,7 +95,7 @@ namespace StellarDsClient.Ui.Mvc.Builders
                     IHttpContextAccessor httpContextAccessor,
                     HttpContext httpContext) =>
             {
-                var oAuthApiService = new OAuthApiService(httpClientFactory, apiSettings, oAuthCredentials);
+                var oAuthApiService = new OAuthApiService(httpClientFactory, apiSettings, oAuthCredentials, oAuthSettings);
 
                 var tokens = await oAuthApiService.GetTokensAsync(code);
 

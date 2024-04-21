@@ -13,11 +13,25 @@ namespace StellarDsClient.Sdk
     {
         private readonly string _requestUriBase = $"/{apiSettings.Version}/data/table";
 
+        /// <summary>
+        /// Gets records for a given table.
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="table"></param>
+        /// <param name="query"></param>
+        /// <returns></returns>
         public async Task<Dto.Transfer.StellarDsResult<IList<TResult>>> Find<TResult>(string table, string query) where TResult : class
         {
             return await GetAsync<IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]) + query);
         }
 
+        /// <summary>
+        /// Gets a single record for a given table.
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="table"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<Dto.Transfer.StellarDsResult<TResult>> Get<TResult>(string table, int id) where TResult : class
         {   
             var result = await GetAsync<IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]) + $"&whereQuery=id;equal;{id}");
@@ -31,6 +45,14 @@ namespace StellarDsClient.Sdk
             };
         }
 
+        /// <summary>
+        /// Creates a single record in a given table.
+        /// </summary>
+        /// <typeparam name="TRequest"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="table"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
         public async Task<Dto.Transfer.StellarDsResult<TResult>> Create<TRequest, TResult>(string table, TRequest request) where TRequest : class where TResult : class
         {
             var result = await PostAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]), [request]);
@@ -44,26 +66,65 @@ namespace StellarDsClient.Sdk
             };
         }
 
+        /// <summary>
+        /// Creates records in a given table.
+        /// </summary>
+        /// <typeparam name="TRequest"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="table"></param>
+        /// <param name="requests"></param>
+        /// <returns></returns>
         public async Task<Dto.Transfer.StellarDsResult<IList<TResult>>> Create<TRequest, TResult>(string table, IList<TRequest> requests) where TRequest : class where TResult : class
         {
             return await PostAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]), requests);
         }
 
+        /// <summary>
+        /// Updates a single record in a given table.
+        /// </summary>
+        /// <typeparam name="TRequest"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="table"></param>
+        /// <param name="id"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
         public async Task<Dto.Transfer.StellarDsResult<IList<TResult>>> Put<TRequest, TResult>(string table, int id, TRequest request) where TRequest : class where TResult : class
         {
             return await PutAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]), [id], request);
         }
+
+        /// <summary>
+        /// Updates records in a given table.
+        /// </summary>
+        /// <typeparam name="TRequest"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="tableId"></param>
+        /// <param name="ids"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
 
         public async Task<Dto.Transfer.StellarDsResult<IList<TResult>>> Put<TRequest, TResult>(int tableId, IList<int> ids, TRequest request) where TRequest : class where TResult : class
         {
             return await PutAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableId), ids, request);
         }
 
+        /// <summary>
+        /// Deletes a single record in a given table.
+        /// </summary>
+        /// <param name="table"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<StellarDsResult> Delete(string table, int id) 
         {
             return await DeleteAsync(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]) + $"&record={id}");
         }
 
+        /// <summary>
+        /// Deletes records in a given table.
+        /// </summary>
+        /// <param name="table"></param>
+        /// <param name="ids"></param>
+        /// <returns></returns>
         public async Task Delete(string table, string[] ids)
         {
             if (ids.Length == 0)
@@ -78,6 +139,14 @@ namespace StellarDsClient.Sdk
             httpResponse.EnsureSuccessStatusCode();
         }
 
+        /// <summary>
+        /// Uploads a blob to a field in a record of a given table.
+        /// </summary>
+        /// <param name="table"></param>
+        /// <param name="field"></param>
+        /// <param name="record"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
         public async Task<StreamProperties> UploadFileToApi(string table, string field, int record, MultipartFormDataContent content)
         {
             var httpClient = await GetHttpClientAsync();
@@ -91,6 +160,13 @@ namespace StellarDsClient.Sdk
             return result ?? new StreamProperties(); //todo return nullable?
         }
 
+        /// <summary>
+        /// Downloads a blob from a given field in a given table for a single record.
+        /// </summary>
+        /// <param name="table"></param>
+        /// <param name="field"></param>
+        /// <param name="record"></param>
+        /// <returns></returns>
         public async Task<byte[]> DownloadBlobFromApi(string table, string field, int record)
         {
             var httpClient = await GetHttpClientAsync();
