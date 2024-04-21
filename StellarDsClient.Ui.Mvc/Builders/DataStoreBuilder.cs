@@ -16,35 +16,36 @@ namespace StellarDsClient.Ui.Mvc.Builders
         internal static void CreateTables()
         {
             if (new ConfigurationBuilder().AddJsonFile("appsettings.StellarDsCredentials.json", true).Build().Get<StellarDsCredentials>() is not null) return;
-            
+
+            #region UserInput
             Console.WriteLine("Some of the credentials have special requirements. ");
-            Console.WriteLine("You can find those requirements in the Readme."); //todo: folder path?
+            Console.WriteLine("You can find those requirements in the Readme."); //todo: folder path & github link
             Console.WriteLine("");
 
             Console.Write("ClientId: ");
             var clientId = Console.ReadLine();
-            if(clientId is null){ return; }
+            if (clientId is null) { return; }
 
             Console.Write("ClientSecret: ");
             var clientSecret = Console.ReadLine();
-            if(clientSecret is null) { return; }
+            if (clientSecret is null) { return; }
 
             Console.Write("ProjectId: ");
             var projectId = Console.ReadLine();
-            if(projectId is null) { return; }
+            if (projectId is null) { return; }
 
             Console.Write("ReadOnlyToken: ");
             var readOnlyToken = Console.ReadLine();
-            if(readOnlyToken is null) { return; }
-            
+            if (readOnlyToken is null) { return; }
+
             Console.Write("Unique name for the 'list' table: ");
             var listTableName = Console.ReadLine();
-            if(listTableName is null) { return; }
+            if (listTableName is null) { return; }
 
             Console.Write("Unique name for the 'toDo' table: ");
             var toDoTableName = Console.ReadLine();
             if (toDoTableName is null) { return; }
-
+            #endregion
 
             var oAuthCredentials = new OAuthCredentials
             {
@@ -58,7 +59,7 @@ namespace StellarDsClient.Ui.Mvc.Builders
                 Project = projectId,
                 ReadOnlyToken = readOnlyToken
             };
-            
+
             var models = new Dictionary<Type, string> { { typeof(List), listTableName }, { typeof(ToDo), "toDo_" + toDoTableName } };
 
             var minimalWebApplicationBuilder = WebApplication.CreateBuilder();
@@ -86,7 +87,12 @@ namespace StellarDsClient.Ui.Mvc.Builders
 
             minimalWebApplication.MapGet("/", () => Results.Redirect($"https://stellards.io/oauth?client_id={oAuthCredentials.ClientId}&redirect_uri={oAuthCredentials.RedirectUri}&response_type=code"));
 
-            minimalWebApplication.MapGet("/oauth/oauthcallback", async ([FromQuery] string code, IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, HttpContext httpContext) =>
+            minimalWebApplication.MapGet(
+                "/oauth/oauthcallback", 
+                async ([FromQuery] string code,
+                    IHttpClientFactory httpClientFactory, 
+                    IHttpContextAccessor httpContextAccessor,
+                    HttpContext httpContext) =>
             {
                 var oAuthApiService = new OAuthApiService(httpClientFactory, apiSettings, oAuthCredentials);
 
@@ -102,7 +108,10 @@ namespace StellarDsClient.Ui.Mvc.Builders
                 {
                     var stellarDsResult = await schemaService.CreateTable(model.Key, model.Value);
 
-                    var metaData = stellarDsResult.Data ?? throw new NullReferenceException($"Unable to retrieve metadata for model {model.Key}. The table is probably not build.");
+                    var metaData = 
+                        stellarDsResult.Data ?? 
+                        throw new NullReferenceException($"Unable to retrieve metadata for model {model.Key}. The table is probably not build.");
+                    
                     tableSettings.Add(model.Key.Name, metaData.Id);
                 }
 
