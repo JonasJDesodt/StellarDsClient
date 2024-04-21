@@ -14,7 +14,7 @@ namespace StellarDsClient.Sdk
         private readonly string _requestUriBase = $"/{apiSettings.Version}/data/table";
 
         /// <summary>
-        /// Gets records for a given table.
+        /// Gets records from a given table.
         /// </summary>
         /// <typeparam name="TResult"></typeparam>
         /// <param name="table"></param>
@@ -26,7 +26,7 @@ namespace StellarDsClient.Sdk
         }
 
         /// <summary>
-        /// Gets a single record for a given table.
+        /// Gets a single record with a given from a given table.
         /// </summary>
         /// <typeparam name="TResult"></typeparam>
         /// <param name="table"></param>
@@ -80,7 +80,7 @@ namespace StellarDsClient.Sdk
         }
 
         /// <summary>
-        /// Updates a single record in a given table.
+        /// Updates a single record with a given id in a given table.
         /// </summary>
         /// <typeparam name="TRequest"></typeparam>
         /// <typeparam name="TResult"></typeparam>
@@ -94,7 +94,7 @@ namespace StellarDsClient.Sdk
         }
 
         /// <summary>
-        /// Updates records in a given table.
+        /// Updates records with given ids in a given table.
         /// </summary>
         /// <typeparam name="TRequest"></typeparam>
         /// <typeparam name="TResult"></typeparam>
@@ -109,7 +109,7 @@ namespace StellarDsClient.Sdk
         }
 
         /// <summary>
-        /// Deletes a single record in a given table.
+        /// Deletes a single record with a given id in a given table.
         /// </summary>
         /// <param name="table"></param>
         /// <param name="id"></param>
@@ -120,7 +120,7 @@ namespace StellarDsClient.Sdk
         }
 
         /// <summary>
-        /// Deletes records in a given table.
+        /// Deletes records with given ids in a given table.
         /// </summary>
         /// <param name="table"></param>
         /// <param name="ids"></param>
