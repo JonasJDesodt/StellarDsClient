@@ -2,6 +2,7 @@
 
 using System.Net;
 using System.Net.Http.Json;
+using System.Web;
 using StellarDsClient.Sdk.Abstractions;
 using StellarDsClient.Sdk.Dto.Transfer;
 using StellarDsClient.Sdk.Extensions;
@@ -34,7 +35,7 @@ namespace StellarDsClient.Sdk
         /// <returns></returns>
         public async Task<Dto.Transfer.StellarDsResult<TResult>> Get<TResult>(string table, int id) where TResult : class
         {   
-            var result = await GetAsync<IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]) + $"&whereQuery=id;equal;{id}");
+            var result = await GetAsync<IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]) + $"&whereQuery={HttpUtility.UrlEncode($"id;equal;{id}")}");
 
             return new Dto.Transfer.StellarDsResult<TResult>
             {

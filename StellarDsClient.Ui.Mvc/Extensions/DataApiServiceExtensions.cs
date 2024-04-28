@@ -11,12 +11,13 @@ using StellarDsClient.Models.Request;
 using StellarDsClient.Models.Result;
 using StellarDsClient.Sdk.Dto.Transfer;
 using StellarDsClient.Models.Mappers;
+using System.Web;
 
 namespace StellarDsClient.Ui.Mvc.Extensions
 {
     internal static class DataApiServiceExtensions
     {
-        internal static async Task<StellarDsResult<ListResult>> GetLastUpdatedList(this DataApiService<OAuthTokenProvider> dataApiService)
+        internal static async Task<StellarDsResult<ListResult>> GetLastUpdatedList(this DataApiService<OAuthAccessTokenProvider> dataApiService)
         {
             var pagination = new Pagination
             {
@@ -67,9 +68,9 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             };
         }
 
-        internal static async Task DeleteListWithTasks(this DataApiService<OAuthTokenProvider> dataApiService, int id)
+        internal static async Task DeleteListWithTasks(this DataApiService<OAuthAccessTokenProvider> dataApiService, int id)
         {
-            if ((await dataApiService.Find<TaskResult>(nameof(ToDo), $"&whereQuery=ListId;equal;{id}")).Data is not { } taskResults)
+            if ((await dataApiService.Find<TaskResult>(nameof(ToDo), $"&whereQuery={HttpUtility.UrlEncode($"{nameof(ToDo.ListId)};equal;{id}")}")).Data is not { } taskResults)
             {
                 return;  //todo error? do not allow to delete the list without deleting tasks possibly associated with it
             }
@@ -79,7 +80,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             await dataApiService.Delete(nameof(List), id);
         }
 
-        internal static async Task<int> CreateListWithBlob(this DataApiService<OAuthTokenProvider> dataApiService, ListFormModel listFormModel, string ownerId, string ownerName)
+        internal static async Task<int> CreateListWithBlob(this DataApiService<OAuthAccessTokenProvider> dataApiService, ListFormModel listFormModel, string ownerId, string ownerName)
         {
             if ((await dataApiService.Create<CreateListRequest, ListResult>(nameof(List), listFormModel.ToCreateListRequest(ownerId, ownerName))).Data is not { } listResult)
             {
@@ -93,12 +94,12 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 
             using var multipartFormDataContent = new MultipartFormDataContent().AddFormFile(listFormModel.ImageUpload);
 
-            await dataApiService.UploadFileToApi(nameof(List), "Image", listResult.Id, multipartFormDataContent);
+            await dataApiService.UploadFileToApi(nameof(List), nameof(List.Image), listResult.Id, multipartFormDataContent);
 
             return listResult.Id;
         }
 
-        internal static async Task UpdateListWithBlob(this DataApiService<OAuthTokenProvider> dataApiService, int listId, ListFormModel listFormModel)
+        internal static async Task UpdateListWithBlob(this DataApiService<OAuthAccessTokenProvider> dataApiService, int listId, ListFormModel listFormModel)
         {
             if ((await dataApiService.Put<PutListRequest, ListResult>(nameof(List), listId, listFormModel.ToPutListRequest())).Data is null)
             {
@@ -112,7 +113,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 
             using var multipartFormDataContent = new MultipartFormDataContent().AddFormFile(listFormModel.ImageUpload);
 
-            await dataApiService.UploadFileToApi(nameof(List), "Image",listId, multipartFormDataContent);
+            await dataApiService.UploadFileToApi(nameof(List), nameof(List.Image),listId, multipartFormDataContent);
         }
 
         internal static async Task<StellarDsResult<ListUiModel>> GetListWithTasks(this DataApiService<ReadonlyAccessTokenProvider> dataApiService, int listId, Pagination pagination, TaskIndexFilter taskIndexFilter)

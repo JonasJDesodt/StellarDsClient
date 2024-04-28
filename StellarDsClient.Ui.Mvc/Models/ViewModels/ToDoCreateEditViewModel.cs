@@ -4,12 +4,12 @@ using StellarDsClient.Ui.Mvc.Models.UiModels;
 
 namespace StellarDsClient.Ui.Mvc.Models.ViewModels
 {
-    public class TaskCreateEditViewModel
+    public class ToDoCreateEditViewModel
     {
         public IList<StellarDsErrorMessage>? ErrorMessages { get; set; }
 
         public ListUiModel? ListEntity { get; set; }
 
-        public TaskFormModel? TaskFormModel { get; set; }
+        public ToDoFormModel? TaskFormModel { get; set; }
     }
 }

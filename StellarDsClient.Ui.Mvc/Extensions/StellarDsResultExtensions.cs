@@ -50,23 +50,23 @@ namespace StellarDsClient.Ui.Mvc.Extensions
                     Id = listResult.Id,
                     Deadline = listResult.Deadline,
                     Title = listResult.Title,
-                    CurrentImage = listResult.Image?.EndsWith("size=0") == false ? await downloadBlobFromApi(nameof(List), "Image", listResult.Id) : null, //todo: using?, use tableSettings to get the tableId
+                    CurrentImage = listResult.Image?.EndsWith("size=0") == false ? await downloadBlobFromApi(nameof(List), nameof(List.Image), listResult.Id) : null, //todo: using?
                     HasDeleteRequest = hasDeleteRequest
                 }
             };
         }
 
-        public static async Task<TaskCreateEditViewModel> ToTaskCreateEditViewModel(this StellarDsResult<ListResult> stellarDsResult, DownloadBlobFromApi downloadBlobFromApi)
+        public static async Task<ToDoCreateEditViewModel> ToTaskCreateEditViewModel(this StellarDsResult<ListResult> stellarDsResult, DownloadBlobFromApi downloadBlobFromApi)
         {
             if (stellarDsResult.Data is not { } listResult)
             {
-                return new TaskCreateEditViewModel
+                return new ToDoCreateEditViewModel
                 {
                     ErrorMessages = stellarDsResult.Messages
                 };
             }
 
-            return new TaskCreateEditViewModel
+            return new ToDoCreateEditViewModel
             {
                 ListEntity = await listResult.ToListEntityModel(downloadBlobFromApi)
             };
@@ -113,20 +113,20 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             };
         }
 
-        public static async Task<TaskCreateEditViewModel> ToTaskCreateEditViewModel(this StellarDsResult<TaskResult> stellarDsTaskResult, StellarDsResult<ListResult> stellarDsListResult, DownloadBlobFromApi downloadBlobFromApi, bool hasDeleteRequest = false)
+        public static async Task<ToDoCreateEditViewModel> ToTaskCreateEditViewModel(this StellarDsResult<TaskResult> stellarDsTaskResult, StellarDsResult<ListResult> stellarDsListResult, DownloadBlobFromApi downloadBlobFromApi, bool hasDeleteRequest = false)
         {
             if (stellarDsTaskResult.Data is not { } taskResult || stellarDsListResult.Data is not { } listResult)
             {
-                return new TaskCreateEditViewModel
+                return new ToDoCreateEditViewModel
                 {
                     ErrorMessages = [.. stellarDsTaskResult.Messages, .. stellarDsListResult.Messages],
                 };
             }
 
-            var taskFormModel = taskResult.ToTaskFormModel();
+            var taskFormModel = taskResult.ToToDoFormModel();
             taskFormModel.HasDeleteRequest = hasDeleteRequest;
 
-            return new TaskCreateEditViewModel
+            return new ToDoCreateEditViewModel
             {
                 ListEntity = await listResult.ToListEntityModel(downloadBlobFromApi),
                 TaskFormModel = taskFormModel

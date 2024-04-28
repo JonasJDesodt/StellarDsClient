@@ -41,7 +41,6 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 
             if (listIndexFilter.DeadlineStart is { } deadlineStart)
             {
-
                 queries.Add($"{nameof(List.Deadline)};largerThan;{deadlineStart:O}|{nameof(List.Deadline)};equal;{deadlineStart:O}");
             }
 
@@ -50,7 +49,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
                 queries.Add($"{nameof(List.Deadline)};smallerThan;{deadlineEnd:O}|{nameof(List.Deadline)};equal;{deadlineEnd:O}");
             }
 
-            return query + HttpUtility.UrlEncode(string.Join("&", queries)) + $"&sortQuery={listIndexFilter.Sort ?? "created"};{(listIndexFilter.SortAscending is true or null ? "asc" : "desc")}";
+            return query + HttpUtility.UrlEncode(string.Join("&", queries)) + $"&sortQuery={HttpUtility.UrlEncode($"{listIndexFilter.Sort ?? "created"};{(listIndexFilter.SortAscending is true or null ? "asc" : "desc")}")}";
         }
 
         public static int GetActiveCount(this ListIndexFilter filter)

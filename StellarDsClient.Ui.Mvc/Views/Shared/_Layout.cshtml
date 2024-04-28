@@ -48,6 +48,15 @@
                     {
                         <li><a asp-controller="List" asp-action="Index">Lists</a></li>
                     }
+
+                    if (ViewData["Title"]?.Equals("Admin") == true)
+                    {
+                        <li class="active">Admin</li>
+                    }
+                    else
+                    {
+                        <li><a asp-controller="Admin" asp-action="Index">Admin</a></li>
+                    }
                 }
             </ul>
         </nav>
@@ -65,11 +74,6 @@
         </button>
     </header>
     <main role="main">
-@*         @if (ViewData["Title"]?.Equals("Home") is false)
-        {
-            <button id="return-button" class="warning">Return</button>
-        }
- *@
         @RenderBody()
     </main>
 
@@ -99,6 +103,3 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-
-
-

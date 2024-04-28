@@ -8,46 +8,46 @@ using StellarDsClient.Ui.Mvc.Models.ViewModels;
 
 namespace StellarDsClient.Ui.Mvc.Extensions
 {
-    public static class TaskFormModelExtensions
+    public static class ToDoFormModelExtensions
     {
-        public static CreateTaskRequest ToCreateRequest(this TaskFormModel taskFormModel, int listId)
+        public static CreateTaskRequest ToCreateRequest(this ToDoFormModel toDoFormModel, int listId)
         {
             var now = DateTime.UtcNow;
 
             return new CreateTaskRequest
             {
-                Done = taskFormModel.Finished,
+                Done = toDoFormModel.Finished,
                 ListId = listId,
-                Title = taskFormModel.Title,
+                Title = toDoFormModel.Title,
                 Created = now,
                 Updated = now
             };
         }
 
-        public static PutTaskRequest ToPutRequest(this TaskFormModel taskFormModel)
+        public static PutTaskRequest ToPutRequest(this ToDoFormModel toDoFormModel)
         {
             return new PutTaskRequest
             {
-                Done = taskFormModel.Finished,
-                Title = taskFormModel.Title,
+                Done = toDoFormModel.Finished,
+                Title = toDoFormModel.Title,
                 Updated = DateTime.UtcNow
             };
         }
 
-        public static async Task<TaskCreateEditViewModel> ToTaskCreateEditViewModel(this TaskFormModel taskFormModel, StellarDsResult<ListResult> stellarDsListResult, DownloadBlobFromApi downloadBlobFromApi)
+        public static async Task<ToDoCreateEditViewModel> ToTaskCreateEditViewModel(this ToDoFormModel toDoFormMOdel, StellarDsResult<ListResult> stellarDsListResult, DownloadBlobFromApi downloadBlobFromApi)
         {
             if (stellarDsListResult.Data is not { } listResult)
             {
-                return new TaskCreateEditViewModel
+                return new ToDoCreateEditViewModel
                 {
                     ErrorMessages = stellarDsListResult.Messages
                 };
             }
 
-            return new TaskCreateEditViewModel
+            return new ToDoCreateEditViewModel
             {
                 ListEntity = await listResult.ToListEntityModel(downloadBlobFromApi),
-                TaskFormModel = taskFormModel
+                TaskFormModel = toDoFormMOdel
             };
         }
     }

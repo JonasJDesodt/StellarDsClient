@@ -60,21 +60,21 @@ namespace StellarDsClient.Ui.Mvc.Builders
                 ReadOnlyToken = readOnlyToken
             };
 
-            var models = new Dictionary<Type, string> { { typeof(List), listTableName }, { typeof(ToDo), "toDo_" + toDoTableName } };
+            var models = new Dictionary<Type, string> { { typeof(List), listTableName }, { typeof(ToDo), toDoTableName } };
 
-            var minimalWebApplicationBuilder = WebApplication.CreateBuilder();
+            var builder = WebApplication.CreateBuilder();
 
-            var cookieSettings = minimalWebApplicationBuilder.Configuration.GetSection(nameof(CookieSettings)).Get<CookieSettings>() ?? throw new NullReferenceException($"Unable to get the {nameof(CookieSettings)}");
-            var oAuthSettings = minimalWebApplicationBuilder.Configuration.GetSection(nameof(OAuthSettings)).Get<OAuthSettings>() ?? throw new NullReferenceException("Unable to get the OAuthSettings from appsettings.json.");
-            var apiSettings = minimalWebApplicationBuilder.Configuration.GetSection(nameof(ApiSettings)).Get<ApiSettings>() ?? throw new NullReferenceException("Unable to get the ApiSettings from appsettings.json.");
+            var cookieSettings = builder.Configuration.GetSection(nameof(CookieSettings)).Get<CookieSettings>() ?? throw new NullReferenceException($"Unable to get the {nameof(CookieSettings)}");
+            var oAuthSettings = builder.Configuration.GetSection(nameof(OAuthSettings)).Get<OAuthSettings>() ?? throw new NullReferenceException("Unable to get the OAuthSettings from appsettings.json.");
+            var apiSettings = builder.Configuration.GetSection(nameof(ApiSettings)).Get<ApiSettings>() ?? throw new NullReferenceException("Unable to get the ApiSettings from appsettings.json.");
 
-            minimalWebApplicationBuilder.Services.AddHttpClient(apiSettings.Name, httpClient =>
+            builder.Services.AddHttpClient(apiSettings.Name, httpClient =>
             {
                 httpClient.BaseAddress = new Uri(apiSettings.BaseAddress);
             });
 
-            minimalWebApplicationBuilder.Services.AddHttpContextAccessor();
-            minimalWebApplicationBuilder.Services
+            builder.Services.AddHttpContextAccessor();
+            builder.Services
                 .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
@@ -83,35 +83,27 @@ namespace StellarDsClient.Ui.Mvc.Builders
                     options.SlidingExpiration = false;
                 });
 
-
-            var minimalWebApplication = minimalWebApplicationBuilder.Build();
+            var minimalWebApplication = builder.Build();
 
             minimalWebApplication.MapGet("/", () => Results.Redirect($"https://stellards.io/oauth?client_id={oAuthCredentials.ClientId}&redirect_uri={oAuthCredentials.RedirectUri}&response_type=code"));
 
-            minimalWebApplication.MapGet(
-                "/oauth/oauthcallback", 
-                async ([FromQuery] string code,
-                    IHttpClientFactory httpClientFactory, 
-                    IHttpContextAccessor httpContextAccessor,
-                    HttpContext httpContext) =>
+            minimalWebApplication.MapGet("/oauth/oauthcallback", async ([FromQuery] string code, IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, HttpContext httpContext) =>
             {
                 var oAuthApiService = new OAuthApiService(httpClientFactory, apiSettings, oAuthCredentials, oAuthSettings);
 
                 var tokens = await oAuthApiService.GetTokensAsync(code);
 
-                var oAuthTokenProvider = new OAuthTokenProvider(new OAuthTokenStore(httpContextAccessor, cookieSettings), oAuthApiService, httpContextAccessor);
-                await oAuthTokenProvider.BrowserSignIn(tokens);
+                var oAuthAccessTokenProvider = new OAuthAccessTokenProvider(new OAuthTokenStore(httpContextAccessor, cookieSettings), oAuthApiService, httpContextAccessor);
+                await oAuthAccessTokenProvider.BrowserSignIn(tokens);
 
-                var schemaService = new SchemaApiService<OAuthTokenProvider>(httpClientFactory, apiSettings, apiCredentials, oAuthTokenProvider);
+                var schemaService = new SchemaApiService<OAuthAccessTokenProvider>(httpClientFactory, apiSettings, apiCredentials, oAuthAccessTokenProvider);
 
                 var tableSettings = new TableSettings { };
                 foreach (var model in models)
                 {
                     var stellarDsResult = await schemaService.CreateTable(model.Key, model.Value);
 
-                    var metaData = 
-                        stellarDsResult.Data ?? 
-                        throw new NullReferenceException($"Unable to retrieve metadata for model {model.Key}. The table is probably not build.");
+                    var metaData = stellarDsResult.Data ?? throw new NullReferenceException($"Unable to retrieve metadata for model {model.Key}. The table is probably not build.");
                     
                     tableSettings.Add(model.Key.Name, metaData.Id);
                 }

@@ -15,7 +15,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
     [Authorize]
     [Route("lists")]
     [ProvideOAuthBaseAddress]
-    public class ListController(DataApiService<ReadonlyAccessTokenProvider> readOnlyDataApiService, DataApiService<OAuthTokenProvider> oAuthDataApiService) : Controller
+    public class ListController(DataApiService<ReadonlyAccessTokenProvider> readOnlyDataApiService, DataApiService<OAuthAccessTokenProvider> oAuthDataApiService) : Controller
     {
         [HttpGet]
         [Route("index")]

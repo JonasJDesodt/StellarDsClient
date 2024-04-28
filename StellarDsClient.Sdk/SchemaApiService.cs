@@ -12,16 +12,16 @@ namespace StellarDsClient.Sdk
 {
     public class SchemaApiService<TTokenProvider>(IHttpClientFactory httpClientFactory, ApiSettings apiSettings, ApiCredentials apiCredentials, TTokenProvider tokenProvider) where TTokenProvider : ITokenProvider
     {
-        public async Task<Dto.Transfer.StellarDsResult<IList<TableResult>>> FindTables()
+        public async Task<StellarDsResult<IList<TableResult>>> FindTables()
         {
             var httpClient = await GetHttpClientAsync();
 
             var httpResponseMessage = await httpClient.GetAsync($"v1/schema/table?project={apiCredentials.Project}");
-  
+
             return await httpResponseMessage.ToStellarDsResult<IList<TableResult>>();
         }
 
-        public async Task<Dto.Transfer.StellarDsResult<TableResult>> GetTable(int id)
+        public async Task<StellarDsResult<TableResult>> GetTable(int id)
         {
             var httpClient = await GetHttpClientAsync();
 
@@ -31,7 +31,7 @@ namespace StellarDsClient.Sdk
         }
 
         //todo: create request
-        public async Task<Dto.Transfer.StellarDsResult<TableResult>> CreateTable(string title, string? description, bool isMultiTenant)
+        public async Task<StellarDsResult<TableResult>> CreateTable(string title, string? description, bool isMultiTenant)
         {
             var httpClient = await GetHttpClientAsync();
 
@@ -39,8 +39,8 @@ namespace StellarDsClient.Sdk
 
             return await httpResponseMessage.ToStellarDsResult<TableResult>();
         }
-        
-        public async Task<Dto.Transfer.StellarDsResult<IList<FieldResult>>> GetFields(int tableId)
+
+        public async Task<StellarDsResult<IList<FieldResult>>> GetFields(int tableId)
         {
             var httpClient = await GetHttpClientAsync();
 
@@ -50,7 +50,7 @@ namespace StellarDsClient.Sdk
         }
 
 
-        public async Task<Dto.Transfer.StellarDsResult<FieldResult>> CreateField(int tableId, string title, string stellarDsType)
+        public async Task<StellarDsResult<FieldResult>> CreateField(int tableId, string title, string stellarDsType)
         {
             var httpClient = await GetHttpClientAsync();
 
@@ -61,9 +61,9 @@ namespace StellarDsClient.Sdk
 
         public async Task<StellarDsResult<TableResult>> CreateTable(Type model, string name)
         {
-            var metaData =  model.GetCustomAttribute<StellarDsTable>() ?? throw new NullReferenceException($"{nameof(model)} is not decorated with a StellarDsTable attribute");
-            
-            var stellarDsResult = await CreateTable(name.ToLowerInvariant(), metaData.Description, metaData.IsMultiTenant);
+            var metaData = model.GetCustomAttribute<StellarDsTable>() ?? throw new NullReferenceException($"{nameof(model)} is not decorated with a StellarDsTable attribute");
+
+            var stellarDsResult = await CreateTable(name, metaData.Description, metaData.IsMultiTenant);
 
             if (stellarDsResult.Data is not { } tableResult) return stellarDsResult;
 
@@ -72,7 +72,7 @@ namespace StellarDsClient.Sdk
                 var stellarDsType = property.GetCustomAttribute<StellarDsProperty>()?.Type ?? throw new NullReferenceException($"{nameof(property)} is not decorated with a StellarDsProperty attribute.");
 
                 //todo: do something with the stellarDsresult
-                await CreateField(tableResult.Id, property.Name.ToLowerInvariant(), stellarDsType);
+                await CreateField(tableResult.Id, property.Name, stellarDsType);
             }
 
             return stellarDsResult;

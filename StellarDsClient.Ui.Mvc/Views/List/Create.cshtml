@@ -4,7 +4,7 @@
     ViewData["Title"] = "Create list";
 }
 
-@if (Model.ErrorMessages is not null)
+@if (Model.ErrorMessages is not null && Model.ErrorMessages.Count > 0)
 {
     <partial name="_ErrorMessagesPartial" model="@Model.ErrorMessages" />
 }

@@ -45,7 +45,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
                 queries.Add($"{nameof(ToDo.ListId)};equal;{listId}");
             }
 
-            return query + HttpUtility.UrlEncode(string.Join("&", queries)) + $"&sortQuery={taskIndexFilter.Sort ?? "created"};{(taskIndexFilter.SortAscending is true or null ? "asc" : "desc")}";
+            return query + HttpUtility.UrlEncode(string.Join("&", queries)) + $"&sortQuery={HttpUtility.UrlEncode($"{taskIndexFilter.Sort ?? "created"};{(taskIndexFilter.SortAscending is true or null ? "asc" : "desc")}")}";
         }
 
         public static int GetActiveCount(this TaskIndexFilter filter)

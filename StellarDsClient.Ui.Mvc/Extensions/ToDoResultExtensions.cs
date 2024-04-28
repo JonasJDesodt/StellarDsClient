@@ -3,16 +3,16 @@ using StellarDsClient.Ui.Mvc.Models.FormModels;
 
 namespace StellarDsClient.Ui.Mvc.Extensions
 {
-    public static class TaskResultExtensions
+    public static class ToDoResultExtensions
     {
-        public static IList<TaskFormModel> ToTaskFormModels(this IList<TaskResult> taskResults)
+        public static IList<ToDoFormModel> ToToDoFormModels(this IList<TaskResult> taskResults)
         {
-            return taskResults.Select(tr => tr.ToTaskFormModel()).ToList();
+            return taskResults.Select(tr => tr.ToToDoFormModel()).ToList();
         }
 
-        public static TaskFormModel ToTaskFormModel(this TaskResult taskResult)
+        public static ToDoFormModel ToToDoFormModel(this TaskResult taskResult)
         {
-            return new TaskFormModel
+            return new ToDoFormModel
             {
                 Finished = taskResult.Done,
                 Title = taskResult.Title,

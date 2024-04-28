@@ -13,7 +13,7 @@ namespace StellarDsClient.Sdk.Extensions
     {
         //todo: api returns custom code: 'LimitReached' {"messages":[{"code":"LimitReached","message":"The requests limit of 500 has been reached. Upgrade your project tier to continue.","type":30}],"isSuccess":false}
 
-        public static HttpResponseMessage EnsureSerializableContent(this HttpResponseMessage httpResponseMessage)
+        private static HttpResponseMessage EnsureSerializableContent(this HttpResponseMessage httpResponseMessage)
         {
             if (httpResponseMessage.StatusCode is not HttpStatusCode.TooManyRequests or HttpStatusCode.Unauthorized)
             {

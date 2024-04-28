@@ -16,7 +16,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
     [Authorize]
     [Route("tasks/{listId:int}")]
     [ProvideOAuthBaseAddress]
-    public class ToDoController(DataApiService<ReadonlyAccessTokenProvider> readOnlyDataApiService, DataApiService<OAuthTokenProvider> oAuthDataApiService) : Controller
+    public class ToDoController(DataApiService<ReadonlyAccessTokenProvider> readOnlyDataApiService, DataApiService<OAuthAccessTokenProvider> oAuthDataApiService) : Controller
     {
         [HttpGet]
         [Route("index")]
@@ -44,7 +44,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("create")]
-        public async Task<IActionResult> Create([FromRoute] int listId, [FromForm] TaskFormModel taskFormModel)
+        public async Task<IActionResult> Create([FromRoute] int listId, [FromForm] ToDoFormModel taskFormModel)
         {
             var stellarDsListResult = await oAuthDataApiService.Get<ListResult>(nameof(List), listId);
 
@@ -73,7 +73,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("edit/{id:int}")]
-        public async Task<IActionResult> Edit([FromRoute] int listId, [FromRoute] int id, [FromForm] TaskFormModel taskFormModel)
+        public async Task<IActionResult> Edit([FromRoute] int listId, [FromRoute] int id, [FromForm] ToDoFormModel taskFormModel)
         {
             var stellarDsListResult = await oAuthDataApiService.Get<ListResult>(nameof(List), listId);
 

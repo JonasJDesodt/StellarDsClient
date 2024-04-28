@@ -1,0 +1,18 @@
+﻿@model ResetTablesFormModel
+
+@{
+    ViewData["Title"] = "Reset tables"; 
+}
+
+<h2>Reset tables</h2>
+
+<form method="post">
+    <p>Are you sure you want to create and use new tables? This process does not delete any tables from Stellar DataStore.</p>
+    
+    <input asp-for="@Model.UserName" />
+
+    <div class="buttons">
+        <a asp-controller="Admin" asp-action="Index" class="button">No</a>
+        <button type="submit" class="warning">Yes</button>
+    </div>
+</form>

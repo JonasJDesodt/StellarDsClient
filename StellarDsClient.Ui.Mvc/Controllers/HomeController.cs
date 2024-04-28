@@ -20,7 +20,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
 {
     [Authorize]
     [ProvideOAuthBaseAddress]
-    public class HomeController(DataApiService<OAuthTokenProvider> dataApiService) : Controller
+    public class HomeController(DataApiService<OAuthAccessTokenProvider> dataApiService) : Controller
     {
         public async Task<IActionResult> Index()
         {

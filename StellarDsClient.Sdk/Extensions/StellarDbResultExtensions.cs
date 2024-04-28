@@ -53,7 +53,7 @@ namespace StellarDsClient.Sdk.Extensions
             [
                 new StellarDsErrorMessage()
                 {
-                    Code = HttpStatusCode.TooManyRequests,
+                    Code = HttpStatusCode.TooManyRequests, //todo => this should be rate limit reached message
                     Message = "Rate limit reached.", //todo: add the stellardb error message?
                     Type = 0 // todo
                 }

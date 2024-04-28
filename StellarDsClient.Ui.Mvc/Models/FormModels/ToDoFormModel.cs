@@ -2,7 +2,7 @@
 
 namespace StellarDsClient.Ui.Mvc.Models.FormModels
 {
-    public class TaskFormModel : BaseFormModel
+    public class ToDoFormModel : BaseFormModel
     {
         [Required]
         [MaxLength(255)]

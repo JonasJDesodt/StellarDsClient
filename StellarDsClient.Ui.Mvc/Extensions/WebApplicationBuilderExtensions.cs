@@ -11,6 +11,16 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 {
     internal static class WebApplicationBuilderExtensions 
     {
+        internal static WebApplicationBuilder AddStellarDsClientServices(this WebApplicationBuilder webApplicationBuilder, TableSettings? tableSettings) 
+        {
+            tableSettings ??= [];
+
+
+
+            return webApplicationBuilder;
+        }
+
+
         //todo: move to sdk? 
         internal static WebApplicationBuilder AddStellarDsClientServices(this WebApplicationBuilder builder)
         {
@@ -61,9 +71,9 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 
             builder.Services.AddScoped<OAuthApiService>();
 
-            builder.Services.AddScoped<OAuthTokenProvider>();
+            builder.Services.AddScoped<OAuthAccessTokenProvider>();
             builder.Services.AddScoped<ReadonlyAccessTokenProvider>();
-            builder.Services.AddScoped<DataApiService<OAuthTokenProvider>>();
+            builder.Services.AddScoped<DataApiService<OAuthAccessTokenProvider>>();
             builder.Services.AddScoped<DataApiService<ReadonlyAccessTokenProvider>>();
 
             return builder;

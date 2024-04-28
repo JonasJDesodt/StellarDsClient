@@ -1,10 +1,10 @@
-﻿@model TaskCreateEditViewModel
+﻿@model ToDoCreateEditViewModel
 
 @{
     ViewData["Title"] = $"{Model.ListEntity?.Title ?? "List"}: edit {Model.TaskFormModel?.Title}";
 }
 
-@if (Model.ErrorMessages is not null)
+@if (Model.ErrorMessages is not null && Model.ErrorMessages.Count > 0)
 {
     <partial name="_ErrorMessagesPartial" model="@Model.ErrorMessages" />
 }
