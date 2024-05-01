@@ -4,7 +4,7 @@ namespace StellarDsClient.Sdk.Dto.Transfer
 {
     public class StellarDsErrorMessage
     {
-        public required HttpStatusCode Code { get; set; }
+        public required string Code { get; set; }
 
         public required string Message { get; set; }
 

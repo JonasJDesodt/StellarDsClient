@@ -49,7 +49,6 @@ namespace StellarDsClient.Sdk
             return await httpResponseMessage.ToStellarDsResult<IList<FieldResult>>();
         }
 
-
         public async Task<StellarDsResult<FieldResult>> CreateField(int tableId, string title, string stellarDsType)
         {
             var httpClient = await GetHttpClientAsync();

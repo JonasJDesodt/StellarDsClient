@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Json;
@@ -10,25 +11,27 @@ using StellarDsClient.Sdk.Dto.Transfer;
 namespace StellarDsClient.Sdk.Extensions
 {
     internal static class HttpResponseMessageExtensions
-    {
-        //todo: api returns custom code: 'LimitReached' {"messages":[{"code":"LimitReached","message":"The requests limit of 500 has been reached. Upgrade your project tier to continue.","type":30}],"isSuccess":false}
-
-        private static HttpResponseMessage EnsureSerializableContent(this HttpResponseMessage httpResponseMessage)
+    {      
+        private static HttpResponseMessage LogResponseMessageException(this HttpResponseMessage httpResponseMessage)
         {
-            if (httpResponseMessage.StatusCode is not HttpStatusCode.TooManyRequests or HttpStatusCode.Unauthorized)
+            try
             {
                 httpResponseMessage.EnsureSuccessStatusCode();
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex); //todo: log it!
             }
 
             return httpResponseMessage;
         }
 
-        public static async Task<Dto.Transfer.StellarDsResult<TResult>> ToStellarDsResult<TResult>(this HttpResponseMessage httpResponseMessage) where TResult : class
+        public static async Task<StellarDsResult<TResult>> ToStellarDsResult<TResult>(this HttpResponseMessage httpResponseMessage) where TResult : class
         {
             var result = await httpResponseMessage
-                .EnsureSerializableContent()
+                .LogResponseMessageException()
                 .Content
-                .ReadFromJsonAsync<Dto.Transfer.StellarDsResult<TResult>>();
+                .ReadFromJsonAsync<StellarDsResult<TResult>>();
 
             return result.ToNonNullable();
         }

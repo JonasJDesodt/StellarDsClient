@@ -4,7 +4,7 @@ using System.Security.Claims;
 
 namespace StellarDsClient.Ui.Mvc.Attributes
 {
-    public class MatchesCurrentUserName : ValidationAttribute
+    public class MatchesCurrentUsername : ValidationAttribute
     {
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {

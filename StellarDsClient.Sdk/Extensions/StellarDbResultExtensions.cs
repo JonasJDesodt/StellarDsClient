@@ -25,7 +25,7 @@ namespace StellarDsClient.Sdk.Extensions
             [
                 new StellarDsErrorMessage()
                 {
-                    Code = HttpStatusCode.Unauthorized,
+                    Code = HttpStatusCode.Unauthorized.ToString(),
                     Message = "The refresh token has expired.",
                     Type = 0 // todo
                 }
@@ -33,32 +33,32 @@ namespace StellarDsClient.Sdk.Extensions
         }
 
 
-        public static StellarDsResult TooManyRequests(this StellarDsResult result)
-        {
-            result.AddTooManyRequests();
+        //public static StellarDsResult TooManyRequests(this StellarDsResult result)
+        //{
+        //    result.AddTooManyRequests();
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        public static Dto.Transfer.StellarDsResult<T> TooManyRequests<T>(this Dto.Transfer.StellarDsResult<T> result) where T : class
-        {
-            result.AddTooManyRequests();
+        //public static Dto.Transfer.StellarDsResult<T> TooManyRequests<T>(this Dto.Transfer.StellarDsResult<T> result) where T : class
+        //{
+        //    result.AddTooManyRequests();
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        private static void AddTooManyRequests(this StellarDsResult result)
-        {
-            result.Messages =
-            [
-                new StellarDsErrorMessage()
-                {
-                    Code = HttpStatusCode.TooManyRequests, //todo => this should be rate limit reached message
-                    Message = "Rate limit reached.", //todo: add the stellardb error message?
-                    Type = 0 // todo
-                }
-            ];
-        }
+        //private static void AddTooManyRequests(this StellarDsResult result)
+        //{
+        //    result.Messages =
+        //    [
+        //        new StellarDsErrorMessage()
+        //        {
+        //            Code = "RateL", //todo => this should be rate limit reached message
+        //            Message = "Rate limit reached.", //todo: add the stellardb error message?
+        //            Type = 0 // todo
+        //        }
+        //    ];
+        //}
 
         public static Dto.Transfer.StellarDsResult<T> ToNonNullable<T>(this Dto.Transfer.StellarDsResult<T>? result) where T : class
         {

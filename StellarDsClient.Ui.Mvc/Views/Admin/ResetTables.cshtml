@@ -9,7 +9,12 @@
 <form method="post">
     <p>Are you sure you want to create and use new tables? This process does not delete any tables from Stellar DataStore.</p>
     
-    <input asp-for="@Model.UserName" />
+    <div>
+        <label asp-for="@Model.Username">Please enter your username as confirmation</label>
+        <input asp-for="@Model.Username" />
+        <span asp-validation-for="@Model.Username"></span>
+    </div>
+
 
     <div class="buttons">
         <a asp-controller="Admin" asp-action="Index" class="button">No</a>

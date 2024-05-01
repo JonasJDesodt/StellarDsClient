@@ -14,8 +14,6 @@ using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//var tableSettings = builder.Configuration.GetSection(nameof(TableSettings)).Get<TableSettings>();
-
 if (builder.Configuration.GetSection(nameof(CookieSettings)).Get<CookieSettings>() is not { } cookieSettings)
 {
     Debug.WriteLine("Unable to retrieve the CookieSettings from appsettings.json");
@@ -51,12 +49,6 @@ if (builder.Configuration.GetSection(nameof(ApiCredentials)).Get<ApiCredentials>
     return;
 }
 
-//if (tableSettings is null || !tableSettings.Validate())
-//{
-//    Debug.WriteLine("Unable to retrieve the TableSettings from appsettings.json");
-
-//    return;
-//}
 
 Batteries_V2.Init();
 

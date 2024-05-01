@@ -2,7 +2,7 @@
 {
     public class StellarDsResult
     {
-        public IList<Sdk.Dto.Transfer.StellarDsErrorMessage> Messages { get; set; } = [];
+        public IList<StellarDsErrorMessage> Messages { get; set; } = [];
 
         public bool? IsSuccess { get; set; }
     }

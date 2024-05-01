@@ -8,7 +8,7 @@ namespace StellarDsClient.Ui.Mvc.Models.FormModels
 
         public int? CurrentToDoTableId { get; set; }
 
-        [MatchesCurrentUserName]
-        public required string UserName { get; set; }
+        [MatchesCurrentUsername]
+        public required string Username { get; set; }
     }
 }

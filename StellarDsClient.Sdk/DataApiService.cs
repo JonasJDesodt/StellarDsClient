@@ -179,7 +179,6 @@ namespace StellarDsClient.Sdk
             return await httpResponse.Content.ReadAsByteArrayAsync();
         }
 
-
         private string GetDefaultRequestUri(int table)
         {
             return $"{_requestUriBase}?project={apiCredentials.Project}&table={table}";
@@ -202,21 +201,23 @@ namespace StellarDsClient.Sdk
                 .AddAuthorization(await tokenProvider.Get());
         }
 
-        private static async Task<Dto.Transfer.StellarDsResult<TResult>> GetAsync<TResult>(HttpClient httpClient, string uri) where TResult : class
+        private static async Task<StellarDsResult<TResult>> GetAsync<TResult>(HttpClient httpClient, string uri) where TResult : class
         {
             var httpResponseMessage = await httpClient.GetAsync(uri);
+
+            var flag = await httpResponseMessage.Content.ReadAsStringAsync();
 
             return await httpResponseMessage.ToStellarDsResult<TResult>();
         }
 
-        private static async Task<Dto.Transfer.StellarDsResult<TResult>> PostAsJsonAsync<TRequest, TResult>(HttpClient httpClient, string uri, IList<TRequest> requests) where TRequest : class where TResult : class
+        private static async Task<StellarDsResult<TResult>> PostAsJsonAsync<TRequest, TResult>(HttpClient httpClient, string uri, IList<TRequest> requests) where TRequest : class where TResult : class
         {
             var httpResponseMessage = await httpClient.PostAsJsonAsync(uri, new { records = requests });
 
             return await httpResponseMessage.ToStellarDsResult<TResult>();
         }
 
-        private static async Task<Dto.Transfer.StellarDsResult<TResult>> PutAsJsonAsync<TRequest, TResult>(HttpClient httpClient, string uri, IList<int> ids, TRequest request) where TRequest : class where TResult : class
+        private static async Task<StellarDsResult<TResult>> PutAsJsonAsync<TRequest, TResult>(HttpClient httpClient, string uri, IList<int> ids, TRequest request) where TRequest : class where TResult : class
         {
             var httpResponseMessage = await httpClient.PutAsJsonAsync(uri, new { idList = ids, record = request });
 

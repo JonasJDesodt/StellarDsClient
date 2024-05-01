@@ -5,6 +5,7 @@ using StellarDsClient.Sdk;
 using StellarDsClient.Sdk.Settings;
 using StellarDsClient.Ui.Mvc.Extensions;
 using StellarDsClient.Ui.Mvc.Models.FormModels;
+using StellarDsClient.Ui.Mvc.Models.ViewModels;
 using StellarDsClient.Ui.Mvc.Providers;
 using StellarDsClient.Ui.Mvc.Services;
 
@@ -16,7 +17,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            return View();
+            return View(new AdminViewModel { CurrentListTableId = tableSettings[nameof(List)], CurrentToDoTableId = tableSettings[nameof(ToDo)] });
         }
 
         [HttpGet]

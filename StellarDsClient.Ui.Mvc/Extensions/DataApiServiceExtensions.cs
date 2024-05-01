@@ -19,6 +19,9 @@ namespace StellarDsClient.Ui.Mvc.Extensions
     {
         internal static async Task<StellarDsResult<ListResult>> GetLastUpdatedList(this DataApiService<OAuthAccessTokenProvider> dataApiService)
         {
+
+
+
             var pagination = new Pagination
             {
                 Page = 1,

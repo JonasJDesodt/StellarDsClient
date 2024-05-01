@@ -20,10 +20,15 @@ namespace StellarDsClient.Ui.Mvc.Controllers
 {
     [Authorize]
     [ProvideOAuthBaseAddress]
-    public class HomeController(DataApiService<OAuthAccessTokenProvider> dataApiService) : Controller
+    public class HomeController(DataApiService<OAuthAccessTokenProvider> dataApiService, TableSettings tableSettings) : Controller
     {
         public async Task<IActionResult> Index()
         {
+            if (!tableSettings.Validate())
+            {
+                return RedirectToAction("Index", "Admin");
+            }
+
             var stellarDsResult = await dataApiService.GetLastUpdatedList();
 
             return View(await stellarDsResult.ToHomeViewModel(dataApiService.DownloadBlobFromApi));
