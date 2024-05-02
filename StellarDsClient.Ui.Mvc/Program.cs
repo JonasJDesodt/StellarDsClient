@@ -1,13 +1,11 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.JsonWebTokens;
-using SQLitePCL;
 using StellarDsClient.Models.Mappers;
 using StellarDsClient.Sdk;
 using StellarDsClient.Sdk.Settings;
 using StellarDsClient.Ui.Mvc.Extensions;
 using StellarDsClient.Ui.Mvc.Models.Settings;
 using StellarDsClient.Ui.Mvc.Providers;
-using StellarDsClient.Ui.Mvc.Services;
 using StellarDsClient.Ui.Mvc.Stores;
 using System.Diagnostics;
 
@@ -49,12 +47,15 @@ if (builder.Configuration.GetSection(nameof(ApiCredentials)).Get<ApiCredentials>
     return;
 }
 
+if(builder.Configuration.GetSection(nameof(TableNames)).Get<TableNames>() is not { } tableNames)
+{
+    Debug.WriteLine("Unable to retrieve the TableNames from appsettings.json");
 
-Batteries_V2.Init();
+    return;
+}
+
 
 builder.Services.AddControllersWithViews();
-
-builder.Services.AddSingleton<SqliteService>();
 
 builder.Services.AddSingleton(apiCredentials);
 
@@ -65,6 +66,8 @@ builder.Services.AddSingleton(cookieSettings);
 builder.Services.AddSingleton(apiSettings);
 
 builder.Services.AddSingleton(oAuthSettings);
+
+builder.Services.AddSingleton(tableNames);
 
 builder.Services.AddSingleton(new TableSettings());
 
@@ -111,28 +114,6 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
-var sqliteService = app.Services.GetService<SqliteService>();
-if(sqliteService is null)
-{
-    Debug.WriteLine("Unable to get the SqliteService from the ServiceCollection");
-    return;
-};
-
-sqliteService.EnsureDatabase();
-
-var tableSettings = app.Services.GetService<TableSettings>();
-if(tableSettings is null)
-{
-    Debug.WriteLine("Unable to get the TableSettings from the ServiceCollection.");
-    return;
-}
-
-var listTableId = sqliteService.GetTableId(nameof(List));
-tableSettings.Add(nameof(List), listTableId ?? 0);
-
-var toDoTableId = sqliteService.GetTableId(nameof(ToDo));
-tableSettings.Add(nameof(ToDo), toDoTableId ?? 0);
 
 
 app.UseHttpsRedirection();

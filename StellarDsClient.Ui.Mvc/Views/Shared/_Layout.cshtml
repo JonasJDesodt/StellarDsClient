@@ -48,15 +48,6 @@
                     {
                         <li><a asp-controller="List" asp-action="Index">Lists</a></li>
                     }
-
-                    if (ViewData["Title"]?.Equals("Admin") == true)
-                    {
-                        <li class="active">Admin</li>
-                    }
-                    else
-                    {
-                        <li><a asp-controller="Admin" asp-action="Index">Admin</a></li>
-                    }
                 }
             </ul>
         </nav>
