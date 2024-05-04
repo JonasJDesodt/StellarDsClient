@@ -50,7 +50,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
                 Sort = "updated"
             };
 
-            var taskStellarDsResult = await dataApiService.Find<TaskResult>(nameof(ToDo), taskIndexFilter.GetQuery() + pagination.GetQuery());
+            var taskStellarDsResult = await dataApiService.Find<ToDoResult>(nameof(ToDo), taskIndexFilter.GetQuery() + pagination.GetQuery());
 
             if (taskStellarDsResult.Data?.FirstOrDefault() is not { } taskResult)
             {
@@ -73,7 +73,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 
         internal static async Task DeleteListWithTasks(this DataApiService<OAuthAccessTokenProvider> dataApiService, int id)
         {
-            if ((await dataApiService.Find<TaskResult>(nameof(ToDo), $"&whereQuery={HttpUtility.UrlEncode($"{nameof(ToDo.ListId)};equal;{id}")}")).Data is not { } taskResults)
+            if ((await dataApiService.Find<ToDoResult>(nameof(ToDo), $"&whereQuery={HttpUtility.UrlEncode($"{nameof(ToDo.ListId)};equal;{id}")}")).Data is not { } taskResults)
             {
                 return;  //todo error? do not allow to delete the list without deleting tasks possibly associated with it
             }
@@ -133,7 +133,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             taskIndexFilter ??= new TaskIndexFilter();
             taskIndexFilter.ListId = listId;
 
-            var stellarDsTaskResult = await dataApiService.Find<TaskResult>(nameof(ToDo), pagination.GetQuery() + taskIndexFilter.GetQuery());
+            var stellarDsTaskResult = await dataApiService.Find<ToDoResult>(nameof(ToDo), pagination.GetQuery() + taskIndexFilter.GetQuery());
             if (stellarDsTaskResult.Data is not { } taskResults)
             {
                 return new StellarDsResult<ListUiModel>

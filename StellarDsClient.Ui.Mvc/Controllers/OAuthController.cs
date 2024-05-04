@@ -13,7 +13,6 @@ using System.Reflection;
 
 namespace StellarDsClient.Ui.Mvc.Controllers
 {
-    [ProvideOAuthBaseAddress]
     public class OAuthController(OAuthAccessTokenProvider oAuthAccessTokenProvider, SchemaApiService<OAuthAccessTokenProvider> schemaApiService, TableNames tableNames, TableSettings tableSettings) : Controller
     {
         private readonly OAuthApiService _oAuthApiService = oAuthAccessTokenProvider.OAuthApiService;

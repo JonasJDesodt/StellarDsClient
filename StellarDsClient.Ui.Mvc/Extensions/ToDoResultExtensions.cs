@@ -5,12 +5,12 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 {
     public static class ToDoResultExtensions
     {
-        public static IList<ToDoFormModel> ToToDoFormModels(this IList<TaskResult> taskResults)
+        public static IList<ToDoFormModel> ToToDoFormModels(this IList<ToDoResult> taskResults)
         {
             return taskResults.Select(tr => tr.ToToDoFormModel()).ToList();
         }
 
-        public static ToDoFormModel ToToDoFormModel(this TaskResult taskResult)
+        public static ToDoFormModel ToToDoFormModel(this ToDoResult taskResult)
         {
             return new ToDoFormModel
             {

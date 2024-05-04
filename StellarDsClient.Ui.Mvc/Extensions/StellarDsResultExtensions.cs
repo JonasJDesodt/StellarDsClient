@@ -93,19 +93,19 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             };
         }
 
-        public static TaskIndexViewModel ToTaskIndexViewModel(this StellarDsResult<ListUiModel> stellarDsResult, Pagination pagination, TaskIndexFilter taskIndexFilter)
+        public static ToDoIndexViewModel ToTaskIndexViewModel(this StellarDsResult<ListUiModel> stellarDsResult, Pagination pagination, TaskIndexFilter taskIndexFilter)
         {
             var paginationPartialModel = pagination.ToPaginationPartialModel(stellarDsResult.Data?.TotalTaskResults ?? 0); //todo: handle null check better
 
             if (stellarDsResult.Data is not { } listEntity)
             {
-                return new TaskIndexViewModel
+                return new ToDoIndexViewModel
                 {
                     ErrorMessages = stellarDsResult.Messages
                 };
             }
 
-            return new TaskIndexViewModel
+            return new ToDoIndexViewModel
             {
                 PaginationPartialModel = paginationPartialModel,
                 List = listEntity,
@@ -113,7 +113,7 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             };
         }
 
-        public static async Task<ToDoCreateEditViewModel> ToTaskCreateEditViewModel(this StellarDsResult<TaskResult> stellarDsTaskResult, StellarDsResult<ListResult> stellarDsListResult, DownloadBlobFromApi downloadBlobFromApi, bool hasDeleteRequest = false)
+        public static async Task<ToDoCreateEditViewModel> ToTaskCreateEditViewModel(this StellarDsResult<ToDoResult> stellarDsTaskResult, StellarDsResult<ListResult> stellarDsListResult, DownloadBlobFromApi downloadBlobFromApi, bool hasDeleteRequest = false)
         {
             if (stellarDsTaskResult.Data is not { } taskResult || stellarDsListResult.Data is not { } listResult)
             {

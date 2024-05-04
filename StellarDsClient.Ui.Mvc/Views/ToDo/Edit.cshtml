@@ -1,7 +1,13 @@
-﻿@model ToDoCreateEditViewModel
+﻿@using System.Web
+@using StellarDsClient.Ui.Mvc.Controllers
+@model ToDoCreateEditViewModel
 
 @{
     ViewData["Title"] = $"{Model.ListEntity?.Title ?? "List"}: edit {Model.TaskFormModel?.Title}";
+
+    var queryParams = HttpUtility.ParseQueryString(ViewData[nameof(ToDoController)] as string ?? "").ToDictionary();
+
+    queryParams.Add("ListId", Model.ListEntity?.Id.ToString() ?? "0"); 
 }
 
 @if (Model.ErrorMessages is not null && Model.ErrorMessages.Count > 0)
@@ -14,8 +20,15 @@ else if (Model.ListEntity is not null && Model.TaskFormModel is not null)
         <h2>@ViewData["Title"]</h2>
 
         <partial name="_ListPartial" model="@Model.ListEntity" />
-    
-        <button id="return-button" class="warning">Return</button>
+
+        <div class="buttons">
+            <a asp-controller="ToDo"
+               asp-action="Index"
+               asp-all-route-data="@queryParams"
+               class="button">
+                Overview
+            </a>
+        </div>
 
         <form method="post" enctype="multipart/form-data">
             <partial name="_CreateEditPartial" model="@Model.TaskFormModel" />
@@ -25,7 +38,7 @@ else if (Model.ListEntity is not null && Model.TaskFormModel is not null)
                 <div class="buttons">
                     <button type="submit" class="button">Save</button>
 
-                    <a asp-action="Edit" class="button warning">Clear</a>
+                    <a asp-action="Edit" class="button warning">Undo changes</a>
 
                     <a asp-controller="ToDo" asp-action="DeleteRequest" asp-route-id="@Model.TaskFormModel.Id" asp-route-listId="@Model.ListEntity.Id" class="button danger">Delete</a>
                 </div>

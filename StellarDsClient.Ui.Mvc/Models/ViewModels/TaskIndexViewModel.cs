@@ -5,7 +5,7 @@ using StellarDsClient.Ui.Mvc.Models.UiModels;
 
 namespace StellarDsClient.Ui.Mvc.Models.ViewModels
 {
-    public class TaskIndexViewModel 
+    public class ToDoIndexViewModel 
     {
         public IList<StellarDsErrorMessage>? ErrorMessages { get; set; }
 

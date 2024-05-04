@@ -1,4 +1,6 @@
-﻿@model TaskIndexViewModel
+﻿@using System.Web
+@using StellarDsClient.Ui.Mvc.Controllers
+@model ToDoIndexViewModel
 
 @{
     ViewData["Title"] = @Model.List?.Title;
@@ -16,7 +18,12 @@ else if (Model.List is not null)
         <partial name="_ListPartial" model="@Model.List" />
 
         <div class="buttons">
-            <button id="return-button" class="warning">Return</button>
+            <a asp-controller="List"
+               asp-action="Index"
+               asp-all-route-data="@(HttpUtility.ParseQueryString(ViewData[nameof(ListController)] as string ?? "").ToDictionary())"
+               class="button">
+                Overview
+            </a>
 
             @if (@Model.List.OwnerId == User.GetId())
             {

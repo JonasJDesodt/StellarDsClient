@@ -1,7 +1,13 @@
-﻿@model ToDoCreateEditViewModel
+﻿@using System.Web
+@using StellarDsClient.Ui.Mvc.Controllers
+@model ToDoCreateEditViewModel
 
 @{
-    ViewData["Title"] = $"{Model.ListEntity?.Title ?? "List"}: Add task";
+    ViewData["Title"] = $"{Model.ListEntity?.Title ?? "List"}: Add todo";
+
+    var queryParams = HttpUtility.ParseQueryString(ViewData[nameof(ToDoController)] as string ?? "").ToDictionary();
+
+    queryParams.Add("ListId", Model.ListEntity?.Id.ToString() ?? "0"); //adds the listId, it will map as route data
 }
 
 @if (Model.ErrorMessages is not null && Model.ErrorMessages.Count > 0)
@@ -15,13 +21,22 @@ else if (Model.ListEntity is not null)
 
         <partial name="_ListPartial" model="@Model.ListEntity" />
 
-        <button id="return-button" class="warning">Return</button>
+        <div class="buttons">
+            <a asp-controller="ToDo"
+               asp-action="Index"
+               asp-all-route-data="@queryParams"
+               class="button">
+                Overview
+            </a>
+        </div>
 
         <form method="post">
             <partial name="_CreateEditPartial" model="Model.TaskFormModel" />
 
             <div class="buttons">
                 <button type="submit">Add</button>
+
+                <a asp-controller="ToDo" asp-action="Create" class="button warning">Clear</a>
             </div>
         </form>
     </section>

@@ -18,7 +18,7 @@ namespace StellarDsClient.Ui.Mvc.Models.UiModels
 
         public required string OwnerName { get; set; }
 
-        public IList<TaskResult> TaskResults = [];
+        public IList<ToDoResult> TaskResults = [];
 
         public required int TotalTaskResults;
 

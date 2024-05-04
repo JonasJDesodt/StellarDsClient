@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using StellarDsClient.Models.Mappers;
 using StellarDsClient.Models.Result;
@@ -9,16 +10,18 @@ using StellarDsClient.Ui.Mvc.Models.Filters;
 using StellarDsClient.Ui.Mvc.Models.FormModels;
 using StellarDsClient.Ui.Mvc.Models.ViewModels;
 using StellarDsClient.Ui.Mvc.Providers;
+using System.Collections.Generic;
+using System.Web;
 
 namespace StellarDsClient.Ui.Mvc.Controllers
 {
     [Authorize]
     [Route("lists")]
-    [ProvideOAuthBaseAddress]
     public class ListController(DataApiService<ReadonlyAccessTokenProvider> readOnlyDataApiService, DataApiService<OAuthAccessTokenProvider> oAuthDataApiService) : Controller
     {
         [HttpGet]
         [Route("index")]
+        [StoreQueryString]
         public async Task<IActionResult> Index([FromQuery] ListIndexFilter? listIndexFilter, [FromQuery] Pagination? pagination)
         {
             pagination ??= new Pagination();
@@ -42,6 +45,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
 
         [HttpGet]
         [Route("create")]
+        [ProvideQueryString(nameof(ListController))]
         public IActionResult Create()
         {
             return View(new ListCreateEditViewModel());
@@ -50,6 +54,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [HttpPost]
         [Route("create")]
         [ValidateAntiForgeryToken]
+        [ProvideQueryString(nameof(ListController))]
         public async Task<IActionResult> Create([FromForm] ListFormModel listFormModel)
         {
             if (!ModelState.IsValid)
@@ -62,11 +67,17 @@ namespace StellarDsClient.Ui.Mvc.Controllers
                 return RedirectToAction("SignOut", "OAuth");//todo: add message?
             }
 
-            return RedirectToAction("Index", "ToDo", new { ListId = await oAuthDataApiService.CreateListWithBlob(listFormModel, ownerId, ownerName) });
+            var listId = await oAuthDataApiService.CreateListWithBlob(listFormModel, ownerId, ownerName);
+
+            var queryParams = HttpUtility.ParseQueryString(HttpContext.Session.GetString(nameof(ListController)) ?? "").ToDictionary();
+            queryParams.Add("ListId", $"{listId}");
+
+            return RedirectToAction("Index", "ToDo", queryParams);        
         }
 
         [HttpGet]
         [Route("edit/{id:int}")]
+        [ProvideQueryString(nameof(ListController))]
         public async Task<IActionResult> Edit([FromRoute] int id)
         {
             var stellarDsResult = await oAuthDataApiService.Get<ListResult>(nameof(List), id);
@@ -77,6 +88,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [HttpPost]
         [Route("edit/{id:int}")]
         [ValidateAntiForgeryToken]
+        [ProvideQueryString(nameof(ListController))]
         public async Task<IActionResult> Edit([FromRoute] int id, [FromForm] ListFormModel listFormModel)
         {
             if (!ModelState.IsValid)
@@ -86,11 +98,12 @@ namespace StellarDsClient.Ui.Mvc.Controllers
 
             await oAuthDataApiService.UpdateListWithBlob(id, listFormModel);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", HttpUtility.ParseQueryString(HttpContext.Session.GetString(nameof(ListController)) ?? "").ToDictionary());
         }
 
         [HttpGet]
         [Route("delete-request/{id:int}")]
+        [ProvideQueryString(nameof(ListController))]
         public async Task<IActionResult> DeleteRequest([FromRoute] int id)
         {
             var stellarDsResult = await oAuthDataApiService.Get<ListResult>(nameof(List), id);
@@ -100,11 +113,12 @@ namespace StellarDsClient.Ui.Mvc.Controllers
 
         [HttpGet]
         [Route("delete/{id:int}")]
+        [ProvideQueryString(nameof(ListController))]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             await oAuthDataApiService.DeleteListWithTasks(id);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", HttpUtility.ParseQueryString(HttpContext.Session.GetString(nameof(ListController)) ?? "").ToDictionary());
         }
     }
 }

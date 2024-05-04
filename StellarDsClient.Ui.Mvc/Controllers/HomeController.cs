@@ -19,7 +19,6 @@ using StellarDsClient.Ui.Mvc.Providers;
 namespace StellarDsClient.Ui.Mvc.Controllers
 {
     [Authorize]
-    [ProvideOAuthBaseAddress]
     public class HomeController(DataApiService<OAuthAccessTokenProvider> dataApiService, TableSettings tableSettings) : Controller
     {
         public async Task<IActionResult> Index()

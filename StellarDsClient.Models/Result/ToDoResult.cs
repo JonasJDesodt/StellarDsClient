@@ -2,7 +2,7 @@
 
 namespace StellarDsClient.Models.Result
 {
-    public class TaskResult
+    public class ToDoResult
     {
         public required int Id { get; set; }
 

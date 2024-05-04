@@ -1,4 +1,6 @@
-﻿@model ListCreateEditViewModel
+﻿@using StellarDsClient.Ui.Mvc.Controllers
+@using System.Web
+@model ListCreateEditViewModel
 
 @{
     ViewData["Title"] = "Create list";
@@ -13,10 +15,18 @@ else
     <section class="content">
         <h2>@ViewData["Title"]</h2>
 
-        <button id="return-button" class="warning">Return</button>
+        <div class="buttons">
+            <a 
+                asp-controller="List" 
+                asp-action="Index" 
+                asp-all-route-data="@(HttpUtility.ParseQueryString(ViewData[nameof(ListController)] as string ?? "").ToDictionary())" 
+                class="button">
+                Overview
+            </a>
+        </div>
 
         <form method="post" enctype="multipart/form-data">
-            <partial name="_CreateEditPartial" model="@Model.ListFormModel"/>
+            <partial name="_CreateEditPartial" model="@Model.ListFormModel" />
 
             <div class="buttons">
                 <button type="submit">Create</button>

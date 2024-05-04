@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StellarDsClient.Models.Mappers;
@@ -14,12 +15,13 @@ using StellarDsClient.Ui.Mvc.Providers;
 namespace StellarDsClient.Ui.Mvc.Controllers
 {
     [Authorize]
-    [Route("tasks/{listId:int}")]
-    [ProvideOAuthBaseAddress]
+    [Route("todo/{listId:int}")]
     public class ToDoController(DataApiService<ReadonlyAccessTokenProvider> readOnlyDataApiService, DataApiService<OAuthAccessTokenProvider> oAuthDataApiService) : Controller
     {
         [HttpGet]
         [Route("index")]
+        [StoreQueryString]
+        [ProvideQueryString(nameof(ListController))]
         public async Task<IActionResult> Index([FromRoute] int listId, [FromQuery] TaskIndexFilter? taskIndexFilter, [FromQuery] Pagination? pagination)
         {
             pagination ??= new Pagination();
@@ -34,6 +36,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
 
         [HttpGet]
         [Route("create")]
+        [ProvideQueryString(nameof(ToDoController))]
         public async Task<IActionResult> Create([FromRoute] int listId)
         {
             var stellarDsListResult = await oAuthDataApiService.Get<ListResult>(nameof(List), listId);
@@ -44,6 +47,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("create")]
+        [ProvideQueryString(nameof(ToDoController))]
         public async Task<IActionResult> Create([FromRoute] int listId, [FromForm] ToDoFormModel taskFormModel)
         {
             var stellarDsListResult = await oAuthDataApiService.Get<ListResult>(nameof(List), listId);
@@ -53,19 +57,23 @@ namespace StellarDsClient.Ui.Mvc.Controllers
                 return View(await taskFormModel.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi));
             }
 
-            await oAuthDataApiService.Create<CreateTaskRequest, TaskResult>(nameof(ToDo), taskFormModel.ToCreateRequest(listId));
+            await oAuthDataApiService.Create<CreateTaskRequest, ToDoResult>(nameof(ToDo), taskFormModel.ToCreateRequest(listId));
             //todo: error if no success?
 
-            return RedirectToAction("Index", new { listId });
+            var queryParams = HttpUtility.ParseQueryString(HttpContext.Session.GetString(nameof(ToDoController)) ?? "").ToDictionary();
+            queryParams.Add("ListId", $"{listId}");
+
+            return RedirectToAction("Index", queryParams);
         }
 
         [HttpGet]
         [Route("edit/{id:int}")]
+        [ProvideQueryString(nameof(ToDoController))]
         public async Task<IActionResult> Edit([FromRoute] int listId, [FromRoute] int id)
         {
             var stellarDsListResult = await oAuthDataApiService.Get<ListResult>(nameof(List), listId);
 
-            var stellarDsTaskResult = await oAuthDataApiService.Get<TaskResult>(nameof(ToDo), id);
+            var stellarDsTaskResult = await oAuthDataApiService.Get<ToDoResult>(nameof(ToDo), id);
 
             return View(await stellarDsTaskResult.ToTaskCreateEditViewModel(stellarDsListResult, oAuthDataApiService.DownloadBlobFromApi));
         }
@@ -73,6 +81,7 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("edit/{id:int}")]
+        [ProvideQueryString(nameof(ToDoController))]
         public async Task<IActionResult> Edit([FromRoute] int listId, [FromRoute] int id, [FromForm] ToDoFormModel taskFormModel)
         {
             var stellarDsListResult = await oAuthDataApiService.Get<ListResult>(nameof(List), listId);
@@ -83,19 +92,23 @@ namespace StellarDsClient.Ui.Mvc.Controllers
 
             }
 
-            await oAuthDataApiService.Put<PutTaskRequest, TaskResult>(nameof(ToDo), id, taskFormModel.ToPutRequest());
+            await oAuthDataApiService.Put<PutTaskRequest, ToDoResult>(nameof(ToDo), id, taskFormModel.ToPutRequest());
             //todo: error if no success?
 
-            return RedirectToAction("Index", new { listId });
+            var queryParams = HttpUtility.ParseQueryString(HttpContext.Session.GetString(nameof(ToDoController)) ?? "").ToDictionary();
+            queryParams.Add("ListId", $"{listId}");
+
+            return RedirectToAction("Index", queryParams);
         }
 
         [HttpGet]
         [Route("delete-request/{id:int}")]
+        [ProvideQueryString(nameof(ToDoController))]
         public async Task<IActionResult> DeleteRequest([FromRoute] int listId, [FromRoute] int id)
         {
             var stellarDsListResult = await oAuthDataApiService.Get<ListResult>(nameof(List), listId);
 
-            if ((await oAuthDataApiService.Get<TaskResult>(nameof(ToDo), id)) is not { } stellarDbResult)
+            if ((await oAuthDataApiService.Get<ToDoResult>(nameof(ToDo), id)) is not { } stellarDbResult)
             {
                 return RedirectToAction("Index", "ToDo", new { listId }); // todo: error page
             }
@@ -105,14 +118,18 @@ namespace StellarDsClient.Ui.Mvc.Controllers
 
         [HttpGet]
         [Route("delete/{id:int}")]
+        [ProvideQueryString(nameof(ToDoController))]
         public async Task<IActionResult> Delete([FromRoute] int listId, [FromRoute] int id)
         {
-            if ((await oAuthDataApiService.Get<TaskResult>(nameof(ToDo), id)).Data is {} taskResult && taskResult.ListId == listId)
+            if ((await oAuthDataApiService.Get<ToDoResult>(nameof(ToDo), id)).Data is {} taskResult && taskResult.ListId == listId)
             {
                 await oAuthDataApiService.Delete(nameof(ToDo), id);
             }
-            
-            return RedirectToAction("Index", new { listId });
+
+            var queryParams = HttpUtility.ParseQueryString(HttpContext.Session.GetString(nameof(ToDoController)) ?? "").ToDictionary();
+            queryParams.Add("ListId", $"{listId}");
+
+            return RedirectToAction("Index", queryParams);
         }
     }
 }
