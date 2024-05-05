@@ -28,10 +28,12 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 
             var listIndexFilter = new ListIndexFilter
             {
-                Sort = "updated"
+                Sort = "updated",
+                SortAscending = false
             };
 
             var listStellarDsResult = await dataApiService.Find<ListResult>(nameof(List), listIndexFilter.GetQuery() + pagination.GetQuery());
+
             if (listStellarDsResult.Data?.FirstOrDefault() is not { } listResult)
             {
                 return new StellarDsResult<ListResult>
@@ -43,7 +45,8 @@ namespace StellarDsClient.Ui.Mvc.Extensions
 
             var taskIndexFilter = new TaskIndexFilter
             {
-                Sort = "updated"
+                Sort = "updated",
+                SortAscending = false
             };
 
             var taskStellarDsResult = await dataApiService.Find<ToDoResult>(nameof(ToDo), taskIndexFilter.GetQuery() + pagination.GetQuery());
@@ -52,13 +55,16 @@ namespace StellarDsClient.Ui.Mvc.Extensions
             {
                 return new StellarDsResult<ListResult>
                 {
-                    Messages = taskStellarDsResult.Messages,
+                    Data = listResult,
                 };
             }
             
             if (taskResult.Updated > listResult.Updated && taskResult.ListId != listResult.Id)
             {
-                return await dataApiService.Get<ListResult>(nameof(List), taskResult.ListId);
+                return new StellarDsResult<ListResult>
+                {
+                    Data = listStellarDsResult.Data.FirstOrDefault(l => l.Id == taskResult.ListId),
+                };
             }
 
             return new StellarDsResult<ListResult>

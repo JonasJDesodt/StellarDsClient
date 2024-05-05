@@ -1,0 +1,23 @@
+﻿@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment env
+
+@{
+    ViewData["Title"] = "Bad request";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>@ViewData["Message"]</p>
+
+@if (env.IsDevelopment())
+{
+   <p>The following issues could be the cause of this error: </p>
+
+   <ul>
+       <li>Invalid or no tables defined</li>
+       <li>Insufficient user permissions</li>
+       <li>Invalid StellarDsClientSettings section in appsettings.json</li>
+       <li>Invalid refresh token</li>
+   </ul>
+
+   <p>Please read the ReadMe to learn how to set up this demo correctly.</p>
+}

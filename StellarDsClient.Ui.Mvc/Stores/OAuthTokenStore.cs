@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using StellarDsClient.Sdk.Exceptions;
+using System.Runtime.CompilerServices;
 
 namespace StellarDsClient.Ui.Mvc.Stores
 {
@@ -20,7 +21,7 @@ namespace StellarDsClient.Ui.Mvc.Stores
         /// <exception cref="NullReferenceException"></exception>
         public string GetRefreshToken()
         {
-            return _refreshTokenScopedStore ?? GetToken("RefreshToken") ?? throw new NullReferenceException("The RefreshToken cookie returned null");
+            return _refreshTokenScopedStore ?? GetToken("RefreshToken") ?? throw new CustomUnauthorizedException("Unauthorized", new NullReferenceException("The RefreshToken cookie returned null"));
         }
 
         public void SaveAccessToken(string token, DateTimeOffset expires)

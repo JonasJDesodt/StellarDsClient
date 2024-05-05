@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Security;
 using StellarDsClient.Sdk.Dto.Transfer;
 using StellarDsClient.Ui.Mvc.Extensions;
+using StellarDsClient.Sdk.Exceptions;
 
 namespace StellarDsClient.Ui.Mvc.Providers
 {
@@ -49,17 +50,16 @@ namespace StellarDsClient.Ui.Mvc.Providers
 
             var handler = new JsonWebTokenHandler();
 
-            var accessJsonWebToken = handler.ReadJsonWebToken(oAuthTokens.AccessToken) ?? throw new SecurityException("Token could not be converted");
+            var accessJsonWebToken = handler.ReadJsonWebToken(oAuthTokens.AccessToken) ?? throw new CustomUnauthorizedException("Unauthorized", new ArgumentException("The access token string could not be converted to a JsonWebToken."));
 
             var claims = accessJsonWebToken.Claims.ToList();
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-            //oAuthTokenStore.SaveAccessToken(oAuthTokens.AccessToken, new DateTimeOffset(accessJsonWebToken.ValidTo));
-            oAuthTokenStore.SaveAccessToken(oAuthTokens.AccessToken, new DateTimeOffset(DateTime.Now.AddSeconds(15)));
+            oAuthTokenStore.SaveAccessToken(oAuthTokens.AccessToken, new DateTimeOffset(accessJsonWebToken.ValidTo));
 
 
-            var refreshJsonWebToken = handler.ReadJsonWebToken(oAuthTokens.RefreshToken) ?? throw new SecurityException("Token could not be converted");
+            var refreshJsonWebToken = handler.ReadJsonWebToken(oAuthTokens.RefreshToken) ?? throw new CustomUnauthorizedException("Unauthorized", new ArgumentException("The refresh token string could not be converted to a JsonWebToken."));
 
             var refreshJsonWebTokenExpiry = new DateTimeOffset(refreshJsonWebToken.ValidTo);
 

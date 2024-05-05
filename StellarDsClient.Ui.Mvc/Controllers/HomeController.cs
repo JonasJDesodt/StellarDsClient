@@ -48,6 +48,9 @@ namespace StellarDsClient.Ui.Mvc.Controllers
                 case CustomUnauthorizedException:
                     ViewBag.Message = exception.Message;
                     return RedirectToAction("SignOut", "OAuth", new { returnUrl = "/" });
+                case CustomBadRequestException:
+                    ViewBag.Message = exception.Message;
+                    return View("BadRequest");
                 case CustomHttpException:
                     ViewBag.Message = exception.Message;
                     return View("GeneralError");
