@@ -111,6 +111,11 @@ namespace StellarDsClient.Sdk
             {
                 foreach(var model in models)
                 {
+                    if(tables.Any(x => x.Name == model.Name))
+                    {
+                        return;
+                    }
+
                     if (tables.FirstOrDefault(t => t.Name.Equals(stellarDsClientSettings.ApiSettings.Tables[model.Name].Name)) is not { } existingTableResult)
                     {
                         if ((await CreateTable(model, stellarDsClientSettings.ApiSettings.Tables[model.Name].Name))?.Data is { } tableResult)
