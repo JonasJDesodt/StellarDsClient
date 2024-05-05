@@ -10,9 +10,9 @@ using StellarDsClient.Sdk.Settings;
 
 namespace StellarDsClient.Sdk
 {
-    public class DataApiService<TTokenProvider>(IHttpClientFactory httpClientFactory, ApiSettings apiSettings, ApiCredentials apiCredentials, TTokenProvider tokenProvider, TableSettings tableSettings) where TTokenProvider : ITokenProvider
+    public class DataApiService<TTokenProvider>(IHttpClientFactory httpClientFactory, TTokenProvider tokenProvider, StellarDsClientSettings stellarDsClientSettings) where TTokenProvider : ITokenProvider
     {
-        private readonly string _requestUriBase = $"/{apiSettings.Version}/data/table";
+        private readonly string _requestUriBase = $"/{stellarDsClientSettings.ApiSettings.Version}/data/table";
 
         /// <summary>
         /// Gets records from a given table.
@@ -23,7 +23,7 @@ namespace StellarDsClient.Sdk
         /// <returns></returns>
         public async Task<Dto.Transfer.StellarDsResult<IList<TResult>>> Find<TResult>(string table, string query) where TResult : class
         {
-            return await GetAsync<IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]) + query);
+            return await GetAsync<IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(stellarDsClientSettings.ApiSettings.Tables[table].Id) + query);
         }
 
         /// <summary>
@@ -34,8 +34,8 @@ namespace StellarDsClient.Sdk
         /// <param name="id"></param>
         /// <returns></returns>
         public async Task<Dto.Transfer.StellarDsResult<TResult>> Get<TResult>(string table, int id) where TResult : class
-        {   
-            var result = await GetAsync<IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]) + $"&whereQuery={HttpUtility.UrlEncode($"id;equal;{id}")}");
+        {
+            var result = await GetAsync<IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(stellarDsClientSettings.ApiSettings.Tables[table].Id) + $"&whereQuery={HttpUtility.UrlEncode($"id;equal;{id}")}");
 
             return new Dto.Transfer.StellarDsResult<TResult>
             {
@@ -56,7 +56,7 @@ namespace StellarDsClient.Sdk
         /// <returns></returns>
         public async Task<Dto.Transfer.StellarDsResult<TResult>> Create<TRequest, TResult>(string table, TRequest request) where TRequest : class where TResult : class
         {
-            var result = await PostAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]), [request]);
+            var result = await PostAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(stellarDsClientSettings.ApiSettings.Tables[table].Id), [request]);
 
             return new Dto.Transfer.StellarDsResult<TResult>
             {
@@ -77,7 +77,7 @@ namespace StellarDsClient.Sdk
         /// <returns></returns>
         public async Task<Dto.Transfer.StellarDsResult<IList<TResult>>> Create<TRequest, TResult>(string table, IList<TRequest> requests) where TRequest : class where TResult : class
         {
-            return await PostAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]), requests);
+            return await PostAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(stellarDsClientSettings.ApiSettings.Tables[table].Id), requests);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace StellarDsClient.Sdk
         /// <returns></returns>
         public async Task<Dto.Transfer.StellarDsResult<IList<TResult>>> Put<TRequest, TResult>(string table, int id, TRequest request) where TRequest : class where TResult : class
         {
-            return await PutAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]), [id], request);
+            return await PutAsJsonAsync<TRequest, IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(stellarDsClientSettings.ApiSettings.Tables[table].Id), [id], request);
         }
 
         /// <summary>
@@ -115,9 +115,9 @@ namespace StellarDsClient.Sdk
         /// <param name="table"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<StellarDsResult> Delete(string table, int id) 
+        public async Task<StellarDsResult> Delete(string table, int id)
         {
-            return await DeleteAsync(await GetHttpClientAsync(), GetDefaultRequestUri(tableSettings[table]) + $"&record={id}");
+            return await DeleteAsync(await GetHttpClientAsync(), GetDefaultRequestUri(stellarDsClientSettings.ApiSettings.Tables[table].Id) + $"&record={id}");
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace StellarDsClient.Sdk
 
             var httpClient = await GetHttpClientAsync();
 
-            var httpResponse = await httpClient.PostAsJsonAsync(GetDeleteRequestUri(tableSettings[table]), ids);  // expected json content to be e.g.  new  { records = int[]{1,2}}
+            var httpResponse = await httpClient.PostAsJsonAsync(GetDeleteRequestUri(stellarDsClientSettings.ApiSettings.Tables[table].Id), ids);  // expected json content to be e.g.  new  { records = int[]{1,2}}
 
             httpResponse.EnsureSuccessStatusCode();
         }
@@ -152,7 +152,7 @@ namespace StellarDsClient.Sdk
         {
             var httpClient = await GetHttpClientAsync();
 
-            var httpResponse = await httpClient.PostAsync(GetBlobRequestUri(tableSettings[table], field, record), content);
+            var httpResponse = await httpClient.PostAsync(GetBlobRequestUri(stellarDsClientSettings.ApiSettings.Tables[table].Id, field, record), content);
 
             httpResponse.EnsureSuccessStatusCode();
 
@@ -172,7 +172,7 @@ namespace StellarDsClient.Sdk
         {
             var httpClient = await GetHttpClientAsync();
 
-            var httpResponse = await httpClient.GetAsync(GetBlobRequestUri(tableSettings[table], field, record));
+            var httpResponse = await httpClient.GetAsync(GetBlobRequestUri(stellarDsClientSettings.ApiSettings.Tables[table].Id, field, record));
 
             httpResponse.EnsureSuccessStatusCode();
 
@@ -181,23 +181,23 @@ namespace StellarDsClient.Sdk
 
         private string GetDefaultRequestUri(int table)
         {
-            return $"{_requestUriBase}?project={apiCredentials.Project}&table={table}";
+            return $"{_requestUriBase}?project={stellarDsClientSettings.ApiSettings.Project}&table={table}";
         }
 
         private string GetDeleteRequestUri(int table)
         {
-            return $"{_requestUriBase}/delete?project={apiCredentials.Project}&table={table}";
+            return $"{_requestUriBase}/delete?project={stellarDsClientSettings.ApiSettings.Project}&table={table}";
         }
 
         private string GetBlobRequestUri(int table, string field, int record)
         {
-            return $"{_requestUriBase}/blob?project={apiCredentials.Project}&table={table}&field={field}&record={record}";
+            return $"{_requestUriBase}/blob?project={stellarDsClientSettings.ApiSettings.Project}&table={table}&field={field}&record={record}";
         }
 
         private async Task<HttpClient> GetHttpClientAsync()
         {
             return httpClientFactory
-                .CreateClient(apiSettings.Name)
+                .CreateClient(stellarDsClientSettings.ApiSettings.Name)
                 .AddAuthorization(await tokenProvider.Get());
         }
 

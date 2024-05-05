@@ -1,16 +1,15 @@
 ﻿using System.Runtime.CompilerServices;
-using StellarDsClient.Ui.Mvc.Models.Settings;
 
 namespace StellarDsClient.Ui.Mvc.Stores
 {
-    public class OAuthTokenStore(IHttpContextAccessor httpContextAccessor, CookieSettings cookieSettings) 
+    public class OAuthTokenStore(IHttpContextAccessor httpContextAccessor)
     {
         private string? _accessTokenScopedStore;
         private string? _refreshTokenScopedStore;
 
         public string? GetAccessToken()
         {
-            return _accessTokenScopedStore ?? GetToken(nameof(CookieSettings.OAuthCookies.AccessToken));
+            return _accessTokenScopedStore ?? GetToken("AccessToken");
         }
 
         /// <summary>
@@ -21,23 +20,32 @@ namespace StellarDsClient.Ui.Mvc.Stores
         /// <exception cref="NullReferenceException"></exception>
         public string GetRefreshToken()
         {
-            return _refreshTokenScopedStore ?? GetToken(nameof(CookieSettings.OAuthCookies.RefreshToken)) ?? throw new NullReferenceException(nameof(CookieSettings.OAuthCookies.RefreshToken));
+            return _refreshTokenScopedStore ?? GetToken("RefreshToken") ?? throw new NullReferenceException("The RefreshToken cookie returned null");
         }
 
         public void SaveAccessToken(string token, DateTimeOffset expires)
         {
-            cookieSettings.OAuthCookies.AccessToken.Expires = expires; // todo: check if max-age is available from api, test if the options are reset when the service is injected
 
-            SaveToken(nameof(CookieSettings.OAuthCookies.AccessToken), token, cookieSettings.OAuthCookies.AccessToken);
+            SaveToken("AccessToken", token, new CookieOptions 
+            {
+                IsEssential = true,
+                Expires = expires,
+                HttpOnly = true,
+                Secure = true
+            });
 
             _accessTokenScopedStore = token;
         }
 
         public void SaveRefreshToken(string token, DateTimeOffset expires)
         {
-            cookieSettings.OAuthCookies.RefreshToken.Expires = expires;
-
-            SaveToken(nameof(CookieSettings.OAuthCookies.RefreshToken), token, cookieSettings.OAuthCookies.RefreshToken);
+            SaveToken("RefreshToken", token, new CookieOptions
+            {
+                IsEssential = true,
+                Expires = expires,
+                HttpOnly = true,
+                Secure = true
+            });
 
             _refreshTokenScopedStore = token;
         }

@@ -4,81 +4,31 @@ using StellarDsClient.Models.Mappers;
 using StellarDsClient.Sdk;
 using StellarDsClient.Sdk.Settings;
 using StellarDsClient.Ui.Mvc.Extensions;
-using StellarDsClient.Ui.Mvc.Models.Settings;
 using StellarDsClient.Ui.Mvc.Providers;
 using StellarDsClient.Ui.Mvc.Stores;
 using System.Diagnostics;
 
-
 var builder = WebApplication.CreateBuilder(args);
-
-if (builder.Configuration.GetSection(nameof(CookieSettings)).Get<CookieSettings>() is not { } cookieSettings)
-{
-    Debug.WriteLine("Unable to retrieve the CookieSettings from appsettings.json");
-
-    return;
-}
-
-if (builder.Configuration.GetSection(nameof(OAuthSettings)).Get<OAuthSettings>() is not { } oAuthSettings)
-{
-    Debug.WriteLine("Unable to retrieve the OAuthSettings from appsettings.json");
-
-    return;
-}
-
-if (builder.Configuration.GetSection(nameof(ApiSettings)).Get<ApiSettings>() is not { } apiSettings)
-{
-    Debug.WriteLine("Unable to retrieve the ApiSettings from appsettings.json");
-
-    return;
-}
-
-if (builder.Configuration.GetSection(nameof(OAuthCredentials)).Get<OAuthCredentials>() is not { } oAuthCredentials)
-{
-    Debug.WriteLine("Unable to retrieve the OAuthCredentials from appsettings.json");
-
-    return;
-}
-
-if (builder.Configuration.GetSection(nameof(ApiCredentials)).Get<ApiCredentials>() is not { } apiCredentials)
-{
-    Debug.WriteLine("Unable to retrieve the ApiCredentials from appsettings.json");
-
-    return;
-}
-
-if(builder.Configuration.GetSection(nameof(TableNames)).Get<TableNames>() is not { } tableNames)
-{
-    Debug.WriteLine("Unable to retrieve the TableNames from appsettings.json");
-
-    return;
-}
-
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddSingleton(apiCredentials);
-
-builder.Services.AddSingleton(oAuthCredentials);
-
-builder.Services.AddSingleton(cookieSettings);
-
-builder.Services.AddSingleton(apiSettings);
-
-builder.Services.AddSingleton(oAuthSettings);
-
-builder.Services.AddSingleton(tableNames);
-
-builder.Services.AddSingleton(new TableSettings());
-
-builder.Services.AddHttpClient(apiSettings.Name, httpClient =>
+if (builder.Configuration.GetRequiredSection(nameof(StellarDsClientSettings)).Get<StellarDsClientSettings>() is not { } stellarDsClientSettings)
 {
-    httpClient.BaseAddress = new Uri(apiSettings.BaseAddress);
+    Debug.WriteLine("Unable to retrieve the StellarDsClientSettings from appsettings.json");
+
+    return;
+}
+
+builder.Services.AddSingleton(stellarDsClientSettings);
+
+builder.Services.AddHttpClient(stellarDsClientSettings.ApiSettings.Name, httpClient =>
+{
+    httpClient.BaseAddress = new Uri(stellarDsClientSettings.ApiSettings.BaseAddress);
 });
 
-builder.Services.AddHttpClient(oAuthSettings.Name, httpClient =>
+builder.Services.AddHttpClient(stellarDsClientSettings.OAuthSettings.Name, httpClient =>
 {
-    httpClient.BaseAddress = new Uri(oAuthSettings.BaseAddress);
+    httpClient.BaseAddress = new Uri(stellarDsClientSettings.OAuthSettings.BaseAddress);
 });
 
 builder.Services.AddHttpContextAccessor();
@@ -115,13 +65,20 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+//Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+} else
+{
+    app.UseExceptionHandler("/Home/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
 }
+
+//app.UseExceptionHandler("/Error/HandleException");
 
 
 app.UseHttpsRedirection();

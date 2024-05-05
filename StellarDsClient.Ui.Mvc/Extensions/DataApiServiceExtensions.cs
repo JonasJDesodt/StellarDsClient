@@ -1,7 +1,6 @@
 ﻿using StellarDsClient.Sdk;
 using StellarDsClient.Ui.Mvc.Models.Filters;
 using StellarDsClient.Ui.Mvc.Models.FormModels;
-using StellarDsClient.Ui.Mvc.Models.Settings;
 using StellarDsClient.Ui.Mvc.Models.ViewModels;
 using StellarDsClient.Ui.Mvc.Providers;
 using System.Collections.Generic;
@@ -19,9 +18,6 @@ namespace StellarDsClient.Ui.Mvc.Extensions
     {
         internal static async Task<StellarDsResult<ListResult>> GetLastUpdatedList(this DataApiService<OAuthAccessTokenProvider> dataApiService)
         {
-
-
-
             var pagination = new Pagination
             {
                 Page = 1,

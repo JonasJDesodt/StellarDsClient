@@ -3,7 +3,6 @@ using StellarDsClient.Ui.Mvc.Models.UiModels;
 using StellarDsClient.Ui.Mvc.Models.Filters;
 using StellarDsClient.Ui.Mvc.Models.FormModels;
 using StellarDsClient.Ui.Mvc.Models.PartialModels;
-using StellarDsClient.Ui.Mvc.Models.Settings;
 using StellarDsClient.Ui.Mvc.Models.ViewModels;
 using StellarDsClient.Models.Result;
 using StellarDsClient.Sdk.Dto.Transfer;

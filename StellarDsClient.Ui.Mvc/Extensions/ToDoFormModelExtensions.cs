@@ -3,7 +3,6 @@ using StellarDsClient.Models.Result;
 using StellarDsClient.Sdk.Dto.Transfer;
 using StellarDsClient.Ui.Mvc.Delegates;
 using StellarDsClient.Ui.Mvc.Models.FormModels;
-using StellarDsClient.Ui.Mvc.Models.Settings;
 using StellarDsClient.Ui.Mvc.Models.ViewModels;
 
 namespace StellarDsClient.Ui.Mvc.Extensions

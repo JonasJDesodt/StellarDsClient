@@ -76,7 +76,7 @@ namespace StellarDsClient.Ui.Mvc.Providers
                 return;
             }
 
-            await httpContextAccessor.HttpContext.ClearApplicationCookies().SignOutAsync();
+            await httpContextAccessor.HttpContext.ClearOAuthCookies().SignOutAsync();
         }
     }
 }

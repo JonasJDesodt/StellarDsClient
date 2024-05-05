@@ -1,26 +1,26 @@
 ﻿using Microsoft.IdentityModel.JsonWebTokens;
 using StellarDsClient.Sdk.Abstractions;
 using StellarDsClient.Sdk.Extensions;
-using StellarDsClient.Sdk.Settings;
 using StellarDsClient.Sdk.Dto.Transfer;
+using StellarDsClient.Sdk.Settings;
 
 namespace StellarDsClient.Sdk
 {
-    public class OAuthApiService(IHttpClientFactory httpClientFactory, ApiSettings apiSettings, OAuthCredentials oAuthCredentials, OAuthSettings oAuthSettings)
+    public class OAuthApiService(IHttpClientFactory httpClientFactory, StellarDsClientSettings stellarDsClientSettings)
     {
-        public string ClientId => oAuthCredentials.ClientId;
-        public string RedirectUri => oAuthCredentials.RedirectUri;
-        public string OAuthBaseAddress => oAuthSettings.BaseAddress;
+        public string ClientId => stellarDsClientSettings.OAuthSettings.ClientId;
+        public string RedirectUri => stellarDsClientSettings.OAuthSettings.RedirectUri;
+        public string OAuthBaseAddress => stellarDsClientSettings.OAuthSettings.BaseAddress;
         
 
-        private readonly string _httpClientName = apiSettings.Name;
+        private readonly string _httpClientName = stellarDsClientSettings.ApiSettings.Name;
 
-        private readonly string _requestUri = $"/{apiSettings.Version}/oauth/token";
+        private readonly string _requestUri = $"/{stellarDsClientSettings.ApiSettings.Version}/oauth/token";
 
         private readonly Dictionary<string, string> _clientParams = new()
         {
-            { "client_id", oAuthCredentials.ClientId },
-            { "client_secret", oAuthCredentials.ClientSecret }
+            { "client_id", stellarDsClientSettings.OAuthSettings.ClientId },
+            { "client_secret", stellarDsClientSettings.OAuthSettings.ClientSecret }
         };
 
 
@@ -32,7 +32,7 @@ namespace StellarDsClient.Sdk
                 {
                     { "grant_type", "authorization_code" },
                     { "code", authorizationCode },
-                    { "redirect_uri", oAuthCredentials.RedirectUri},
+                    { "redirect_uri", stellarDsClientSettings.OAuthSettings.RedirectUri},
                 }.Concat(_clientParams)));
 
             return await httpResponse.ToOAuthTokens();
