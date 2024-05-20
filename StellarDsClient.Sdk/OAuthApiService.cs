@@ -53,4 +53,46 @@ namespace StellarDsClient.Sdk
             return await httpResponse.ToOAuthTokens();
         }
     }
+
+
+    
+   
+
+    public class Car 
+    {
+        private string? _color;
+        public string? Color 
+        {
+            get
+            {
+                return _color;
+            }
+
+            set
+            {
+                _color = value;
+            }
+        
+        }
+    }
+
+    public class Program
+    {
+        static void Main(string[] args)
+        {
+            Car batMobile = new Car();
+            batMobile.Color = "Black";  
+
+            string c = batMobile.Color;
+        }
+    }
+
+
+
+
+
+
+
+
+
 }

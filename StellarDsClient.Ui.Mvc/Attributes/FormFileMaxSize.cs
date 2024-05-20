@@ -22,7 +22,7 @@ namespace StellarDsClient.Ui.Mvc.Attributes
 
         public string GetErrorMessageForMaxSize()
         {
-            return $"The maximum allowed file size is {_maxFileSizeInBytes / 1024} KB.";
+            return $"The maximum allowed file size is {_maxFileSizeInBytes / 1024} kB.";
         }
 
         public string GetErrorMessageForMinSize()

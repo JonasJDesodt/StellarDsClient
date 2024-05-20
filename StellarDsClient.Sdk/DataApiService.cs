@@ -35,6 +35,8 @@ namespace StellarDsClient.Sdk
         /// <returns></returns>
         public async Task<Dto.Transfer.StellarDsResult<TResult>> Get<TResult>(string table, int id) where TResult : class
         {
+            var param = $"&whereQuery=id;equal;{id}";
+
             var result = await GetAsync<IList<TResult>>(await GetHttpClientAsync(), GetDefaultRequestUri(stellarDsClientSettings.ApiSettings.Tables[table].Id) + $"&whereQuery={HttpUtility.UrlEncode($"id;equal;{id}")}");
 
             return new Dto.Transfer.StellarDsResult<TResult>
@@ -204,8 +206,6 @@ namespace StellarDsClient.Sdk
         private static async Task<StellarDsResult<TResult>> GetAsync<TResult>(HttpClient httpClient, string uri) where TResult : class
         {
             var httpResponseMessage = await httpClient.GetAsync(uri);
-
-            var flag = await httpResponseMessage.Content.ReadAsStringAsync();
 
             return await httpResponseMessage.ToStellarDsResult<TResult>();
         }

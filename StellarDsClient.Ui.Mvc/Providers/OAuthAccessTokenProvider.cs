@@ -13,6 +13,7 @@ using StellarDsClient.Sdk.Exceptions;
 
 namespace StellarDsClient.Ui.Mvc.Providers
 {
+
     //todo: rename, it does more than only providing a token
     public class OAuthAccessTokenProvider(OAuthTokenStore oAuthTokenStore, OAuthApiService oAuthApiService, IHttpContextAccessor httpContextAccessor) : ITokenProvider
     {
@@ -38,6 +39,7 @@ namespace StellarDsClient.Ui.Mvc.Providers
         {
             return new JsonWebTokenHandler().ReadJsonWebToken(accessToken).ValidTo > DateTime.UtcNow;
         }
+
 
         //todo: rename
         public async Task BrowserSignIn(OAuthTokens oAuthTokens)

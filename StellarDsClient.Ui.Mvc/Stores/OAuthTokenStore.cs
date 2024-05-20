@@ -40,13 +40,18 @@ namespace StellarDsClient.Ui.Mvc.Stores
 
         public void SaveRefreshToken(string token, DateTimeOffset expires)
         {
-            SaveToken("RefreshToken", token, new CookieOptions
+            SaveToken("RefreshToken", token, 
+            
+            new CookieOptions
             {
                 IsEssential = true,
                 Expires = expires,
                 HttpOnly = true,
                 Secure = true
-            });
+            }
+            
+            
+            );
 
             _refreshTokenScopedStore = token;
         }

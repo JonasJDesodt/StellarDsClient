@@ -23,6 +23,8 @@ namespace StellarDsClient.Ui.Mvc.Controllers
         [StoreQueryString]
         public async Task<IActionResult> Index([FromQuery] ListIndexFilter? listIndexFilter, [FromQuery] Pagination? pagination)
         {
+            var queryString = Request.QueryString;
+
             pagination ??= new Pagination();
 
             //todo; does not seem to work with pagination (offset/take)
